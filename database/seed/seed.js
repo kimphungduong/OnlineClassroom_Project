@@ -17,7 +17,6 @@ const Comment = require('../models/comment');
 const ForumPost = require('../models/forum_post');
 const Message = require('../models/message');
 
-
 // Hàm tạo dữ liệu seed
 const seedData = async () => {
   try {
@@ -187,28 +186,134 @@ const seedData = async () => {
       notes: []
     });
 
-        // Seed dữ liệu Đánh giá
-        await Review.create({
-            course: course1._id,
-            student: student1._id,
-            rating: 5, // Thêm trường rating
-            teacher: teacher1._id, // Thêm trường teacher
-            type: true,
-            stars: 5,
-            comment: 'Khóa học rất hay!',
-            createdAt: new Date()
-        });
-    
-        await Review.create({
-            course: course2._id,
-            student: student2._id,
-            rating: 4, // Thêm trường rating
-            teacher: teacher2._id, // Thêm trường teacher
-            type: true,
-            stars: 4,
-            comment: 'Khóa học tốt nhưng cần cải thiện tài liệu.',
-            createdAt: new Date()
-        });
+    // Seed dữ liệu Tài liệu
+    await Document.create({
+        name: 'Tài liệu Đại số tuyến tính',
+        url: 'https://example.com/document1.pdf',
+        link: 'https://example.com/document1.pdf', // Thêm trường link
+        lesson: lesson1._id,
+        createdAt: new Date()
+      });
+  
+      await Document.create({
+        name: 'Tài liệu Cơ học lượng tử',
+        url: 'https://example.com/document2.pdf',
+        link: 'https://example.com/document2.pdf', // Thêm trường link
+        lesson: lesson2._id,
+        createdAt: new Date()
+      });
+    // Seed dữ liệu Ghi chú
+    await Note.create({
+      content: 'Ghi chú về Đại số tuyến tính',
+      lesson: lesson1._id,
+      student: student1._id,
+      createdAt: new Date()
+    });
+
+    await Note.create({
+      content: 'Ghi chú về Cơ học lượng tử',
+      lesson: lesson2._id,
+      student: student2._id,
+      createdAt: new Date()
+    });
+
+    // Seed dữ liệu Bài kiểm tra
+    const test1 = await Test.create({
+      name: 'Kiểm tra Đại số tuyến tính',
+      lesson: lesson1._id,
+      questions: ['Câu hỏi 1', 'Câu hỏi 2', 'Câu hỏi 3'],
+      createdAt: new Date()
+    });
+
+    const test2 = await Test.create({
+      name: 'Kiểm tra Cơ học lượng tử',
+      lesson: lesson2._id,
+      questions: ['Câu hỏi 1', 'Câu hỏi 2', 'Câu hỏi 3'],
+      createdAt: new Date()
+    });
+
+    // Seed dữ liệu Nộp bài
+    await Submission.create({
+      test: test1._id,
+      student: student1._id,
+      score: 90,
+      timeSpent: 3600,
+      submittedAt: new Date()
+    });
+
+    await Submission.create({
+      test: test2._id,
+      student: student2._id,
+      score: 85,
+      timeSpent: 5400,
+      submittedAt: new Date()
+    });
+
+    // Seed dữ liệu Đánh giá
+    await Review.create({
+      course: course1._id,
+      teacher: teacher1._id,
+      student: student1._id,
+      rating: 5,
+      comment: 'Khóa học rất hay!',
+      createdAt: new Date()
+    });
+
+    await Review.create({
+      course: course2._id,
+      teacher: teacher2._id,
+      student: student2._id,
+      rating: 4,
+      comment: 'Khóa học tốt nhưng cần cải thiện tài liệu.',
+      createdAt: new Date()
+    });
+
+    // Seed dữ liệu Bình luận
+    const comment1 = await Comment.create({
+      content: 'Bài giảng rất hay!',
+      lesson: lesson1._id,
+      user: student1._id,
+      createdAt: new Date()
+    });
+
+    const comment2 = await Comment.create({
+      content: 'Bài giảng cần thêm ví dụ.',
+      lesson: lesson2._id,
+      user: student2._id,
+      createdAt: new Date()
+    });
+
+    // Seed dữ liệu Bài viết diễn đàn
+    const forumPost1 = await ForumPost.create({
+      title: 'Thảo luận về Đại số tuyến tính',
+      content: 'Mọi người cùng thảo luận về Đại số tuyến tính nhé!',
+      createdBy: teacher1._id,
+      createdAt: new Date(),
+      comments: [comment1._id]
+    });
+
+    const forumPost2 = await ForumPost.create({
+      title: 'Thảo luận về Cơ học lượng tử',
+      content: 'Mọi người cùng thảo luận về Cơ học lượng tử nhé!',
+      createdBy: teacher2._id,
+      createdAt: new Date(),
+      comments: [comment2._id]
+    });
+
+    // Seed dữ liệu Tin nhắn
+    await Message.create({
+      sender: student1._id,
+      receiver: student2._id,
+      content: 'Chào bạn, bạn có thể giúp mình bài tập này không?',
+      sentAt: new Date()
+    });
+
+    await Message.create({
+      sender: student2._id,
+      receiver: student1._id,
+      content: 'Chào bạn, mình sẽ giúp bạn.',
+      sentAt: new Date()
+    });
 
     console.log('Seed data created successfully!');
   } catch (error) {
