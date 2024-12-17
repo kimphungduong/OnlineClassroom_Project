@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authApi from '~/api/authApi';
 
+
 let isRefreshing = false;
 
 // Async thunk for login
@@ -27,6 +28,15 @@ export const refreshToken = createAsyncThunk('auth/refresh-token', async (_, thu
   }
 });
 
+// Async thunk for logout
+export const logoutAccount = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
+  try {
+    await authApi.logout();
+  } catch (error) {
+    console.error('Error logging out:', error);
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
@@ -36,7 +46,7 @@ const authSlice = createSlice({
     error: null,
   },
   reducers: {
-    logout: (state) => {
+    logout: async (state) => {
       state.accessToken = null;
       state.role = null;
     },
@@ -44,6 +54,10 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.role = action.payload.role;
     },
+    getSate: (state) => {
+      return state;
+    }
+    
   },
   extraReducers: (builder) => {
     builder
@@ -67,11 +81,22 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.role = action.payload.role;
       })
-      .addCase(refreshToken.rejected, (state, action) => {
+      .addCase(refreshToken.rejected, async(state, action) => {
         state.status = 'failed';
         state.error = action.payload;
         state.accessToken = null;
         state.role = null;
+        // try {
+        //   await authApi.logout();
+        // } catch (error) {
+        //   console.error('Error logging out:', error);
+        // }
+            // Reset Redux Persist
+      })
+      .addCase(logoutAccount.fulfilled, (state) => {
+        state.accessToken = null;
+        state.role = null;
+
       });
   },
 });

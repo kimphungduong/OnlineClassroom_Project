@@ -87,11 +87,14 @@ class AuthController{
       }
     }
   
-    async logout(userId) {
-      const user = await User.findById(userId);
-      if (user) {
-        user.refreshToken = null;
-        await user.save();
+    async logout(req, res, next) {
+      try {
+        const refreshToken = req.cookies.refreshToken;
+        await AuthService.logout(refreshToken);
+        res.clearCookie('refreshToken');
+        res.json({ message: 'Đăng xuất thành công' });
+      } catch (error) {
+        res.status(500).json({ message: 'Lỗi máy chủ' });
       }
     }
 }

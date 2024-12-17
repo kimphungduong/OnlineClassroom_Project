@@ -23,7 +23,7 @@ const publicRoutes = [
     { path: config.routes.login, component: Login, layout: HeaderOnly },
     { path: config.routes.watch, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.profile, component: Profile },
-    { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly },
+    { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.search, component: Search, layout: null },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },

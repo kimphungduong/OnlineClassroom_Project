@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logout } from '~/store/slices/authSlice';
 // URL gốc của API (thay thế bằng URL backend của bạn)
 const BASE_URL = `${process.env.REACT_APP_BASE_URL}/api/auth`;
 
@@ -23,6 +24,9 @@ const authApi = {
   // API làm mới token
   refreshToken: () => {
     return axiosInstance.post('/refresh-token');
+  },
+  logout: () => {
+    return axiosInstance.post('/logout');
   },
 };
 

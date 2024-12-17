@@ -1,9 +1,22 @@
 import axios from 'axios';
 import {jwtDecode} from 'jwt-decode';
-import { getCourse, getLesson, getListCourse } from '~/services/courseService';
 import { store } from '~/store'; // Import Redux store
 import { logout, setTokens } from '~/store/slices/authSlice';
-import { refreshToken } from '~/api/authApi';
+import { useNavigate } from 'react-router-dom';
+
+
+const handleTokenExpired = async () => {
+  try {
+    await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
+  } catch (error) {
+    console.error('Error during logout:', error);
+  } finally {
+    localStorage.clear();
+    store.dispatch(logout()); // Đảm bảo Redux xử lý reset state
+    window.location.reload(); // Reload trang để làm sạch state
+  }
+};
+
 
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -35,20 +48,33 @@ const axiosInstance = axios.create({
 // Interceptor cho các yêu cầu trước khi gửi
 axiosInstance.interceptors.request.use(
   async (config) => {
-    let token = localStorage.getItem('accessToken');
+    let token = store.getState().auth.accessToken;
+    let role = store.getState().auth.role;
     if (isTokenExpired(token)) {
       if (!isRefreshing) {
         isRefreshing = true;
         try {
           const response = await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/refresh-token`, {}, { withCredentials: true });
           token = response.data.accessToken;
-          localStorage.setItem('accessToken', token);
-          store.dispatch(setTokens({ accessToken: token }));
+          role = response.data.role;
+          // localStorage.setItem('accessToken', token);
+          // localStorage.setItem('role', role);
+          store.dispatch(setTokens({ accessToken: token, role }));
           isRefreshing = false;
           onAccessTokenRefreshed(token);
         } catch (error) {
           isRefreshing = false;
-          store.dispatch(logout());
+          try {
+            await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
+          } catch (error) {
+            console.error('Error during logout:', error);
+          } finally {
+            localStorage.clear();
+            store.dispatch(logout());
+            window.location.reload();
+          }
+            var navigate = useNavigate();
+            navigate('/login');
           throw error;
         }
       }
