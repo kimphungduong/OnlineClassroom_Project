@@ -2,6 +2,7 @@ import config from '~/config';
 
 //Auth
 import { StudentRoute } from '~/auth';
+import { TeacherRoute } from '~/auth';
 
 // Layouts
 import { HeaderOnly } from '~/layouts';

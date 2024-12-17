@@ -1,0 +1,80 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import authApi from '~/api/authApi';
+
+let isRefreshing = false;
+
+// Async thunk for login
+export const login = createAsyncThunk('auth/login', async (credentials, thunkAPI) => {
+  try {
+    const response = await authApi.login(credentials);
+    return response.data; // Trả về dữ liệu từ API (accessToken và role)
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response ? error.response.data : error.message);
+  }
+});
+
+// Async thunk for refreshing the token
+export const refreshToken = createAsyncThunk('auth/refresh-token', async (_, thunkAPI) => {
+  if (isRefreshing) return;
+  isRefreshing = true;
+  try {
+    const response = await authApi.refreshToken();
+    isRefreshing = false;
+    return response.data; // Trả về accessToken mới
+  } catch (error) {
+    isRefreshing = false;
+    return thunkAPI.rejectWithValue(error.response ? error.response.data : error.message);
+  }
+});
+
+const authSlice = createSlice({
+  name: 'auth',
+  initialState: {
+    accessToken: localStorage.getItem('accessToken') || null,
+    role: localStorage.getItem('role') || null,
+    status: 'idle',
+    error: null,
+  },
+  reducers: {
+    logout: (state) => {
+      state.accessToken = null;
+      state.role = null;
+    },
+    setTokens: (state, action) => {
+      state.accessToken = action.payload.accessToken;
+      state.role = action.payload.role;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(login.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.accessToken = action.payload.accessToken;
+        state.role = action.payload.role;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(refreshToken.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(refreshToken.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.accessToken = action.payload.accessToken;
+        state.role = action.payload.role;
+      })
+      .addCase(refreshToken.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+        state.accessToken = null;
+        state.role = null;
+      });
+  },
+});
+
+export const { logout, setTokens } = authSlice.actions;
+export default authSlice.reducer;

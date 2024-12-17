@@ -18,8 +18,10 @@ const CoursePage = () => {
         { href: '/courses/1', label: 'Course 1' },
       ];
   return (
-    <Container maxWidth='false' sx={{mt:1, p:'10px !important', background: '#f4f4f4'}}>
-      <CourseBreadcrumbs links={breadcrumbsLinks} ml={1} current="Current Page" />
+    <Container maxWidth='false' sx={{mt:1, p:'5px 10px  !important', background: '#f4f4f4'}}>
+      <Box sx={{ backgroundColor: 'white', p:1,  mb: 1, borderRadius: 1, boxShadow: 0.5 }}> 
+        <CourseBreadcrumbs links={breadcrumbsLinks} current="Current Page" />
+      </Box>
       <Grid container spacing={2}>
         {/* Phần Video và Tabs */}
         <Grid item xs={12} md={8} sx={{  overflowY: 'auto',  minHeight:'100vh'}}>
