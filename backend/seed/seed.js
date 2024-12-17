@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
 
 // Import các models
-const Teacher = require('../models/teacher');
-const Student = require('../models/student');
-const Notification = require('../models/notification');
-const Subject = require('../models/subject');
-const Course = require('../models/course');
-const Payment = require('../models/payment');
-const Lesson = require('../models/lesson');
-const Note = require('../models/note');
-const Test = require('../models/test');
-const Review = require('../models/review');
-const ForumPost = require('../models/forum_post');
-const Message = require('../models/message');
+const Teacher = require('../../database/models/teacher');
+const Student = require('../../database/models/student');
+const Notification = require('../../database/models/notification');
+const Subject = require('../../database/models/subject');
+const Course = require('../../database/models/course');
+const Payment = require('../../database/models/payment');
+const Lesson = require('../../database/models/lesson');
+const Note = require('../../database/models/note');
+const Test = require('../../database/models/test');
+const Review = require('../../database/models/review');
+const ForumPost = require('../../database/models/forum_post');
+const Message = require('../../database/models/message');
 
 const seedData = async () => {
   try {

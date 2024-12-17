@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const seedData = require('./seed/seed');
+const seedData = require('./seed');
 
 // Kết nối MongoDB
 mongoose.connect('mongodb+srv://php2692004:LnTuvPmwUWmRCU6y@vincent.juveo.mongodb.net/?retryWrites=true&w=majority&appName=Vincent/vincent');
