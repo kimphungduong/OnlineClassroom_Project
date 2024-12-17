@@ -10,11 +10,11 @@ const cx = classNames.bind(styles);
 const CourseCard = ({ course }) => {
     return (
         <Card className={cx('course-card')}>
-            <img src={course.image} alt={course.title} className={cx('course-card-image')} />
+            <img src={course.image} alt={course.name} className={cx('course-card-image')} />
             <CardContent className={cx('course-card-content')}>
                 {/* Tiêu đề khóa học */}
                 <Typography variant="h5" component="div" className={cx('course-card-title')}>
-                    {course.title}
+                    {course.name}
                 </Typography>
 
                 {/* Mô tả ngắn gọn */}
@@ -60,7 +60,7 @@ const CourseCard = ({ course }) => {
 
 CourseCard.propTypes = {
     course: PropTypes.shape({
-        id: PropTypes.number.isRequired,
+        _id: PropTypes.number.isRequired,
         title: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
         image: PropTypes.string.isRequired,

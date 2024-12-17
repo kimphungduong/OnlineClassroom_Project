@@ -1,7 +1,6 @@
 import axios from 'axios';
-
 // URL gốc của API (thay thế bằng URL backend của bạn)
-const BASE_URL = 'http://localhost:3000/api/auth';
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}/api/auth`;
 
 // Tạo một instance axios để dễ dàng cấu hình và sử dụng
 const axiosInstance = axios.create({

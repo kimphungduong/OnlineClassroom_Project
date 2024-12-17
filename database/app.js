@@ -1,9 +1,8 @@
 const mongoose = require('mongoose');
-const seedData = require('./seed');
-require('dotenv').config();
+const seedData = require('./seed/seed');
 
 // Kết nối MongoDB
-mongoose.connect(process.env.MONGODB);
+mongoose.connect('mongodb+srv://php2692004:LnTuvPmwUWmRCU6y@vincent.juveo.mongodb.net/?retryWrites=true&w=majority&appName=Vincent/vincent');
 
 mongoose.connection.on('connected', () => {
   console.log('MongoDB connected');

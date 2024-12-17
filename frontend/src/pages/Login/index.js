@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { login } from '~/store/slices/authSlice'; // Import hành động login
-import LoginForm from '~/features/Auth/Login/LoginForm'; // Import LoginForm
+import LoginForm from '~/layouts/components/Login/LoginForm'; // Import LoginForm
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
