@@ -14,68 +14,71 @@ import StarHalfIcon from "@mui/icons-material/StarHalf";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 
 const CourseStat = () => {
-  const [reviews, setReviews] = useState([]);
-  const [totalStudents, setTotalStudents] = useState(0);
-  const [averageRating, setAverageRating] = useState(0);
-
-//   const fetchReviews = async () => {
-//     try {
-//       const response = await fetch("http://localhost:5000/api/reviews");
-//       if (!response.ok) throw new Error("Failed to fetch reviews");
-//       const data = await response.json();
-
-//       // Tính tổng học viên và đánh giá trung bình
-//       const total = data.length;
-//       const avgRating =
-//         data.reduce((sum, review) => sum + review.rating, 0) / total;
-
-//       setReviews(data);
-//       setTotalStudents(total);
-//       setAverageRating(avgRating.toFixed(1));
-//     } catch (error) {
-//       console.error("Error fetching reviews:", error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchReviews();
-//   }, []);
+    const [reviews, setReviews] = useState([]);
+    const [totalStudents, setTotalStudents] = useState(0);
+    const [averageRating, setAverageRating] = useState(0);
+  
+    // Fetch API
+    const fetchReviews = async () => {
+      try {
+        const response = await fetch("http://localhost:5000/api/reviews");
+        if (!response.ok) throw new Error("Failed to fetch reviews");
+  
+        const data = await response.json();
+  
+        // Tính tổng học viên và đánh giá trung bình
+        const total = data.length;
+        const avgRating =
+          data.reduce((sum, review) => sum + review.rating, 0) / total;
+  
+        setReviews(data);
+        setTotalStudents(total);
+        setAverageRating(avgRating.toFixed(1));
+      } catch (error) {
+        console.error("Error fetching reviews:", error);
+      }
+    };
+  
+    // UseEffect để gọi API khi component được mount
+    useEffect(() => {
+      fetchReviews();
+    }, []);
 
 
     // Dữ liệu tĩnh
-    const staticData = [
-        {
-          student: { name: "Quang Cao" },
-          rating: 4.5,
-          comment: "Khóa học rất bổ ích, kiến thức đầy đủ. Giáo viên giải đáp thắc mắc tận tâm.",
-          createdAt: "2024-04-21T11:11:00Z",
-        },
-        {
-          student: { name: "Nguyen Van A" },
-          rating: 5,
-          comment: "Khóa học tuyệt vời, bài giảng dễ hiểu và thực tế.",
-          createdAt: "2024-04-22T08:30:00Z",
-        },
-        {
-          student: { name: "Tran Van B" },
-          rating: 4,
-          comment: "Giáo viên rất nhiệt tình và tài liệu phong phú.",
-          createdAt: "2024-04-23T09:00:00Z",
-        },
-      ];
+    // const staticData = [
+    //     {
+    //       student: { name: "Quang Cao" },
+    //       rating: 4.5,
+    //       comment: "Khóa học rất bổ ích, kiến thức đầy đủ. Giáo viên giải đáp thắc mắc tận tâm.",
+    //       createdAt: "2024-04-21T11:11:00Z",
+    //     },
+    //     {
+    //       student: { name: "Nguyen Van A" },
+    //       rating: 5,
+    //       comment: "Khóa học tuyệt vời, bài giảng dễ hiểu và thực tế.",
+    //       createdAt: "2024-04-22T08:30:00Z",
+    //     },
+    //     {
+    //       student: { name: "Tran Van B" },
+    //       rating: 4,
+    //       comment: "Giáo viên rất nhiệt tình và tài liệu phong phú.",
+    //       createdAt: "2024-04-23T09:00:00Z",
+    //     },
+    //   ];
     
-      useEffect(() => {
-        // Giả lập fetch dữ liệu bằng cách gán từ staticData
-        setReviews(staticData);
+    //   useEffect(() => {
+    //     // Giả lập fetch dữ liệu bằng cách gán từ staticData
+    //     setReviews(staticData);
     
-        // Tính tổng học viên và đánh giá trung bình
-        const total = staticData.length;
-        const avgRating =
-          staticData.reduce((sum, review) => sum + review.rating, 0) / total;
+    //     // Tính tổng học viên và đánh giá trung bình
+    //     const total = staticData.length;
+    //     const avgRating =
+    //       staticData.reduce((sum, review) => sum + review.rating, 0) / total;
     
-        setTotalStudents(total);
-        setAverageRating(avgRating.toFixed(1));
-      }, []);
+    //     setTotalStudents(total);
+    //     setAverageRating(avgRating.toFixed(1));
+    //   }, []);
 
   const renderStars = (rating) => {
     const fullStars = Math.floor(rating);
