@@ -8,6 +8,8 @@ const routes = {
     login: '/login',
     dashboard: '/dashboard',
     course: '/course',
+    allCourse: '/all-course',
+    detail: '/detail',
 };
 
 export default routes;

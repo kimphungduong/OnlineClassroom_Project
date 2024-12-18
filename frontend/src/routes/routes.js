@@ -15,6 +15,8 @@ import Search from '~/pages/Search';
 import Login from '~/pages/Login';
 import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
+import AllCourse from '~/pages/AllCourse';
+import Detail from '~/pages/Detail';
 
 // Public routes
 const publicRoutes = [
@@ -23,9 +25,12 @@ const publicRoutes = [
     { path: config.routes.watch, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.profile, component: Profile },
     { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly },
-    { path: config.routes.search, component: Search, layout: null },
+    { path: config.routes.search, component: Search, layout: HeaderOnly },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
+    { path: config.routes.allCourse, component: AllCourse, layout: HeaderOnly },
+    { path: config.routes.detail, component: Detail, layout: HeaderOnly },
+
 ];
 
 const privateRoutes = [];
