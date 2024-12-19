@@ -5,7 +5,7 @@ const courseController= require('../controllers/CourseController');
 
 router.get('/',courseController.getListCourse);
 router.get('/:slug',courseController.getCourse);
-router.get('/:slug/:slugLesson',courseController.getLession);
-
+router.get('/:slug/lessons/:slugLesson', courseController.getLesson);
+router.get('/:slug/lessons',courseController.getAllLession);
 
 module.exports = router;

@@ -8,7 +8,7 @@ const routes = {
     login: '/login',
     dashboard: '/dashboard',
     course: '/course',
-    courseEdit: '/course-edit',
+    courseEdit: '/course-edit/:slug',
     lessonEdit: '/lesson-edit',
     courseStat: '/course-stat',
     membersStat: '/members-stat',

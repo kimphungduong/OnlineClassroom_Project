@@ -1,52 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container, Typography, Box, List, ListItem, ListItemText, Collapse, IconButton, Button, Divider, Breadcrumbs, Link, TextField,
+  Container, Typography, Box, Collapse, IconButton, Button, Divider, Breadcrumbs, Link, TextField,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const CourseEdit = () => {
+  const { slug } = useParams(); // Lấy slug từ URL
+  const [lessons, setLessons] = useState([]);
+  const [courseName, setCourseName] = useState('');
   const [expandedLesson, setExpandedLesson] = useState(null);
-  const [lessons, setLessons] = useState([]); // Load bài giảng thay vì khóa học
-  const navigate = useNavigate();
   const [newLessonName, setNewLessonName] = useState('');
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const fetchLessons = async () => {
+    const fetchCourse = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/lessons'); // Endpoint mới cho lessons
+        const response = await fetch(`http://localhost:5000/api/course/${slug}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-  
-        // Chuyển đổi dữ liệu từ JSON
+
         const data = await response.json();
-        console.log('Fetched Lessons:', data);
-  
-        // Cập nhật state với dữ liệu lấy về
-        setLessons(data);
+        console.log('Fetched Course:', data);
+        setLessons(data.lessons || []);
+        setCourseName(data.name || ''); // Lấy tên khóa học
+        setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching lessons:', error);
+        console.error('Error fetching course:', error);
+        setIsLoading(false);
       }
     };
-  
-    fetchLessons();
-  }, []);
+
+    if (slug) {
+      fetchCourse();
+    }
+  }, [slug]);
 
   const handleExpandClick = (id) => {
     setExpandedLesson(expandedLesson === id ? null : id);
   };
 
   const handleDeleteLesson = (id) => {
-    setLessons(lessons.filter((lesson) => lesson._id !== id));  // Xóa bài giảng
+    setLessons(lessons.filter((lesson) => lesson._id !== id));
   };
 
   const handleEditLesson = (lessonId) => {
     const lesson = lessons.find((l) => l._id === lessonId);
-    navigate('/lesson-edit', { state: { lessonData: lesson } });
+    if (lesson) {
+      navigate('/lesson-edit', { state: { lessonData: lesson } });
+    }
   };
 
   const handleAddLesson = () => {
@@ -60,22 +67,51 @@ const CourseEdit = () => {
     setNewLessonName('');
   };
 
+  const handleSaveLessons = async () => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/course/${slug}/lessons`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ lessons }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      alert('Lưu bài giảng thành công!');
+    } catch (error) {
+      console.error('Error saving lessons:', error);
+      alert('Lỗi khi lưu bài giảng');
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <Container>
+        <Typography>Đang tải khóa học...</Typography>
+      </Container>
+    );
+  }
+
   return (
     <Container maxWidth="false" sx={{ mt: 4, mb: 4, backgroundColor: '#fff', p: 3, borderRadius: 2 }}>
       <Breadcrumbs sx={{ mb: 3 }} separator="›" aria-label="breadcrumb">
         <Link underline="hover" color="inherit" href="/">Trang chủ</Link>
-        <Link underline="hover" color="inherit" href="/lessons">Danh sách bài giảng</Link>
+        <Link underline="hover" color="inherit" href="/courses">Danh sách khóa học</Link>
         <Typography color="text.primary">Chỉnh sửa bài giảng</Typography>
       </Breadcrumbs>
 
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
-        Chỉnh sửa bài giảng
+        {courseName ? `Chỉnh sửa bài giảng: ${courseName}` : 'Chỉnh sửa bài giảng'}
       </Typography>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {lessons.map((lesson) => (
           <Box
-            key={lesson._id}  // Sử dụng _id làm key
+            key={lesson._id}
             sx={{
               p: 2, border: '1px solid #ccc', borderRadius: 2, backgroundColor: '#fff', boxShadow: 1,
             }}
@@ -85,16 +121,17 @@ const CourseEdit = () => {
                 variant="outlined"
                 value={lesson.name}
                 fullWidth
+                disabled
                 sx={{ mr: 2 }}
               />
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton color="primary" onClick={() => handleExpandClick(lesson._id)}>  {/* Expand lesson */}
+                <IconButton color="primary" onClick={() => handleExpandClick(lesson._id)}>
                   {expandedLesson === lesson._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                 </IconButton>
-                <IconButton color="secondary" onClick={() => handleEditLesson(lesson._id)}>  {/* Nút chỉnh sửa */}
+                <IconButton color="secondary" onClick={() => handleEditLesson(lesson._id)}>
                   <EditIcon />
                 </IconButton>
-                <IconButton color="error" onClick={() => handleDeleteLesson(lesson._id)}>  {/* Xóa bài giảng */}
+                <IconButton color="error" onClick={() => handleDeleteLesson(lesson._id)}>
                   <DeleteIcon />
                 </IconButton>
               </Box>
@@ -135,6 +172,7 @@ const CourseEdit = () => {
           variant="contained"
           color="primary"
           size="large"
+          onClick={handleSaveLessons}
           sx={{ px: 5, py: 1.5, fontWeight: 'bold' }}
         >
           Lưu lại thay đổi

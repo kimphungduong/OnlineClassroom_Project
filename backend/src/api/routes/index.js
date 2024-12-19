@@ -1,6 +1,7 @@
 
 const authRouter=require('./auth');
 const courseRouter=require('./course');
+const reviewRouter=require('./review');
 function requireLogin(req, res, next) {
     if (!req.session.userId) {
         return res.redirect('/');
@@ -15,6 +16,7 @@ function router(app)
 {
     app.use('/api/auth', authRouter);
     app.use('/api/course', courseRouter);
+    app.use('/api/review', reviewRouter);
 }
 
 module.exports = router

@@ -15,8 +15,6 @@ const httpServer = http.createServer(app);
 const port = process.env.PORT || 3000;
 
 const route = require('./api/routes'); 
-const courseRoutes = require('./api/routes/course');
-const reviewRoutes = require('./api/routes/reviewRoutes'); // Đường dẫn đúng
 
 app.use(express.json());
 app.use(express.urlencoded({
@@ -36,8 +34,7 @@ app.use(morgan('combined'));
 
 route(app);
 
-app.use('/api/courses', courseRoutes);
-app.use('/api/reviews', reviewRoutes);
+
 
 const authenticateJWT = require('./configs/jwtConfig');
 app.get('/protected', authenticateJWT, (req, res) => {

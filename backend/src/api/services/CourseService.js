@@ -37,6 +37,16 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin bài học');
     }
   }
+  
+  async updateLessons(slug, lessons) {
+    const course = await Course.findOneAndUpdate(
+        { slug },
+        { $set: { lessons } },
+        { new: true }
+    ).populate('lessons');
+    if (!course) throw new Error('Không tìm thấy khóa học');
+    return course;
+}
 }
 
 module.exports = new CourseService();
