@@ -1,15 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Button, IconButton, Paper, Typography, Divider } from '@mui/material';
 import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css'; // import quill style
+import 'react-quill/dist/quill.snow.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-const NotesSection = ({ videoRef }) => {
+const NotesSection = ({ videoRef, notesData, onAddNote }) => {
   const [notes, setNotes] = useState([]);
   const [currentNote, setCurrentNote] = useState('');
   const [editingNoteIndex, setEditingNoteIndex] = useState(null);
   const [currentTime, setCurrentTime] = useState(0);
+
+  useEffect(() => {
+    // Render notes từ props notesData
+    setNotes(notesData || []);
+  }, [notesData]);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -29,18 +34,23 @@ const NotesSection = ({ videoRef }) => {
       };
 
       if (editingNoteIndex === null) {
-        setNotes([...notes, noteWithTime]);
+        const updatedNotes = [...notes, noteWithTime];
+        setNotes(updatedNotes);
+        onAddNote(noteWithTime); // Gọi callback để thêm ghi chú vào server
       } else {
         const updatedNotes = [...notes];
         updatedNotes[editingNoteIndex] = noteWithTime;
         setNotes(updatedNotes);
         setEditingNoteIndex(null);
       }
+
       setCurrentNote('');
+      if (videoRef && videoRef.current) videoRef.current.pause(); // Dừng video
     }
   };
 
   const handleEditNote = (index) => {
+    if (videoRef && videoRef.current) videoRef.current.pause(); // Dừng video
     setCurrentNote(notes[index].content);
     setEditingNoteIndex(index);
   };
@@ -55,16 +65,6 @@ const NotesSection = ({ videoRef }) => {
     setEditingNoteIndex(null);
   };
 
-  const modules = {
-    toolbar: [
-      [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
-      [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-      ['bold', 'italic', 'underline'],
-      [{ 'align': [] }],
-      ['link']
-    ],
-  };
-
   const formatTime = (time) => {
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
@@ -72,7 +72,7 @@ const NotesSection = ({ videoRef }) => {
   };
 
   return (
-    <Box sx={{ padding: 3 }} >
+    <Box sx={{ padding: 3 }}>
       <Typography variant="h6" gutterBottom>
         Ghi chú
       </Typography>
@@ -81,26 +81,16 @@ const NotesSection = ({ videoRef }) => {
         <ReactQuill
           value={currentNote}
           onChange={setCurrentNote}
-          modules={modules}
           theme="snow"
           placeholder="Nhập ghi chú của bạn tại đây..."
         />
       </Paper>
 
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
-        <Button
-          variant="outlined"
-          color="secondary"
-          sx={{ marginRight: 1 }}
-          onClick={handleCancel}
-        >
+        <Button variant="outlined" color="secondary" sx={{ marginRight: 1 }} onClick={handleCancel}>
           Hủy
         </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddOrUpdateNote}
-        >
+        <Button variant="contained" color="primary" onClick={handleAddOrUpdateNote}>
           {editingNoteIndex === null ? 'Lưu' : 'Cập nhật'}
         </Button>
       </Box>
@@ -119,7 +109,6 @@ const NotesSection = ({ videoRef }) => {
                 justifyContent: 'space-between',
               }}
             >
-              {/* Thời gian ở bên trái */}
               <Box sx={{ marginRight: 2, minWidth: '40px' }}>
                 <Typography
                   variant="body2"
@@ -135,8 +124,6 @@ const NotesSection = ({ videoRef }) => {
                   {formatTime(note.time)}
                 </Typography>
               </Box>
-
-              {/* Nội dung ghi chú */}
               <Box
                 sx={{
                   flexGrow: 1,
@@ -149,8 +136,6 @@ const NotesSection = ({ videoRef }) => {
                   <div dangerouslySetInnerHTML={{ __html: note.content }} />
                 </Typography>
               </Box>
-
-              {/* Nút Edit và Delete */}
               <Box sx={{ display: 'flex', marginLeft: 2 }}>
                 <IconButton onClick={() => handleEditNote(index)}>
                   <EditIcon color="primary" />

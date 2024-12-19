@@ -6,29 +6,32 @@ import NotesSection from '~/layouts/components/NotesSection';
 import CourseSidebar from '~/layouts/components/CourseSidebar';
 import { useParams } from 'react-router-dom';
 import courseApi from '~/api/courseApi';
+import { useRef } from 'react';
 
 const CoursePage = () => {
-  const { slugCourse, slugLesson } = useParams(); // Lấy slug từ URL
+  const { slugCourse, slugLesson } = useParams();
   const [tabIndex, setTabIndex] = useState(0);
   const [courseData, setCourseData] = useState(null);
   const [lessonData, setLessonData] = useState(null);
+  const [notesData, setNotesData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Tạo videoRef
+  const videoRef = useRef(null);
 
   useEffect(() => {
     const fetchCourseAndLessonData = async () => {
       try {
-        // Gọi API khóa học
         const courseResponse = await courseApi.getCourse(slugCourse);
         setCourseData(courseResponse.data);
 
-        // Gọi API bài học (nếu slugLesson tồn tại)
         if (slugLesson) {
-          const lessonResponse = await courseApi.getLesson(slugCourse,slugLesson);
+          const lessonResponse = await courseApi.getLesson(slugCourse, slugLesson);
           setLessonData(lessonResponse.data);
-        }
-        if (slugLesson) {
-          
+
+          const notesResponse = await courseApi.getNotes(slugCourse, lessonResponse.data._id);
+          setNotesData(notesResponse.data);
         }
 
         setLoading(false);
@@ -62,7 +65,7 @@ const CoursePage = () => {
       <Grid container spacing={2}>
         {/* Phần Video và Tabs */}
         <Grid item xs={12} md={8} sx={{ overflowY: 'auto', minHeight: '100vh' }}>
-          <VideoPlayer url={lessonData?.videoUrl} title={lessonData?.name} />
+          <VideoPlayer url={lessonData?.videoUrl} title={lessonData?.name} videoRef={videoRef} />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabIndex} onChange={handleChange} aria-label="tabs">
               <Tab label="Các thông báo" />
@@ -70,12 +73,23 @@ const CoursePage = () => {
               <Tab label="Ghi chú" />
             </Tabs>
           </Box>
-          <NotesSection lessonId={lessonData?._id} />
+          <NotesSection
+            videoRef={videoRef}
+            notesData={notesData}
+            onAddNote={async (newNote) => {
+              try {
+                const response = await courseApi.addNote(lessonData?._id, newNote);
+                setNotesData([...notesData, response.data]); // Cập nhật ghi chú mới từ server
+              } catch (error) {
+                console.error('Error adding note:', error);
+              }
+            }}
+          />
         </Grid>
 
         {/* Phần Sidebar */}
         <Grid item xs={12} md={4} sx={{ overflowY: 'auto', minHeight: '100vh' }}>
-          <CourseSidebar sections={courseData?.sections} slugCourse={slugCourse}/>
+          <CourseSidebar sections={courseData?.sections} slugCourse={slugCourse} />
         </Grid>
       </Grid>
     </Container>

@@ -191,7 +191,28 @@ const seedData = async () => {
       { content: 'Bạn có một bài kiểm tra mới!' },
       { content: 'Lớp học của bạn đã được cập nhật.' },
     ]);
-
+      // Seed dữ liệu ghi chú
+      const seedNotes = async () => {
+        try {
+          const notes = await Note.create([
+            {
+              content: 'Ghi chú bài giảng Đại số tuyến tính',
+              lesson: lessons[0]._id,
+              student: students[0]._id,
+            },
+            {
+              content: 'Ghi chú bài giảng Cơ học lượng tử',
+              lesson: lessons[1]._id,
+              student: students[1]._id,
+            },
+          ]);
+  
+          console.log('Seed dữ liệu ghi chú thành công!');
+        } catch (error) {
+          console.error('Lỗi khi seed dữ liệu ghi chú:', error);
+        }
+      };
+      await seedNotes();
     console.log('Seed dữ liệu thành công!');
   } catch (error) {
     console.error('Lỗi khi seed dữ liệu:', error);
