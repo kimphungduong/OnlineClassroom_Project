@@ -16,7 +16,7 @@ class AuthService {
     const user = new User({ username, password , role, name, email });
     await user.save();
 
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5s' });
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
@@ -34,12 +34,12 @@ class AuthService {
       throw new Error('Sai mật khẩu');
     }
 
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5s' });
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
 
-    return { accessToken, refreshToken, role: user.role };
+    return { accessToken, refreshToken, role: user.role, name: user.name };
   }
   async requestRefreshToken(refreshToken) {
     if (!refreshToken) throw new Error("You're not authenticated");
@@ -56,7 +56,7 @@ class AuthService {
       }
   
       // Tạo mới access token và refresh token
-      const newAccessToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_SECRET, { expiresIn: '5s' });
+      const newAccessToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
       const newRefreshToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
   
       // Cập nhật refresh token mới vào Redis

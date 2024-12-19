@@ -16,13 +16,14 @@ import Search from '~/pages/Search';
 import Login from '~/pages/Login';
 import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
+import Logout from '~/pages/Logout';
 
 // Public routes
 const publicRoutes = [
     { path: config.routes.home, component: Home, layout: HeaderOnly },
     { path: config.routes.login, component: Login, layout: HeaderOnly },
     { path: config.routes.watch, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
-    { path: config.routes.profile, component: Profile },
+    { path: config.routes.logout, component: Logout, layout: HeaderOnly },
     { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.search, component: Search, layout: null },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },

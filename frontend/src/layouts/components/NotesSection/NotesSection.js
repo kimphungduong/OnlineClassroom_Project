@@ -1,32 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, IconButton, Paper, Typography, Divider } from '@mui/material';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // import quill style
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import FormatAlignLeftIcon from '@mui/icons-material/FormatAlignLeft';
-import FormatAlignCenterIcon from '@mui/icons-material/FormatAlignCenter';
-import FormatAlignRightIcon from '@mui/icons-material/FormatAlignRight';
 
-const NotesSection = () => {
-  // State để lưu ghi chú và ghi chú hiện tại đang chỉnh sửa
+const NotesSection = ({ videoRef }) => {
   const [notes, setNotes] = useState([]);
   const [currentNote, setCurrentNote] = useState('');
   const [editingNoteIndex, setEditingNoteIndex] = useState(null);
+  const [currentTime, setCurrentTime] = useState(0);
 
-  // Hàm thêm ghi chú mới hoặc cập nhật ghi chú đã chỉnh sửa
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (videoRef && videoRef.current) {
+        setCurrentTime(videoRef.current.currentTime);
+      }
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [videoRef]);
+
   const handleAddOrUpdateNote = () => {
     if (currentNote.trim()) {
+      const noteWithTime = {
+        content: currentNote,
+        time: currentTime,
+      };
+
       if (editingNoteIndex === null) {
-        // Thêm ghi chú mới (lưu dưới dạng HTML)
-        setNotes([...notes, currentNote]);
+        setNotes([...notes, noteWithTime]);
       } else {
-        // Cập nhật ghi chú đang chỉnh sửa
         const updatedNotes = [...notes];
-        updatedNotes[editingNoteIndex] = currentNote;
+        updatedNotes[editingNoteIndex] = noteWithTime;
         setNotes(updatedNotes);
         setEditingNoteIndex(null);
       }
@@ -34,25 +40,21 @@ const NotesSection = () => {
     }
   };
 
-  // Hàm chỉnh sửa ghi chú
   const handleEditNote = (index) => {
-    setCurrentNote(notes[index]);
+    setCurrentNote(notes[index].content);
     setEditingNoteIndex(index);
   };
 
-  // Hàm xóa ghi chú
   const handleDeleteNote = (index) => {
     const updatedNotes = notes.filter((_, i) => i !== index);
     setNotes(updatedNotes);
   };
 
-  // Hàm hủy thay đổi
   const handleCancel = () => {
     setCurrentNote('');
     setEditingNoteIndex(null);
   };
 
-  // Cấu hình toolbar cho react-quill
   const modules = {
     toolbar: [
       [{ 'header': '1' }, { 'header': '2' }, { 'font': [] }],
@@ -63,14 +65,19 @@ const NotesSection = () => {
     ],
   };
 
+  const formatTime = (time) => {
+    const minutes = Math.floor(time / 60);
+    const seconds = Math.floor(time % 60);
+    return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+  };
+
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box sx={{ padding: 3 }} >
       <Typography variant="h6" gutterBottom>
         Ghi chú
       </Typography>
 
-      {/* Text editor (React-Quill) */}
-      <Paper sx={{ padding: 2 }}>
+      <Paper sx={{ padding: 2, boxShadow: '1px 1px 1px 1px rgba(0, 0, 0, 0.2)' }}>
         <ReactQuill
           value={currentNote}
           onChange={setCurrentNote}
@@ -80,7 +87,6 @@ const NotesSection = () => {
         />
       </Paper>
 
-      {/* Nút Lưu và Hủy */}
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', marginTop: 2 }}>
         <Button
           variant="outlined"
@@ -99,29 +105,60 @@ const NotesSection = () => {
         </Button>
       </Box>
 
-      {/* Divider */}
       <Divider sx={{ marginTop: 3, marginBottom: 2 }} />
 
-      {/* Danh sách ghi chú */}
       <Paper sx={{ padding: 2 }}>
         {notes.length > 0 ? (
           notes.map((note, index) => (
-            <Box key={index} sx={{ marginBottom: 2 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Typography variant="body1">
-                  {/* Render nội dung HTML của ghi chú */}
-                  <div dangerouslySetInnerHTML={{ __html: note }} />
+            <Box
+              key={index}
+              sx={{
+                marginBottom: 2,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              {/* Thời gian ở bên trái */}
+              <Box sx={{ marginRight: 2, minWidth: '40px' }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    backgroundColor: '#000',
+                    color: '#fff',
+                    padding: '2px 6px',
+                    borderRadius: '5px',
+                    fontSize: '12px',
+                    textAlign: 'center',
+                  }}
+                >
+                  {formatTime(note.time)}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <IconButton onClick={() => handleEditNote(index)}>
-                    <EditIcon color="primary" />
-                  </IconButton>
-                  <IconButton onClick={() => handleDeleteNote(index)}>
-                    <DeleteIcon color="error" />
-                  </IconButton>
-                </Box>
               </Box>
-              <Divider sx={{ marginTop: 1, marginBottom: 1 }} />
+
+              {/* Nội dung ghi chú */}
+              <Box
+                sx={{
+                  flexGrow: 1,
+                  backgroundColor: '#f5f5f5',
+                  padding: '8px 12px',
+                  borderRadius: '5px',
+                }}
+              >
+                <Typography variant="body1">
+                  <div dangerouslySetInnerHTML={{ __html: note.content }} />
+                </Typography>
+              </Box>
+
+              {/* Nút Edit và Delete */}
+              <Box sx={{ display: 'flex', marginLeft: 2 }}>
+                <IconButton onClick={() => handleEditNote(index)}>
+                  <EditIcon color="primary" />
+                </IconButton>
+                <IconButton onClick={() => handleDeleteNote(index)}>
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Box>
             </Box>
           ))
         ) : (

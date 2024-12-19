@@ -7,12 +7,13 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 const persistConfig = {
   key: 'auth',
   storage, // Lưu state vào localStorage
-  whitelist: ['accessToken', 'role'], // Chỉ lưu những state cần thiết
+  whitelist: ['accessToken', 'role', 'name'], // Chỉ lưu những state cần thiết
 };
 
 const initialState = {
   accessToken: null,
   role: null,
+  name: null,
   // các state khác nếu có
 };
 

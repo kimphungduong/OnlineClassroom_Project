@@ -1,13 +1,15 @@
+import { logout } from "~/store/slices/authSlice";
+
 const routes = {
     home: '/',
     following: '/following',
-    profile: '/@:nickname',
+    logout: '/logout',
     watch: '/watch',
     search: '/search',
     myCourse: '/my-course',
     login: '/login',
     dashboard: '/dashboard',
-    course: '/course',
+    course: '/course/:slugCourse/:slugLesson',
 };
 
 export default routes;

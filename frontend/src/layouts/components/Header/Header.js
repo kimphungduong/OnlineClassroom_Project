@@ -26,6 +26,7 @@ import styles from './Header.module.scss';
 import images from '~/assets/images';
 import classNames from 'classnames/bind';
 import { useMediaQuery } from '@mui/material'; // Import useMediaQuery
+import {store} from '~/store'; // Import Redux store
 
 const cx = classNames.bind(styles);
 
@@ -53,7 +54,7 @@ const MENU_ITEMS = [
 ];
 
 function Header() {
-    const currentUser = true;
+    const currentUser = store.getState().auth.accessToken !==null; // Get current user from Redux store
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchVisible, setSearchVisible] = useState(false); // State to control search visibility
 

@@ -48,14 +48,14 @@ class AuthController{
     async login(req, res, next) {
       const { username, password } = req.body;
       try {
-        const { accessToken, refreshToken, role } = await AuthService.login(username, password);
+        const { accessToken, refreshToken, role, name } = await AuthService.login(username, password);
         
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           secure: false,
           sameSite: 'Lax',
         });
-        res.json({ accessToken, role });
+        res.json({ accessToken, role, name });
       } catch (error) {
         if (error.message === 'Sai tên đăng nhập' || error.message === 'Sai mật khẩu') {
           res.status(400).json({ message: 'Sai tên đăng nhập hoặc mật khẩu' });

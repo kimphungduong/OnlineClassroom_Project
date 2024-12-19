@@ -27,8 +27,8 @@ const Dashboard = () => {
                 }}
             >
                 <Avatar sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                <Typography variant="h4" sx={{ marginTop: 2 }}>Quân Lê</Typography>
-                <Typography variant="h5" color="textSecondary">
+                <Typography variant="h5" sx={{ marginTop: 2 }}>Quân Lê</Typography>
+                <Typography variant="h6" color="textSecondary">
                     Headline
                 </Typography>
                 <Divider sx={{ marginY: 2 }} />

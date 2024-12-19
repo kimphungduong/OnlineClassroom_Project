@@ -3,7 +3,8 @@ import {jwtDecode} from 'jwt-decode';
 import { store } from '~/store'; // Import Redux store
 import { logout, setTokens } from '~/store/slices/authSlice';
 import { useNavigate } from 'react-router-dom';
-
+import { useDispatch } from 'react-redux';
+import { get } from '~/utils/httpRequest';
 
 const handleTokenExpired = async () => {
   try {
@@ -64,15 +65,16 @@ axiosInstance.interceptors.request.use(
           onAccessTokenRefreshed(token);
         } catch (error) {
           isRefreshing = false;
-          try {
-            await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
-          } catch (error) {
-            console.error('Error during logout:', error);
-          } finally {
-            localStorage.clear();
-            store.dispatch(logout());
-            window.location.reload();
-          }
+          // try {
+          //   await axios.post(`${process.env.REACT_APP_BASE_URL}/api/auth/logout`, {}, { withCredentials: true });
+          // } catch (error) {
+          //   console.log('Error during logout:', error);
+          // }
+          const dispatch = useDispatch();
+          dispatch(logout());
+          
+          // localStorage.clear();
+          // window.location.reload();
             var navigate = useNavigate();
             navigate('/login');
           throw error;
@@ -95,7 +97,9 @@ const courseApi = {
   getListCourse: () => {
     return axiosInstance.get('/');
   },
-
+  getMyCourse: () => {
+    return axiosInstance.get(`/my-courses`);
+  },
   // API đăng ký
   getCourse: (courseSlug) => {
     return axiosInstance.get(`/${courseSlug}`);
