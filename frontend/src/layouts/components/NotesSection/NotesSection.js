@@ -4,7 +4,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import {getNotes, addNote} from '~/services/noteService';
 const NotesSection = ({ videoRef, notesData, onAddNote }) => {
   const [notes, setNotes] = useState([]);
   const [currentNote, setCurrentNote] = useState('');
@@ -12,45 +12,76 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
   const [currentTime, setCurrentTime] = useState(0);
 
   useEffect(() => {
-    // Render notes từ props notesData
     setNotes(notesData || []);
   }, [notesData]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       if (videoRef && videoRef.current) {
-        setCurrentTime(videoRef.current.currentTime);
+        const player = videoRef.current.getInternalPlayer();
+        if (player && typeof player.getCurrentTime === 'function') {
+          setCurrentTime(player.getCurrentTime());
+        }
       }
     }, 1000);
 
     return () => clearInterval(interval);
   }, [videoRef]);
 
-  const handleAddOrUpdateNote = () => {
+  const handlePauseVideo = () => {
+    if (videoRef && videoRef.current) {
+      const player = videoRef.current.getInternalPlayer();
+      if (player && typeof player.pause === 'function') {
+        player.pause();
+      }
+    }
+  };
+  const handlePlayVideo = () => {
+    if (videoRef && videoRef.current) {
+      const player = videoRef.current.getInternalPlayer();
+      if (player && typeof player.play === 'function') {
+        player.play();
+      }
+    }
+  };
+  const handleSeekAndPlayVideo = (time) => {
+    if (videoRef && videoRef.current) {
+      const player = videoRef.current
+      if (player && typeof player.seekTo === 'function') {
+        player.seekTo(time);
+        handlePlayVideo();
+      }
+    }
+  };
+
+  const handleAddOrUpdateNote = async () => {
     if (currentNote.trim()) {
       const noteWithTime = {
         content: currentNote,
         time: currentTime,
       };
 
-      if (editingNoteIndex === null) {
-        const updatedNotes = [...notes, noteWithTime];
-        setNotes(updatedNotes);
-        onAddNote(noteWithTime); // Gọi callback để thêm ghi chú vào server
-      } else {
-        const updatedNotes = [...notes];
-        updatedNotes[editingNoteIndex] = noteWithTime;
-        setNotes(updatedNotes);
-        setEditingNoteIndex(null);
+      try {
+        if (editingNoteIndex === null) {
+          setNotes([...notes, noteWithTime]);
+          onAddNote(noteWithTime); // Callback để cập nhật ghi chú toàn cục
+        } else {
+          const updatedNotes = [...notes];
+          updatedNotes[editingNoteIndex] = noteWithTime;
+          setNotes(updatedNotes);
+          setEditingNoteIndex(null);
+        }
+        
+        setCurrentNote('');
+        handlePlayVideo(); // Tiếp tục video sau khi thêm ghi chú
+      } catch (error) {
+        console.error('Lỗi khi thêm ghi chú:', error);
       }
-
-      setCurrentNote('');
-      if (videoRef && videoRef.current) videoRef.current.pause(); // Dừng video
     }
   };
 
   const handleEditNote = (index) => {
-    if (videoRef && videoRef.current) videoRef.current.pause(); // Dừng video
+    handlePauseVideo(); // Dừng video khi chỉnh sửa
     setCurrentNote(notes[index].content);
     setEditingNoteIndex(index);
   };
@@ -66,6 +97,7 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
   };
 
   const formatTime = (time) => {
+    if (isNaN(time) || time === undefined) return '0:00';
     const minutes = Math.floor(time / 60);
     const seconds = Math.floor(time % 60);
     return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
@@ -83,6 +115,8 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
           onChange={setCurrentNote}
           theme="snow"
           placeholder="Nhập ghi chú của bạn tại đây..."
+          onFocus={handlePauseVideo} // Dừng video khi ReactQuill được focus
+          onMouseDown={handlePauseVideo} // Dừng video khi người dùng thả chuột vào ReactQuill
         />
       </Paper>
 
@@ -108,6 +142,7 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
                 alignItems: 'center',
                 justifyContent: 'space-between',
               }}
+              onClick={() => handleSeekAndPlayVideo(note.time)} 
             >
               <Box sx={{ marginRight: 2, minWidth: '40px' }}>
                 <Typography

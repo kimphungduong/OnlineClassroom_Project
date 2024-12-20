@@ -5,7 +5,8 @@ import VideoPlayer from '~/layouts/components/VideoPlayer';
 import NotesSection from '~/layouts/components/NotesSection';
 import CourseSidebar from '~/layouts/components/CourseSidebar';
 import { useParams } from 'react-router-dom';
-import courseApi from '~/api/courseApi';
+import {getCourse, getLesson} from '~/services/courseService';
+import {addNote, getNotes} from '~/services/noteService';
 import { useRef } from 'react';
 
 const CoursePage = () => {
@@ -16,6 +17,7 @@ const CoursePage = () => {
   const [notesData, setNotesData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [lessonId, setLessonId] = useState(null);
 
   // Tạo videoRef
   const videoRef = useRef(null);
@@ -23,15 +25,17 @@ const CoursePage = () => {
   useEffect(() => {
     const fetchCourseAndLessonData = async () => {
       try {
-        const courseResponse = await courseApi.getCourse(slugCourse);
-        setCourseData(courseResponse.data);
+        const courseResponse = await getCourse(slugCourse);
+        setCourseData(courseResponse);
 
         if (slugLesson) {
-          const lessonResponse = await courseApi.getLesson(slugCourse, slugLesson);
-          setLessonData(lessonResponse.data);
+          const lessonResponse = await getLesson(slugCourse, slugLesson);
+          setLessonData(lessonResponse);
+          setLessonId(lessonResponse._id);
+          console.log(lessonResponse._id);
 
-          const notesResponse = await courseApi.getNotes(slugCourse, lessonResponse.data._id);
-          setNotesData(notesResponse.data);
+          const notesResponse = await getNotes(slugCourse, lessonResponse._id);
+          setNotesData(notesResponse);
         }
 
         setLoading(false);
@@ -78,8 +82,8 @@ const CoursePage = () => {
             notesData={notesData}
             onAddNote={async (newNote) => {
               try {
-                const response = await courseApi.addNote(lessonData?._id, newNote);
-                setNotesData([...notesData, response.data]); // Cập nhật ghi chú mới từ server
+                const response = await addNote(lessonData?._id, newNote.content, newNote.time);
+                setNotesData([...notesData, response]); // Cập nhật ghi chú mới từ server
               } catch (error) {
                 console.error('Error adding note:', error);
               }

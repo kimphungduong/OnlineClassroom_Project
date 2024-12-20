@@ -121,6 +121,15 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin ghi chú');
     }
   }
+  async addNote (lessonId, studentId, content, time) {
+    try {
+      const newNote = await Note.create({ lesson: lessonId, student: studentId, content, time });
+      return newNote;
+    } catch (error) {
+      throw new Error('Lỗi khi thêm ghi chú');
+    }
+  }
+  
 }
 
 module.exports = new CourseService();

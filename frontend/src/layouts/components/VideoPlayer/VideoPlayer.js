@@ -7,7 +7,19 @@ const VideoPlayer = ({ url, title, videoRef }) => {
   return (
     <Box sx={{ position: 'relative', paddingTop: '56.25%' /* 16:9 Aspect Ratio */ }}>
       <Box sx={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}>
-        <ReactPlayer  ref={videoRef} url={url} width="100%" height="100%" controls/>
+        <ReactPlayer   
+          // playing={false}
+          // onProgress={({ playedSeconds }) => {
+          //   setCurrentTime(playedSeconds); // Cập nhật thời gian video
+          // }} 
+          config={{
+            file: {
+              forceVideo: true, // Buộc phát dưới dạng video
+            },
+          }}
+          ref={videoRef} 
+          url={url} 
+          width="100%" height="100%" controls/>
       </Box>
     </Box>
   );

@@ -56,6 +56,17 @@ class CourseController{
             res.status(500).json({ message: 'Lỗi khi lấy ghi chú', error });
         }
     }
+    async addNote(req, res) {
+        try {
+            const { lessonId } = req.params;
+            const { content, time } = req.body;
+            const note = await CourseService.addNote(lessonId, req.user.userId, content, time);
+            res.json(note);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Lỗi khi thêm ghi chú', error });
+        }
+    }
 
     
 }

@@ -39,12 +39,3 @@ export const getLesson = async (courseSlug, lessonSlug) => {
         throw error;
     }
 };
-export const getNotes = async (courseSlug,lessonId) => {
-    try {
-        const response = await courseApi.getNotes(courseSlug ,lessonId);
-        return response.data;
-    } catch (error) {
-        console.error('Error fetching notes:', error);
-        throw error;
-    }
-}
