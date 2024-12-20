@@ -1,11 +1,15 @@
-const express = require ('express');
-const router =express.Router();
+const express = require('express');
+const router = express.Router();
 
-const courseController= require('../controllers/CourseController');
+const CourseController = require('../controllers/CourseController');
 
-router.get('/',courseController.getListCourse);
-router.get('/:slug',courseController.getCourse);
-router.get('/:slug/lessons/:slugLesson', courseController.getLesson);
-router.get('/:slug/lessons',courseController.getAllLession);
+router.get('/', CourseController.getListCourse);
+router.get('/:slug', CourseController.getCourse);
+router.get('/:slug/lessons', CourseController.getLessonsByCourseSlug); // Corrected endpoint
+// Thêm bài giảng vào section
+router.post('/:slug/section/:sectionId/lesson/new', CourseController.addLessonToSection);
+
+// Xóa bài giảng khỏi section
+router.delete('/:slug/section/:sectionId/lesson/:lessonId', CourseController.removeLessonFromSection);
 
 module.exports = router;

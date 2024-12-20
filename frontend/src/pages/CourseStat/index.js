@@ -21,7 +21,7 @@ const CourseStat = () => {
     // Fetch API
     const fetchReviews = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/reviews");
+        const response = await fetch("http://localhost:5000/api/review");
         if (!response.ok) throw new Error("Failed to fetch reviews");
   
         const data = await response.json();

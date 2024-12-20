@@ -9,7 +9,7 @@ const routes = {
     dashboard: '/dashboard',
     course: '/course',
     courseEdit: '/course-edit/:slug',
-    lessonEdit: '/lesson-edit',
+    lessonEdit: '/lesson-edit/:slug/sections/:sectionId/lesson/new',
     courseStat: '/course-stat',
     membersStat: '/members-stat',
 };

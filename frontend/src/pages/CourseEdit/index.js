@@ -1,91 +1,133 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Container, Typography, Box, Collapse, IconButton, Button, Divider, Breadcrumbs, Link, TextField,
+  Container,
+  Typography,
+  Box,
+  Collapse,
+  IconButton,
+  Button,
+  Divider,
+  Breadcrumbs,
+  Link,
+  List,
+  ListItem,
+  ListItemText,
+  TextField,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import AddIcon from '@mui/icons-material/Add';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const CourseEdit = () => {
   const { slug } = useParams(); // Lấy slug từ URL
-  const [lessons, setLessons] = useState([]);
+  const [sections, setSections] = useState([]);
   const [courseName, setCourseName] = useState('');
-  const [expandedLesson, setExpandedLesson] = useState(null);
-  const [newLessonName, setNewLessonName] = useState('');
-  const navigate = useNavigate();
+  const [expandedSection, setExpandedSection] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [editingSectionId, setEditingSectionId] = useState(null); // Theo dõi trạng thái chỉnh sửa section
+  const [newSectionTitle, setNewSectionTitle] = useState(''); // Dữ liệu tiêu đề mới của section
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchCourse = async () => {
+    const fetchCourseWithLessons = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/course/${slug}`);
+        if (!slug) throw new Error('Slug không tồn tại');
+
+        const response = await fetch(`http://localhost:5000/api/course/${slug}/lessons`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         console.log('Fetched Course:', data);
-        setLessons(data.lessons || []);
-        setCourseName(data.name || ''); // Lấy tên khóa học
+        setSections(data || []);
+        setCourseName(data[0]?.lessons[0]?.course.name || ''); // Lấy tên khóa học
         setIsLoading(false);
       } catch (error) {
-        console.error('Error fetching course:', error);
+        console.error('Error fetching course lessons:', error);
         setIsLoading(false);
       }
     };
 
-    if (slug) {
-      fetchCourse();
-    }
+    fetchCourseWithLessons();
   }, [slug]);
 
-  const handleExpandClick = (id) => {
-    setExpandedLesson(expandedLesson === id ? null : id);
+  const handleExpandSection = (sectionId) => {
+    setExpandedSection(expandedSection === sectionId ? null : sectionId);
   };
 
-  const handleDeleteLesson = (id) => {
-    setLessons(lessons.filter((lesson) => lesson._id !== id));
+  const handleEditSectionClick = (sectionId, currentTitle) => {
+    setEditingSectionId(sectionId); // Đặt trạng thái đang chỉnh sửa
+    setNewSectionTitle(currentTitle); // Hiển thị tiêu đề hiện tại để chỉnh sửa
+  };
+
+  const handleSaveSectionTitle = async (sectionId) => {
+    try {
+      const response = await fetch(`http://localhost:5000/api/course/${slug}/sections/${sectionId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title: newSectionTitle }),
+      });
+
+      if (!response.ok) throw new Error('Không thể cập nhật tiêu đề');
+
+      const updatedSections = sections.map((section) =>
+        section._id === sectionId ? { ...section, title: newSectionTitle } : section
+      );
+      setSections(updatedSections);
+      setEditingSectionId(null); // Thoát khỏi chế độ chỉnh sửa
+      setNewSectionTitle('');
+      alert('Cập nhật tiêu đề thành công!');
+    } catch (error) {
+      console.error('Error updating section title:', error);
+      alert('Đã xảy ra lỗi khi cập nhật tiêu đề.');
+    }
+  };
+
+  const handleCancelEditSection = () => {
+    setEditingSectionId(null); // Thoát khỏi chế độ chỉnh sửa
+    setNewSectionTitle('');
+  };
+
+  const handleDeleteLesson = async (sectionId, lessonId) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa bài giảng này?')) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/course/${slug}/sections/${sectionId}/lessons/${lessonId}`,
+        { method: 'DELETE' }
+      );
+
+      if (!response.ok) throw new Error('Không thể xóa bài giảng');
+
+      alert('Xóa bài giảng thành công!');
+      setSections((prevSections) =>
+        prevSections.map((section) =>
+          section._id === sectionId
+            ? { ...section, lessons: section.lessons.filter((lesson) => lesson._id !== lessonId) }
+            : section
+        )
+      );
+    } catch (error) {
+      console.error('Error deleting lesson:', error);
+      alert('Đã xảy ra lỗi khi xóa bài giảng.');
+    }
   };
 
   const handleEditLesson = (lessonId) => {
-    const lesson = lessons.find((l) => l._id === lessonId);
-    if (lesson) {
-      navigate('/lesson-edit', { state: { lessonData: lesson } });
-    }
+    navigate(`/lesson-edit/${lessonId}`); // Điều hướng đến trang lesson-edit với lessonId
   };
 
-  const handleAddLesson = () => {
-    if (newLessonName.trim() === '') return;
-    const newLesson = {
-      _id: Date.now().toString(),
-      name: newLessonName,
-      description: '',
-    };
-    setLessons([...lessons, newLesson]);
-    setNewLessonName('');
-  };
-
-  const handleSaveLessons = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/course/${slug}/lessons`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ lessons }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      alert('Lưu bài giảng thành công!');
-    } catch (error) {
-      console.error('Error saving lessons:', error);
-      alert('Lỗi khi lưu bài giảng');
-    }
+  const handleAddLessonClick = (sectionId) => {
+    navigate(`/lesson-edit/${slug}/sections/${sectionId}/lesson/new`, {
+      state: {
+        sectionId,
+        courseSlug: slug,
+      },
+    }); // Điều hướng đến trang thêm bài giảng
   };
 
   if (isLoading) {
@@ -109,75 +151,106 @@ const CourseEdit = () => {
       </Typography>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        {lessons.map((lesson) => (
+        {sections.map((section) => (
           <Box
-            key={lesson._id}
+            key={section._id}
             sx={{
-              p: 2, border: '1px solid #ccc', borderRadius: 2, backgroundColor: '#fff', boxShadow: 1,
+              p: 2,
+              border: '1px solid #ccc',
+              borderRadius: 2,
+              backgroundColor: '#fff',
+              boxShadow: 1,
             }}
           >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <TextField
-                variant="outlined"
-                value={lesson.name}
-                fullWidth
-                disabled
-                sx={{ mr: 2 }}
-              />
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton color="primary" onClick={() => handleExpandClick(lesson._id)}>
-                  {expandedLesson === lesson._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-                <IconButton color="secondary" onClick={() => handleEditLesson(lesson._id)}>
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error" onClick={() => handleDeleteLesson(lesson._id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
+              {editingSectionId === section._id ? (
+                <>
+                  <TextField
+                    variant="outlined"
+                    value={newSectionTitle}
+                    onChange={(e) => setNewSectionTitle(e.target.value)}
+                    sx={{ flex: 1, mr: 2 }}
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleSaveSectionTitle(section._id)}
+                  >
+                    Lưu
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="secondary"
+                    onClick={handleCancelEditSection}
+                  >
+                    Hủy
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Typography variant="h6">{section.title}</Typography>
+                  <Box sx={{ display: 'flex', gap: 1 }}>
+                    <IconButton color="primary" onClick={() => handleExpandSection(section._id)}>
+                      {expandedSection === section._id ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                    </IconButton>
+                    <IconButton
+                      color="secondary"
+                      onClick={() => handleEditSectionClick(section._id, section.title)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color="success" onClick={() => handleAddLessonClick(section._id)}>
+                      <AddIcon />
+                    </IconButton>
+                  </Box>
+                </>
+              )}
             </Box>
 
-            <Collapse in={expandedLesson === lesson._id} timeout="auto" unmountOnExit>
-              <Box sx={{ mt: 2, pl: 2 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Mô tả: {lesson.description || 'Chưa có mô tả'}
-                </Typography>
-              </Box>
+            <Collapse in={expandedSection === section._id} timeout="auto" unmountOnExit>
+              <List sx={{ mt: 2 }}>
+                {section.lessons.length > 0 ? (
+                  section.lessons.map((lesson) => (
+                    <ListItem
+                      key={lesson._id}
+                      sx={{
+                        borderBottom: '1px solid #e0e0e0',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                      }}
+                    >
+                      <ListItemText
+                        primary={`${lesson.name || 'Chưa có tên'}`}
+                        secondary={lesson.description}
+                      />
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <IconButton
+                          color="secondary"
+                          onClick={() => handleEditLesson(lesson._id)}
+                        >
+                          <EditIcon />
+                        </IconButton>
+                        <IconButton
+                          color="error"
+                          onClick={() => handleDeleteLesson(section._id, lesson._id)}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      </Box>
+                    </ListItem>
+                  ))
+                ) : (
+                  <Typography sx={{ pl: 2, color: 'gray' }}>
+                    Chưa có bài giảng trong phần này
+                  </Typography>
+                )}
+              </List>
             </Collapse>
           </Box>
         ))}
       </Box>
 
       <Divider sx={{ my: 2 }} />
-
-      <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, alignItems: 'center', mb: 3 }}>
-        <TextField
-          label="Tên bài giảng mới"
-          variant="outlined"
-          value={newLessonName}
-          onChange={(e) => setNewLessonName(e.target.value)}
-          sx={{ width: '300px' }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleAddLesson}
-        >
-          Thêm bài giảng mới
-        </Button>
-      </Box>
-
-      <Box sx={{ textAlign: 'center' }}>
-        <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          onClick={handleSaveLessons}
-          sx={{ px: 5, py: 1.5, fontWeight: 'bold' }}
-        >
-          Lưu lại thay đổi
-        </Button>
-      </Box>
     </Container>
   );
 };
