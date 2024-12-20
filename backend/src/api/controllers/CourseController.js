@@ -67,7 +67,16 @@ class CourseController{
             res.status(500).json({ message: 'Lỗi khi thêm ghi chú', error });
         }
     }
-
-    
+    async updateNote(req, res) {
+        try {
+            const { noteId } = req.params;
+            const { content } = req.body;
+            const note = await CourseService.updateNote(noteId, content);
+            res.json(note);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Lỗi khi cập nhật ghi chú', error });
+        }
+    }
 }
 module.exports = new CourseController;

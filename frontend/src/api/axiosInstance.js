@@ -29,7 +29,7 @@ const isTokenExpired = (token) => {
 
 // Tạo Axios instance
 const axiosInstance = axios.create({
-  baseURL: `${process.env.REACT_APP_BASE_URL}/api/course`, // Thay URL của bạn
+  baseURL: `${process.env.REACT_APP_BASE_URL}/api`, // Thay URL của bạn
   withCredentials: true, // Gửi cookie nếu cần
 });
 

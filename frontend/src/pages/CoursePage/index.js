@@ -6,7 +6,7 @@ import NotesSection from '~/layouts/components/NotesSection';
 import CourseSidebar from '~/layouts/components/CourseSidebar';
 import { useParams } from 'react-router-dom';
 import {getCourse, getLesson} from '~/services/courseService';
-import {addNote, getNotes} from '~/services/noteService';
+import {addNote, getNotes, updateNote, deleteNote} from '~/services/noteService';
 import { useRef } from 'react';
 
 const CoursePage = () => {
@@ -87,6 +87,26 @@ const CoursePage = () => {
               } catch (error) {
                 console.error('Error adding note:', error);
               }
+            }}
+            onEditNote={async (noteId, content) => {
+              try {
+                const response = await updateNote(noteId, content);
+                const updatedNotes = notesData.map((note) => (note._id === response._id ? response : note));
+                setNotesData(updatedNotes); // Cập nhật ghi chú mới từ server
+              } catch (error) {
+                console.error('Error adding note:', error);
+              }
+            }}
+            onDeleteNote={async (noteId) => {
+              try{
+                const response = await deleteNote(noteId);
+                const updatedNotes = notesData.filter((note) => note._id !== noteId);
+                setNotesData(updatedNotes); // Cập nhật ghi chú mới từ server
+              }
+              catch(error){
+                console.error('Error deleting note:', error);
+              }
+              
             }}
           />
         </Grid>

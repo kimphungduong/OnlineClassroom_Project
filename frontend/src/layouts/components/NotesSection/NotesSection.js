@@ -5,7 +5,7 @@ import 'react-quill/dist/quill.snow.css';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {getNotes, addNote} from '~/services/noteService';
-const NotesSection = ({ videoRef, notesData, onAddNote }) => {
+const NotesSection = ({ videoRef, notesData, onAddNote, onEditNote, onDeleteNote }) => {
   const [notes, setNotes] = useState([]);
   const [currentNote, setCurrentNote] = useState('');
   const [editingNoteIndex, setEditingNoteIndex] = useState(null);
@@ -18,7 +18,7 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       if (videoRef && videoRef.current) {
-        const player = videoRef.current.getInternalPlayer();
+        const player = videoRef.current;
         if (player && typeof player.getCurrentTime === 'function') {
           setCurrentTime(player.getCurrentTime());
         }
@@ -58,7 +58,7 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
     if (currentNote.trim()) {
       const noteWithTime = {
         content: currentNote,
-        time: currentTime,
+        time: (editingNoteIndex === null)? currentTime : notes[editingNoteIndex].time,
       };
 
       try {
@@ -68,6 +68,8 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
         } else {
           const updatedNotes = [...notes];
           updatedNotes[editingNoteIndex] = noteWithTime;
+          const noteId = notes[editingNoteIndex]._id;
+          onEditNote(noteId, noteWithTime); 
           setNotes(updatedNotes);
           setEditingNoteIndex(null);
         }
@@ -87,6 +89,7 @@ const NotesSection = ({ videoRef, notesData, onAddNote }) => {
   };
 
   const handleDeleteNote = (index) => {
+    onDeleteNote(notes[index]._id); // Xóa ghi chú trên server
     const updatedNotes = notes.filter((_, i) => i !== index);
     setNotes(updatedNotes);
   };
