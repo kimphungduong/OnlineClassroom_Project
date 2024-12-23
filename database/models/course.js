@@ -24,8 +24,15 @@ const courseSchema = new mongoose.Schema({
   createdAt: { type: Date, required: true, default: Date.now },
   studentProgress: [{
     student: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
-    lessonsCompleted: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'lessonsType' }],
-  
+    lessonsCompleted: [{
+      type: mongoose.Schema.Types.ObjectId,
+      refPath: 'lessonsCompletedType'
+    }],
+    lessonsCompletedType: {
+      type: String,
+      enum: ['Lesson', 'Test'],
+      required: true
+    }
   }],
 });
 

@@ -3,6 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice'; // Đảm bảo bạn đã import đúng đường dẫn
 import { composeWithDevTools } from 'redux-devtools-extension';
+import customizationReducer from './slices/customizationReducer';
 
 const persistConfig = {
   key: 'auth',
@@ -32,6 +33,7 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedReducer,
+    customization: customizationReducer,
   },
   devTools: composeWithDevTools(),
 });
