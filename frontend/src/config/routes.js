@@ -7,9 +7,12 @@ const routes = {
     watch: '/watch',
     search: '/search',
     myCourse: '/my-course',
-    login: '/login',
     dashboard: '/dashboard',
     course: '/course/:slugCourse/:slugLesson',
+    cart: '/cart',
+    login: '/login',
+    register: '/register',
+    forgotPassword: '/forgotPassword',
 };
 
 export default routes;

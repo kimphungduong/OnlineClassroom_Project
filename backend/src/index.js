@@ -6,6 +6,7 @@ const methodOverride = require('method-override');
 const http = require('http');
 const cors = require('cors');  
 const cookieParser = require('cookie-parser'); // Thêm cookie-parser để xử lý cookie
+const authRoutes = require('./routes/auth'); // Đường dẫn tới file route auth.js
 
 const db = require('./configs/db');
 db.connect();

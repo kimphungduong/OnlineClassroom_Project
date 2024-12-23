@@ -27,7 +27,7 @@ const CoursePage = () => {
       try {
         const courseResponse = await getCourse(slugCourse);
         setCourseData(courseResponse);
-
+        // gọi get Course
         if (slugLesson) {
           const lessonResponse = await getLesson(slugCourse, slugLesson);
           setLessonData(lessonResponse);

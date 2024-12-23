@@ -8,11 +8,19 @@ const User = require('../models/User'); // Adjust the path as necessary
 class AuthService {
   
   async register(username, password, role, name, email) {
-    const existingUser = await User.findOne({ username });
+    // Kiểm tra tên đăng nhập hoặc email đã tồn tại
+    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
       throw new Error('Tên đăng nhập đã tồn tại');
     }
 
+    // Kiểm tra role hợp lệ
+    const validRoles = ['student', 'teacher'];
+    if (!validRoles.includes(role)) {
+      throw new Error('Vai trò không hợp lệ');
+    }
+
+    // Tạo user mới
     const user = new User({ username, password , role, name, email });
     await user.save();
 
@@ -23,6 +31,7 @@ class AuthService {
 
     return { accessToken, refreshToken, role: user.role };
   }
+
   async login(username, password) {
     const user = await User.findOne({ username });
     if (!user) {
@@ -41,6 +50,7 @@ class AuthService {
 
     return { accessToken, refreshToken, role: user.role, name: user.name };
   }
+  
   async requestRefreshToken(refreshToken) {
     if (!refreshToken) throw new Error("You're not authenticated");
   

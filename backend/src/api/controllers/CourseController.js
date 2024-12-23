@@ -9,6 +9,7 @@ class CourseController{
             res.status(500).json({ message: 'Lỗi máy chủ' });
         }
     }
+    // Controller sẽ xử lí lỗi. và gọi hàm của service
     async getMyCourse(req, res, next) {
         try {
             const courses = await CourseService.getMyCourse(req.user.userId);
