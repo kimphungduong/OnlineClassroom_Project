@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import {getCourse, getLesson} from '~/services/courseService';
 import {addNote, getNotes, updateNote, deleteNote} from '~/services/noteService';
 import { useRef } from 'react';
+import ChatRoom from '~/components/ChatRoom';
 
 const CoursePage = () => {
   const { slugCourse, slugLesson } = useParams();
@@ -32,7 +33,6 @@ const CoursePage = () => {
           const lessonResponse = await getLesson(slugCourse, slugLesson);
           setLessonData(lessonResponse);
           setLessonId(lessonResponse._id);
-          console.log(lessonResponse._id);
 
           const notesResponse = await getNotes(slugCourse, lessonResponse._id);
           setNotesData(notesResponse);
@@ -116,7 +116,9 @@ const CoursePage = () => {
           <CourseSidebar sections={courseData?.sections} slugCourse={slugCourse} />
         </Grid>
       </Grid>
+      <ChatRoom userType="student" courseId={courseData._id} />
     </Container>
+
   );
 };
 
