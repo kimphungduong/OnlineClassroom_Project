@@ -1,0 +1,328 @@
+const mongoose = require('mongoose');
+
+// Import các models
+const Teacher = require('../models/teacher');
+const Student = require('../models/student');
+const Notification = require('../models/notification');
+const Subject = require('../models/subject');
+const Course = require('../models/course');
+const Payment = require('../models/payment');
+const Lesson = require('../models/lesson');
+const Note = require('../models/note');
+const Test = require('../models/test');
+const Review = require('../models/review');
+const ForumPost = require('../models/forumPost');
+const Message = require('../models/message');
+
+const seedData = async () => {
+  try {
+    // Xóa tất cả dữ liệu cũ
+    await Teacher.deleteMany({});
+    await Student.deleteMany({});
+    await Notification.deleteMany({});
+    await Subject.deleteMany({});
+    await Course.deleteMany({});
+    await Payment.deleteMany({});
+    await Lesson.deleteMany({});
+    await Note.deleteMany({});
+    await Test.deleteMany({});
+    await Review.deleteMany({});
+    await ForumPost.deleteMany({});
+    await Message.deleteMany({});
+
+    // Seed dữ liệu giáo viên
+    const teachers = await Teacher.create([
+      { name: 'Nguyễn Văn A', gender: 'Nam', username: 'teacher1', password: 'password123', email: 'teacher1@example.com', phone: '0123456789' },
+      { name: 'Trần Thị B', gender: 'Nữ', username: 'teacher2', password: 'password123', email: 'teacher2@example.com', phone: '0987654321' },
+      { name: 'Lê Minh C', gender: 'Nam', username: 'teacher3', password: 'password123', email: 'teacher3@example.com', phone: '0981234567' },
+      { name: 'Phạm Thị D', gender: 'Nữ', username: 'teacher4', password: 'password123', email: 'teacher4@example.com', phone: '0976543210' },
+      { name: 'Vũ Thiện E', gender: 'Nam', username: 'teacher5', password: 'password123', email: 'teacher5@example.com', phone: '0968765432' },
+    ]);
+
+    // Seed dữ liệu môn học
+    const subjects = await Subject.create([
+      { name: 'Toán học', description: 'Môn học cơ bản và nâng cao về toán học.' },
+      { name: 'Vật lý', description: 'Môn học về các nguyên lý vật lý và ứng dụng.' },
+      { name: 'Hóa học', description: 'Môn học về các phản ứng hóa học.' },
+      { name: 'Sinh học', description: 'Nghiên cứu về thế giới sinh vật.' },
+      { name: 'Khoa học máy tính', description: 'Môn học về lập trình và công nghệ thông tin.' },
+    ]);
+
+    // Seed dữ liệu khóa học
+    const courses = await Course.create([
+      { 
+        name: 'Đại số tuyến tính', 
+        price: 1000000, 
+        rating: 4.5, 
+        description: 'Khóa học về đại số tuyến tính.', 
+        image: 'https://example.com/image1.jpg', 
+        teacher: teachers[0]._id, 
+        subjects: [subjects[0]._id],
+        sections: [
+          {
+            title: 'Section 1',
+            lessons: []
+          },
+          {
+            title: 'Section 2',
+            lessons: []
+          }
+        ],
+      },
+      { 
+        name: 'Cơ học lượng tử', 
+        price: 2000000, 
+        rating: 5, 
+        description: 'Khóa học về cơ học lượng tử.', 
+        image: 'https://example.com/image2.jpg', 
+        teacher: teachers[1]._id, 
+        subjects: [subjects[1]._id],
+        sections: [
+          {
+            title: 'Section 1',
+            lessons: []
+          },
+          {
+            title: 'Section 2',
+            lessons: []
+          }
+        ],
+      },
+      { 
+        name: 'Nhập môn Hóa học', 
+        price: 1500000, 
+        rating: 4.0, 
+        description: 'Khóa học về hóa học cơ bản.', 
+        image: 'https://example.com/image3.jpg', 
+        teacher: teachers[2]._id, 
+        subjects: [subjects[2]._id],
+        sections: [
+          {
+            title: 'Section 1',
+            lessons: []
+          },
+          {
+            title: 'Section 2',
+            lessons: []
+          }
+        ],
+      },
+      { 
+        name: 'Sinh học cơ bản', 
+        price: 1800000, 
+        rating: 4.8, 
+        description: 'Khóa học về sinh học cơ bản.', 
+        image: 'https://example.com/image4.jpg', 
+        teacher: teachers[3]._id, 
+        subjects: [subjects[3]._id],
+        sections: [
+          {
+            title: 'Section 1',
+            lessons: []
+          },
+          {
+            title: 'Section 2',
+            lessons: []
+          }
+        ],
+      },
+      { 
+        name: 'Lập trình Python', 
+        price: 2500000, 
+        rating: 5, 
+        description: 'Khóa học về lập trình Python.', 
+        image: 'https://example.com/image5.jpg', 
+        teacher: teachers[4]._id, 
+        subjects: [subjects[4]._id],
+        sections: [
+          {
+            title: 'Section 1',
+            lessons: []
+          },
+          {
+            title: 'Section 2',
+            lessons: []
+          }
+        ],
+      },
+    ]);
+
+    // Seed dữ liệu học viên
+    const students = await Student.create([
+      { name: 'Lê Văn C', gender: 'Nam', username: 'student1', password: 'password123', email: 'student1@example.com', phone: '0912345678', registeredCourses: [courses[0]._id, courses[1]._id, courses[2]._id] },
+      { name: 'Phạm Thị D', gender: 'Nữ', username: 'student2', password: 'password123', email: 'student2@example.com', phone: '0909876543', registeredCourses: [courses[1]._id, courses[2]._id, courses[3]._id] },
+      { name: 'Ngô Minh E', gender: 'Nam', username: 'student3', password: 'password123', email: 'student3@example.com', phone: '0923456789', registeredCourses: [courses[2]._id, courses[3]._id, courses[4]._id] },
+      { name: 'Trần Văn F', gender: 'Nam', username: 'student4', password: 'password123', email: 'student4@example.com', phone: '0934567890', registeredCourses: [courses[0]._id, courses[3]._id, courses[4]._id] },
+      { name: 'Nguyễn Thị G', gender: 'Nữ', username: 'student5', password: 'password123', email: 'student5@example.com', phone: '0945678901', registeredCourses: [courses[0]._id, courses[1]._id, courses[4]._id] },
+    ]);
+
+    // Update courses with registered students
+    await Course.updateOne({ _id: courses[0]._id }, { $push: { students: students[0]._id } });
+    await Course.updateOne({ _id: courses[0]._id }, { $push: { students: students[3]._id } });
+    await Course.updateOne({ _id: courses[0]._id }, { $push: { students: students[4]._id } });
+
+    await Course.updateOne({ _id: courses[1]._id }, { $push: { students: students[0]._id } });
+    await Course.updateOne({ _id: courses[1]._id }, { $push: { students: students[1]._id } });
+    await Course.updateOne({ _id: courses[1]._id }, { $push: { students: students[4]._id } });
+
+    await Course.updateOne({ _id: courses[2]._id }, { $push: { students: students[0]._id } });
+    await Course.updateOne({ _id: courses[2]._id }, { $push: { students: students[1]._id } });
+    await Course.updateOne({ _id: courses[2]._id }, { $push: { students: students[2]._id } });
+
+    await Course.updateOne({ _id: courses[3]._id }, { $push: { students: students[1]._id } });
+    await Course.updateOne({ _id: courses[3]._id }, { $push: { students: students[2]._id } });
+    await Course.updateOne({ _id: courses[3]._id }, { $push: { students: students[3]._id } });
+
+    await Course.updateOne({ _id: courses[4]._id }, { $push: { students: students[2]._id } });
+    await Course.updateOne({ _id: courses[4]._id }, { $push: { students: students[3]._id } });
+    await Course.updateOne({ _id: courses[4]._id }, { $push: { students: students[4]._id } });
+
+    // Seed bài giảng
+    const lessons = await Lesson.create([
+      {
+        name: 'Giới thiệu Đại số tuyến tính',
+        description: 'Giới thiệu về các khái niệm cơ bản của đại số tuyến tính.',
+        videoUrl: 'https://example.com/video1',
+        duration: 3600,
+        course: courses[0]._id,
+        document: [{ name: 'Tài liệu 1', link: 'https://example.com/document1' }],
+      },
+      {
+        name: 'Giới thiệu Cơ học lượng tử',
+        description: 'Các nguyên lý cơ học lượng tử và ứng dụng.',
+        videoUrl: 'https://example.com/video2',
+        duration: 5400,
+        course: courses[1]._id,
+        document: [{ name: 'Tài liệu 2', link: 'https://example.com/document2' }],
+      },
+    ]);
+
+    // Seed bài kiểm tra
+    const tests = await Test.create([
+      {
+        name: 'Kiểm tra Đại số tuyến tính',
+        lesson: lessons[0]._id,
+        questions: ['Câu hỏi 1: Phép cộng ma trận', 'Câu hỏi 2: Định lý Gram-Schmidt'],
+        submissions: [
+          { student: students[0]._id, score: 85, timeSpent: 1200 },
+          { student: students[1]._id, score: 90, timeSpent: 1500 },
+        ]
+      },
+      {
+        name: 'Kiểm tra Cơ học lượng tử',
+        lesson: lessons[1]._id,
+        questions: ['Câu hỏi 1: Nguyên lý Heisenberg', 'Câu hỏi 2: Phương trình Schrödinger'],
+        submissions: [
+          { student: students[2]._id, score: 88, timeSpent: 1400 },
+          { student: students[3]._id, score: 92, timeSpent: 1600 },
+        ]
+      },
+    ]);
+
+    // Update courses with lessons and tests
+    await Course.updateOne({ _id: courses[0]._id, 'sections.title': 'Section 1' }, { $push: { 'sections.$.lessons': { lessonId: lessons[0]._id, lessonType: 'Lesson' } } });
+    await Course.updateOne({ _id: courses[0]._id, 'sections.title': 'Section 2' }, { $push: { 'sections.$.lessons': { lessonId: tests[0]._id, lessonType: 'Test' } } });
+
+    await Course.updateOne({ _id: courses[1]._id, 'sections.title': 'Section 1' }, { $push: { 'sections.$.lessons': { lessonId: lessons[1]._id, lessonType: 'Lesson' } } });
+    await Course.updateOne({ _id: courses[1]._id, 'sections.title': 'Section 2' }, { $push: { 'sections.$.lessons': { lessonId: tests[1]._id, lessonType: 'Test' } } });
+
+    // Seed bài viết diễn đàn
+    const forumPosts = await ForumPost.create([
+      {
+        title: 'Giới thiệu về Đại số tuyến tính',
+        content: 'Bài viết này giới thiệu về các khái niệm cơ bản trong đại số tuyến tính.',
+        createdBy: teachers[0]._id,
+        course: courses[0]._id,
+        comments: [
+          { content: 'Bài viết rất dễ hiểu!', user: students[0]._id },
+          { content: 'Cần thêm ví dụ cụ thể.', user: students[1]._id },
+        ],
+      },
+      {
+        title: 'Giới thiệu về Cơ học lượng tử',
+        content: 'Bài viết này giới thiệu về các nguyên lý cơ học lượng tử.',
+        createdBy: teachers[1]._id,
+        course: courses[1]._id,
+        comments: [
+          { content: 'Tôi thích bài viết này!', user: students[2]._id },
+        ],
+      },
+    ]);
+
+    // Seed Message
+    const messages = await Message.create([
+      {
+        sender: students[0]._id,
+        receiver: students[1]._id,
+        content: 'Chào bạn, bạn có thể giúp tôi không?',
+      },
+      {
+        sender: teachers[0]._id,
+        receiver: students[2]._id,
+        content: 'Hãy xem lại bài học hôm nay nhé!',
+      },
+    ]);
+
+    // Seed Notification
+    const notifications = await Notification.create([
+      { content: 'Bạn có một bài kiểm tra mới!' },
+      { content: 'Lớp học của bạn đã được cập nhật.' },
+    ]);
+
+    // Seed Review
+    const reviews = await Review.create([
+      {
+        course: courses[0]._id,
+        teacher: teachers[0]._id,
+        student: students[0]._id,
+        rating: 5,
+        comment: 'Khóa học rất bổ ích và dễ hiểu!',
+      },
+      {
+        course: courses[1]._id,
+        teacher: teachers[1]._id,
+        student: students[1]._id,
+        rating: 4,
+        comment: 'Khóa học tốt nhưng cần thêm ví dụ.',
+      },
+      {
+        course: courses[2]._id,
+        teacher: teachers[2]._id,
+        student: students[2]._id,
+        rating: 4.5,
+        comment: 'Giảng viên dạy rất nhiệt tình và dễ hiểu.',
+      },
+    ]);
+
+    // Seed dữ liệu ghi chú
+    const seedNotes = async () => {
+      try {
+        const notes = await Note.create([
+          {
+            content: 'Ghi chú bài giảng Đại số tuyến tính',
+            lesson: lessons[0]._id,
+            student: students[0]._id,
+          },
+          {
+            content: 'Ghi chú bài giảng Cơ học lượng tử',
+            lesson: lessons[1]._id,
+            student: students[1]._id,
+          },
+        ]);
+
+        console.log('Seed dữ liệu ghi chú thành công!');
+      } catch (error) {
+        console.error('Lỗi khi seed dữ liệu ghi chú:', error);
+      }
+    };
+    await seedNotes();
+
+    console.log('Seed dữ liệu thành công!');
+  } catch (error) {
+    console.error('Lỗi khi seed dữ liệu:', error);
+  } finally {
+    mongoose.connection.close();
+  }
+};
+
+module.exports = seedData;
