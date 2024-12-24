@@ -8,8 +8,8 @@ const routes = {
     login: '/login',
     dashboard: '/dashboard',
     course: '/course',
-    allCourse: '/all-course',
     detail: '/detail',
+    subject: '/subject/:subjectName', // Tham số động cho môn học
 };
 
 export default routes;

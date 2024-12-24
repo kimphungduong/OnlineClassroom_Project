@@ -12,7 +12,7 @@ import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 
 const cx = classNames.bind(styles);
 
-const Search = () => {
+const AllCourse = () => {
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
@@ -93,9 +93,6 @@ const Search = () => {
 
     return (
         <Container maxWidth="lg">
-            <Box mb={4}>
-                <TabsComponent />
-            </Box>
             <Box display="flex" alignItems="center" mb={4}>
                 <img className={cx('user-avatar')} src={images.avatar} alt="Nguyen Van A" />
                 <Typography variant="h6" className={cx('welcome-message')} ml={2}>
@@ -145,4 +142,4 @@ const Search = () => {
     );
 };
 
-export default Search;
+export default AllCourse;

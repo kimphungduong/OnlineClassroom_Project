@@ -1,0 +1,17 @@
+// filepath: /d:/phuc/NMCNPM/CSC13002_Intro-to-SE/frontend/.vscode/launch.json
+{
+    "version": "0.2.0",
+    "configurations": [
+      {
+        "type": "chrome",
+        "request": "launch",
+        "name": "Launch Chrome against localhost",
+        "url": "http://localhost:3001", // Địa chỉ ứng dụng
+        "webRoot": "${workspaceFolder}/src",
+        "sourceMaps": true,
+        "sourceMapPathOverrides": {
+          "webpack:///src/*": "${webRoot}/*"
+        }
+      }
+    ]
+  }

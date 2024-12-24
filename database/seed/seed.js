@@ -60,11 +60,51 @@ const seedData = async () => {
 
     // Seed dữ liệu khóa học
     const courses = await Course.create([
-      { name: 'Đại số tuyến tính', price: 1000000, rating: 4.5, teacher: teachers[0]._id, subjects: [subjects[0]._id] },
-      { name: 'Cơ học lượng tử', price: 2000000, rating: 5, teacher: teachers[1]._id, subjects: [subjects[1]._id] },
-      { name: 'Nhập môn Hóa học', price: 1500000, rating: 4.0, teacher: teachers[2]._id, subjects: [subjects[2]._id] },
-      { name: 'Sinh học cơ bản', price: 1800000, rating: 4.8, teacher: teachers[3]._id, subjects: [subjects[3]._id] },
-      { name: 'Lập trình Python', price: 2500000, rating: 5, teacher: teachers[4]._id, subjects: [subjects[4]._id] },
+      { 
+        name: 'Đại số tuyến tính', 
+        price: 1000000, 
+        rating: 4.5, 
+        description: 'Khóa học về đại số tuyến tính.', 
+        image: 'https://example.com/image1.jpg', 
+        teacher: teachers[0]._id, 
+        subjects: [subjects[0]._id] 
+      },
+      { 
+        name: 'Cơ học lượng tử', 
+        price: 2000000, 
+        rating: 5, 
+        description: 'Khóa học về cơ học lượng tử.', 
+        image: 'https://example.com/image2.jpg', 
+        teacher: teachers[1]._id, 
+        subjects: [subjects[1]._id] 
+      },
+      { 
+        name: 'Nhập môn Hóa học', 
+        price: 1500000, 
+        rating: 4.0, 
+        description: 'Khóa học về hóa học cơ bản.', 
+        image: 'https://example.com/image3.jpg', 
+        teacher: teachers[2]._id, 
+        subjects: [subjects[2]._id] 
+      },
+      { 
+        name: 'Sinh học cơ bản', 
+        price: 1800000, 
+        rating: 4.8, 
+        description: 'Khóa học về sinh học cơ bản.', 
+        image: 'https://example.com/image4.jpg', 
+        teacher: teachers[3]._id, 
+        subjects: [subjects[3]._id] 
+      },
+      { 
+        name: 'Lập trình Python', 
+        price: 2500000, 
+        rating: 5, 
+        description: 'Khóa học về lập trình Python.', 
+        image: 'https://example.com/image5.jpg', 
+        teacher: teachers[4]._id, 
+        subjects: [subjects[4]._id] 
+      },
     ]);
 
     // Seed bài giảng

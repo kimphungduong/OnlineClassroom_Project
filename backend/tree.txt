@@ -1,0 +1,45 @@
+Folder PATH listing for volume DATA
+Volume serial number is DC1B-93E4
+D:.
+¦   .env.example
+¦   .eslintignore
+¦   .gitignore
+¦   package-lock.json
+¦   package.json
+¦   tree.txt
+¦   
++---docs
+¦       .doxygen
+¦       
++---src
+¦   ¦   index.js
+¦   ¦   
+¦   +---api
+¦   ¦   +---v1
+¦   ¦       +---controllers
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---helpers
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---middlewares
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---models
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---routers
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---services
+¦   ¦       ¦       index.js
+¦   ¦       ¦       
+¦   ¦       +---validations
+¦   ¦               index.js
+¦   ¦               
+¦   +---configs
+¦           index.js
+¦           
++---tests
+        .AIGen
+        

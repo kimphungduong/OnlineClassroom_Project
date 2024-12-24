@@ -1,87 +1,34 @@
+// filepath: /d:/phuc/NMCNPM/CSC13002_Intro-to-SE/frontend/src/pages/Login/index.js
 import React, { useState } from 'react';
-import { TextField, Button, Container, Box, Typography } from '@mui/material';
-import { Google as GoogleIcon } from '@mui/icons-material';
-import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import { login } from '~/store/slices/authSlice'; // Import hành động login
+import LoginForm from '~/layouts/components/Login/LoginForm'; // Import LoginForm
 import { useNavigate } from 'react-router-dom';
-import { GoogleLogin } from '@react-oauth/google';
+
 function Login() {
-    const navigate = useNavigate();
-    const [formData, setFormData] = useState({ email: '', password: '' });
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [error, setError] = useState(null); // State lưu lỗi khi đăng nhập
 
-    const { username, password } = formData;
+  const handleLogin = async (credentials) => {
+    try {
+      // Gửi yêu cầu login qua Redux Thunk
+      await dispatch(login(credentials)).unwrap(); // unwrap để nhận giá trị trả về và catch lỗi
+      console.log('Login successful');
+      navigate('/watch'); // Chuyển hướng về trang chủ
+    } catch (error) {
+      setError(error.message || 'Login failed'); // Hiển thị thông báo lỗi nếu có
+      console.error('Login failed', error.message);
+    }
+  };
 
-    const onChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    const loginWithPassword = async (e) => {
-        e.preventDefault();
-        try {
-            const { data } = await axios.post('http://localhost:3000/auth/login', { username, password });
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
-            navigate('/live');
-        } catch (error) {
-            console.error('Đăng nhập thất bại', error);
-        }
-    };
-    const handleGoogleLoginSuccess = async (response) => {
-        try {
-            const { data } = await axios.post(`${process.env.REACT_APP_BASE_URL}/auth/google`, {
-                token: response.credential,
-            });
-            localStorage.setItem('token', data.token);
-            localStorage.setItem('role', data.role);
-            navigate('/live');
-        } catch (error) {
-            alert('Đăng nhập bằng Google thất bại');
-        }
-    };
-
-    const handleGoogleLoginFailure = (error) => {
-        console.error('Đăng nhập bằng Google thất bại', error);
-    };
-
-    return (
-        <Container maxWidth="sm">
-            <Box sx={{ mt: 5 }}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    Login
-                </Typography>
-                <form>
-                    <TextField
-                        label="Username"
-                        type="Text"
-                        name="username"
-                        value={username}
-                        onChange={onChange}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                    <TextField
-                        label="Password"
-                        type="password"
-                        name="password"
-                        value={password}
-                        onChange={onChange}
-                        fullWidth
-                        required
-                        margin="normal"
-                    />
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        color="primary"
-                        fullWidth
-                        sx={{ mt: 2 }}
-                        onClick={loginWithPassword}
-                    >
-                        Login
-                    </Button>
-                </form>
-                <GoogleLogin onSuccess={handleGoogleLoginSuccess} onError={handleGoogleLoginFailure} />
-            </Box>
-        </Container>
-    );
+  return (
+    <div>
+      <h1>Login Page</h1>
+      {error && <p style={{ color: 'red' }}>{error}</p>} {/* Hiển thị lỗi nếu có */}
+      <LoginForm onSubmit={handleLogin} />
+    </div>
+  );
 }
 
 export default Login;

@@ -1,11 +1,12 @@
 .tabsContainer {
-    background-color: none; /* Light background color for better visibility */
-    padding: 10px 0; /* Padding top and bottom */
-    width: 100%;
-    text-align: center;
+  background-color: none; /* Light background color for better visibility */
+  padding: 3px 0; /* Padding top and bottom */
+  width: 100%;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1), 0px 1px 3px rgba(0, 0, 0, 0.08);
+  border-bottom: 1px solid #e0e0e0; /* Optional: Add border for separation */
 }
-  
-  .tab {
-    margin: 0 10px; /* Increase horizontal margin between tabs */
-    font-size: 16px; 
+
+.tab {
+  margin: 0 10px; /* Increase horizontal margin between tabs */
+  font-size: 16px; 
 }

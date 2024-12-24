@@ -1,11 +1,16 @@
-// src/auth/StudentRoute.js
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router-dom';
 
 const StudentRoute = ({ children }) => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role');
-    return token && role === 'student' ? children : <Navigate to="/login" />;
+  const accessToken = useSelector((state) => state.auth.accessToken);
+  const role = useSelector((state) => state.auth.role);
+
+  if (!accessToken || role !== 'student') {
+    return <Navigate to="/login" />;
+  }
+
+  return children;
 };
 
 export default StudentRoute;
