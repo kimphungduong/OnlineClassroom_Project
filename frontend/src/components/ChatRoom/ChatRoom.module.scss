@@ -1,0 +1,27 @@
+.chat-room {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.chat-toggle {
+  animation: bounce 0.5s infinite;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
