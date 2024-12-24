@@ -7,14 +7,21 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Google } from "@mui/icons-material";
+import { useDispatch } from 'react-redux';
+import { login } from '~/store/slices/authSlice'; // Import hành động login
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({
     username: "",
     password: "",
   });
+  const [error, setError] = useState(""); // Lưu thông báo lỗi
+  const [loading, setLoading] = useState(false); // Hiển thị trạng thái loading
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -24,9 +31,21 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Đăng nhập với thông tin:", form);
+    setError(""); // Reset thông báo lỗi
+    setLoading(true); // Hiển thị trạng thái loading
+
+    try {
+      // Gửi yêu cầu login qua Redux Thunk
+      await dispatch(login({username: form.username, password: form.password})).unwrap(); // unwrap để nhận giá trị trả về và catch lỗi
+      console.log('Login successful');
+      navigate('/'); // Chuyển hướng về trang chủ
+    } catch (err) {
+      setError(err.message); // Hiển thị lỗi nếu đăng nhập thất bại
+    } finally {
+      setLoading(false); // Tắt trạng thái loading
+    }
   };
 
   return (
@@ -45,6 +64,13 @@ const LoginPage = () => {
         Đăng nhập tài khoản
       </Typography>
 
+      {/* Thông báo lỗi */}
+      {error && (
+        <Typography color="error" align="center" sx={{ marginBottom: 2 }}>
+          {error}
+        </Typography>
+      )}
+
       {/* Form đăng nhập */}
       <form onSubmit={handleSubmit}>
         {/* Tên đăng nhập */}
@@ -56,16 +82,6 @@ const LoginPage = () => {
           name="username"
           value={form.username}
           onChange={handleChange}
-          InputProps={{
-            startAdornment: !form.username && (
-              <Box
-                component="img"
-                src="/assets/images/user-icon.png" // Đường dẫn tới hình ảnh icon
-                alt="User"
-                sx={{ width: 24, marginRight: 1 }}
-              />
-            ),
-          }}
         />
 
         {/* Mật khẩu */}
@@ -79,16 +95,6 @@ const LoginPage = () => {
             type={showPassword ? "text" : "password"}
             value={form.password}
             onChange={handleChange}
-            InputProps={{
-              startAdornment: !form.password && (
-                <Box
-                  component="img"
-                  src="/assets/images/password-icon.png" // Đường dẫn tới hình ảnh icon
-                  alt="Password"
-                  sx={{ width: 24, marginRight: 1 }}
-                />
-              ),
-            }}
           />
           <IconButton
             onClick={() => setShowPassword(!showPassword)}
@@ -104,45 +110,24 @@ const LoginPage = () => {
           variant="contained"
           fullWidth
           sx={{ marginTop: 2, textTransform: "none" }}
+          disabled={loading} // Vô hiệu hóa nút khi đang loading
         >
-          Đăng nhập
+          {loading ? "Đang xử lý..." : "Đăng nhập"}
         </Button>
       </form>
 
       {/* Dòng phân cách */}
       <Divider sx={{ margin: "20px 0" }}>khác</Divider>
 
-      {/* Các nút mạng xã hội */}
-      <Box sx={{ display: "flex", justifyContent: "center", gap: 2 }}>
-        {/* Facebook */}
-        <IconButton>
-          <Box
-            component="img"
-            src="/assets/images/facebook-logo.png" // Đường dẫn tới logo Facebook
-            alt="Facebook"
-            sx={{ width: 32 }}
-          />
-        </IconButton>
-
-        {/* Gmail */}
-        <IconButton>
-          <Box
-            component="img"
-            src="/assets/images/gmail-logo.png" // Đường dẫn tới logo Gmail
-            alt="Gmail"
-            sx={{ width: 32 }}
-          />
-        </IconButton>
-
-        {/* Google */}
-        <IconButton>
-          <Box
-            component="img"
-            src="/assets/images/google-logo.png" // Đường dẫn tới logo Google
-            alt="Google"
-            sx={{ width: 32 }}
-          />
-        </IconButton>
+      {/* Nút đăng nhập bằng Google */}
+      <Box sx={{ display: "flex", justifyContent: "center", gap: 2, marginTop: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={<Google />}
+          sx={{ textTransform: "none" }}
+        >
+          Đăng nhập bằng Google
+        </Button>
       </Box>
 
       {/* Quên mật khẩu và Đăng ký */}
