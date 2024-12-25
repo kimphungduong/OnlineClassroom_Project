@@ -5,45 +5,18 @@ const crypto = require('crypto');
 const User = require('../models/User');
 const Teacher = require('../models/Teacher');
 const Student = require('../models/Student');
-const nodemailer = require('nodemailer');
 const { OAuth2Client } = require('google-auth-library');
 const AuthService = require('../services/AuthService');
 
 class AuthController{
   async register(req, res, next) {
-    const { username, password, role, name, email } = req.body;
+    const { username, password, role, displayName, email, phone } = req.body;
     try {
-      // Kiểm tra email hoặc username đã tồn tại
-      const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-      if (existingUser) {
-        return res.status(400).json({ message: "Username hoặc Email đã tồn tại" });
-      }
-
-      // Tạo hồ sơ giáo viên hoặc học viên
-      let profile;
-      if (role === "teacher") {
-        profile = new Teacher({ name });
-      } else if (role === "student") {
-        profile = new Student({ name });
-      } else {
-        return res.status(400).json({ message: "Vai trò không hợp lệ" });
-      }
-      await profile.save();
-
-      // Tạo tài khoản người dùng
-      const user = new User({
-        username,
-        password,
-        email,
-        role,
-        profileId: profile._id, // Liên kết tới Teacher hoặc Student
-      });
-      await user.save();
-
-      res.status(201).json({ message: "Đăng ký thành công" });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Đã xảy ra lỗi máy chủ" });
+      // Sử dụng AuthService để đăng ký người dùng
+      const { accessToken, refreshToken, role: userRole } = await AuthService.register(username, password, role, displayName, email, phone);
+      res.status(201).json({ accessToken, refreshToken, role: userRole });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
   }
     async google(req, res, next) {
@@ -119,79 +92,6 @@ class AuthController{
         }
       }
     }
-  
-    async forgotPassword(req, res, next) {
-      const { email } = req.body;
-  
-      try {
-        // Kiểm tra email
-        const user = await User.findOne({ email });
-        if (!user) {
-          return res.status(404).json({ message: "Email không tồn tại" });
-        }
-  
-        // Tạo token đặt lại mật khẩu
-        const resetToken = crypto.randomBytes(32).toString("hex");
-  
-        // Lưu token trong cơ sở dữ liệu (mã hóa)
-        user.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-        user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // Token hết hạn sau 10 phút
-        await user.save();
-  
-        // Gửi email đặt lại mật khẩu
-        const resetUrl = `${process.env.CLIENT_URL}/reset-password?token=${resetToken}`;
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASSWORD,
-          },
-        });
-  
-        await transporter.sendMail({
-          from: process.env.EMAIL_USER,
-          to: email,
-          subject: "Đặt lại mật khẩu",
-          html: `<p>Nhấn vào liên kết sau để đặt lại mật khẩu:</p>
-                 <a href="${resetUrl}">${resetUrl}</a>`,
-        });
-  
-        res.json({ message: "Liên kết đặt lại mật khẩu đã được gửi đến email của bạn." });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Đã xảy ra lỗi máy chủ" });
-      }
-    }
-
-    async resetPassword(req, res, next) {
-      const { token, newPassword } = req.body;
-  
-      try {
-        // Tìm người dùng bằng token
-        const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
-        const user = await User.findOne({
-          resetPasswordToken: hashedToken,
-          resetPasswordExpires: { $gt: Date.now() }, // Token còn hiệu lực
-        });
-  
-        if (!user) {
-          return res.status(400).json({ message: "Token không hợp lệ hoặc đã hết hạn" });
-        }
-  
-        // Cập nhật mật khẩu mới
-        const salt = await bcrypt.genSalt(10);
-        user.password = await bcrypt.hash(newPassword, salt);
-        user.resetPasswordToken = undefined; // Xóa token
-        user.resetPasswordExpires = undefined; // Xóa thời gian hết hạn
-        await user.save();
-  
-        res.json({ message: "Mật khẩu đã được cập nhật thành công" });
-      } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Đã xảy ra lỗi máy chủ" });
-      }
-    }
-
     async logout(req, res, next) {
       try {
         const refreshToken = req.cookies.refreshToken;

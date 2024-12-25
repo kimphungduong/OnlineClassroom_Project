@@ -33,6 +33,7 @@ const RegisterPage = () => {
   });
   const [errors, setErrors] = useState({}); // Lưu lỗi của từng trường
   const [loading, setLoading] = useState(false); // Hiển thị trạng thái loading
+  const [message, setMessage] = useState(""); // Thông báo lỗi chung
 
   // Xử lý thay đổi input
   const handleChange = (event) => {
@@ -128,8 +129,8 @@ const RegisterPage = () => {
         console.log("Register successful");
         navigate("/"); // Chuyển hướng đến trang chủ
       } catch (err) {
-        setErrors(err.message || "Đăng ký thất bại");
-        console.error("Register failed:", err.message);
+        setErrors({ message: err.message || "Đăng ký thất bại" });
+        console.error("Register failed:", errors);
       } finally {
         setLoading(false); // Tắt trạng thái loading
       }
@@ -301,7 +302,12 @@ const RegisterPage = () => {
         >
           Đăng ký
         </Button>
-      </form>
+        {message && (
+          <Typography color="error" align="center" sx={{ marginTop: 1 }}>
+            {message}
+          </Typography>
+        )}
+        </form>
     </Box>
   );
 };

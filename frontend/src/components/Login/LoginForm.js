@@ -2,176 +2,108 @@ import React, { useState } from "react";
 import {
   Box,
   Button,
-  Checkbox,
-  FormControlLabel,
-  Radio,
-  RadioGroup,
-  TextField,
-  Typography,
   Divider,
   IconButton,
+  TextField,
+  Typography,
 } from "@mui/material";
-import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { Visibility, VisibilityOff, Google } from "@mui/icons-material";
 
-const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+const LoginForm = ({ handleSubmit }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [role, setRole] = useState("student"); // Mặc định là học sinh
-  const [error, setError] = useState(""); // Lưu lỗi nếu có
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+  });
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setForm((prevForm) => ({
+      ...prevForm,
+      [name]: value,
+    }));
   };
 
-  const handleRoleChange = (event) => {
-    setRole(event.target.value);
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setError(""); // Xóa lỗi trước khi đăng nhập
-
-    // Mock gửi thông tin đăng nhập
-    try {
-      console.log("Đăng nhập với thông tin:");
-      console.log("Email:", email);
-      console.log("Password:", password);
-      console.log("Role:", role);
-
-      // Gửi thông tin tới backend (giả lập API call)
-      const response = await mockApiLogin({ email, password, role });
-
-      if (response.status === 200) {
-        alert(`Đăng nhập thành công với tư cách: ${role}`);
-      } else {
-        setError(response.message || "Đăng nhập thất bại. Vui lòng thử lại.");
-      }
-    } catch (err) {
-      setError("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin.");
-    }
-  };
-
-  // Giả lập API đăng nhập
-  const mockApiLogin = async ({ email, password, role }) => {
-    // Mô phỏng backend: Kiểm tra vai trò và trả kết quả
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        if (email === "student@example.com" && role === "student") {
-          resolve({ status: 200, message: "Student logged in" });
-        } else if (email === "teacher@example.com" && role === "teacher") {
-          resolve({ status: 200, message: "Teacher logged in" });
-        } else {
-          resolve({ status: 401, message: "Invalid credentials or role" });
-        }
-      }, 1000); // Mô phỏng độ trễ của API
-    });
+  const onSubmit = () => {
+    handleSubmit(form); // Gọi hàm handleSubmit với form data khi nút Đăng nhập được nhấn
   };
 
   return (
-    <Box
-      sx={{
-        maxWidth: 400,
-        margin: "0 auto",
-        padding: 4,
-        border: "1px solid #ddd",
-        borderRadius: 2,
-        boxShadow: 3,
-      }}
-    >
+    <Box sx={{ maxWidth: 400, margin: "0 auto", padding: 4, border: "1px solid #ddd", borderRadius: 2, boxShadow: 3 }}>
+      {/* Tiêu đề */}
       <Typography variant="h4" align="center" gutterBottom>
-        Hi, Welcome Back
-      </Typography>
-      <Typography variant="body2" align="center" color="textSecondary" gutterBottom>
-        Enter your credentials to continue
+        Đăng nhập tài khoản
       </Typography>
 
-      <Button
+      {/* Tên đăng nhập */}
+      <TextField
+        label="Tên đăng nhập"
         variant="outlined"
         fullWidth
-        sx={{ marginBottom: 2, textTransform: "none" }}
-        startIcon={<img src="/assets/images/google-icon.png" alt="Google" width="20" />}
-      >
-        Sign in with Google
-      </Button>
+        margin="normal"
+        name="username"
+        value={form.username}
+        onChange={handleChange}
+      />
 
-      <Divider sx={{ margin: "20px 0" }}>OR</Divider>
-
-      <form onSubmit={handleSubmit}>
-        <Typography variant="body1" gutterBottom>
-          Sign in with Email address
-        </Typography>
+      {/* Mật khẩu */}
+      <Box sx={{ position: "relative" }}>
         <TextField
-          label="Email Address / Username"
+          label="Mật khẩu"
           variant="outlined"
           fullWidth
           margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          name="password"
+          type={showPassword ? "text" : "password"}
+          value={form.password}
+          onChange={handleChange}
         />
-        <Box sx={{ position: "relative" }}>
-          <TextField
-            label="Password"
-            variant="outlined"
-            type={showPassword ? "text" : "password"}
-            fullWidth
-            margin="normal"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-          <IconButton
-            onClick={togglePasswordVisibility}
-            sx={{ position: "absolute", right: 10, top: "25%" }}
-          >
-            {showPassword ? <VisibilityOff /> : <Visibility />}
-          </IconButton>
-        </Box>
-        <Typography variant="body2" gutterBottom sx={{ marginTop: 2 }}>
-          Choose your role:
-        </Typography>
-        <RadioGroup
-          value={role}
-          onChange={handleRoleChange}
-          row
-          sx={{ justifyContent: "center", marginBottom: 2 }}
+        <IconButton
+          onClick={() => setShowPassword(!showPassword)}
+          sx={{ position: "absolute", right: 10, top: "30%" }}
         >
-          <FormControlLabel value="student" control={<Radio />} label="Tôi là học sinh" />
-          <FormControlLabel value="teacher" control={<Radio />} label="Tôi là giáo viên" />
-        </RadioGroup>
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            marginBottom: 2,
-          }}
-        >
-          <FormControlLabel control={<Checkbox />} label="Keep me logged in" />
-          <Button variant="text" color="primary">
-            Forgot Password?
-          </Button>
-        </Box>
+          {showPassword ? <VisibilityOff /> : <Visibility />}
+        </IconButton>
+      </Box>
+
+      {/* Nút Đăng nhập */}
+      <Button
+        onClick={onSubmit} // Thay vì form, sử dụng onClick để gọi handleSubmit
+        variant="contained"
+        fullWidth
+        sx={{ marginTop: 2, textTransform: "none" }}
+      >
+        Đăng nhập
+      </Button>
+
+      {/* Dòng phân cách */}
+      <Divider sx={{ margin: "20px 0" }}>khác</Divider>
+
+      {/* Nút đăng nhập bằng Google */}
+      <Box sx={{ display: "flex", justifyContent: "center", gap: 2, marginTop: 2 }}>
         <Button
-          variant="contained"
-          color="primary"
-          fullWidth
-          type="submit"
-          sx={{ textTransform: "none", marginBottom: 2 }}
+          variant="outlined"
+          startIcon={<Google />}
+          sx={{ textTransform: "none" }}
         >
-          Sign In
+          Đăng nhập bằng Google
         </Button>
-        {error && (
-          <Typography variant="body2" color="error" align="center" sx={{ marginTop: 2 }}>
-            {error}
-          </Typography>
-        )}
-      </form>
-      <Typography variant="body2" align="center">
-        Don’t have an account?{" "}
-        <Button variant="text" color="primary">
-          Sign Up
-        </Button>
-      </Typography>
+      </Box>
+
+      {/* Quên mật khẩu và Đăng ký */}
+      <Box sx={{ marginTop: 3, textAlign: "center" }}>
+        <Typography variant="body2" gutterBottom>
+          <Button variant="text" sx={{ textTransform: "none" }}>
+            Quên mật khẩu
+          </Button>
+        </Typography>
+        <Typography variant="body2">
+          Không có tài khoản?{" "}
+          <Button variant="text" color="primary" sx={{ textTransform: "none" }}>
+            Đăng ký
+          </Button>
+        </Typography>
+      </Box>
     </Box>
   );
 };

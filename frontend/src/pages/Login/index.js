@@ -8,9 +8,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Visibility, VisibilityOff, Google } from "@mui/icons-material";
-import { useDispatch } from "react-redux";
-import { login } from "~/store/slices/authSlice"; // Import action login
-import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { login } from '~/store/slices/authSlice'; // Import hành động login
+import { useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -23,7 +23,6 @@ const LoginPage = () => {
   const [error, setError] = useState(""); // Lưu thông báo lỗi
   const [loading, setLoading] = useState(false); // Hiển thị trạng thái loading
 
-  // Xử lý thay đổi trong các trường input
   const handleChange = (event) => {
     const { name, value } = event.target;
     setForm((prevForm) => ({
@@ -32,23 +31,20 @@ const LoginPage = () => {
     }));
   };
 
-  // Xử lý đăng nhập
-  const handleLogin = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setError(""); // Reset thông báo lỗi
-    setLoading(true); // Bật trạng thái loading
+    setLoading(true); // Hiển thị trạng thái loading
 
     try {
-      // Gửi thông tin username và password qua Redux Thunk
-      await dispatch(login(form)).unwrap();
-      console.log("Login successful");
-      navigate("/watch"); // Chuyển hướng đến trang chủ
+      // Gửi yêu cầu login qua Redux Thunk
+      await dispatch(login({username: form.username, password: form.password})).unwrap(); // unwrap để nhận giá trị trả về và catch lỗi
+      console.log('Login successful');
+      navigate('/'); // Chuyển hướng về trang chủ
     } catch (err) {
-      setError(err.message || "Đăng nhập thất bại");
-      console.error("Login failed:", err.message);
-    } finally {
-      setLoading(false); // Tắt trạng thái loading
+      setError(err.message); // Hiển thị lỗi nếu đăng nhập thất bại
     }
+    setLoading(false); // Ẩn trạng thái loading
   };
 
   return (
@@ -75,7 +71,7 @@ const LoginPage = () => {
       )}
 
       {/* Form đăng nhập */}
-      <form onSubmit={handleLogin}>
+      <form onSubmit={handleSubmit}>
         {/* Tên đăng nhập */}
         <TextField
           label="Tên đăng nhập"
@@ -113,7 +109,7 @@ const LoginPage = () => {
           variant="contained"
           fullWidth
           sx={{ marginTop: 2, textTransform: "none" }}
-          disabled={loading}
+          disabled={loading} // Vô hiệu hóa nút khi đang loading
         >
           {loading ? "Đang xử lý..." : "Đăng nhập"}
         </Button>
