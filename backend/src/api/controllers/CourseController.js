@@ -48,6 +48,7 @@ class CourseController{
     }
     async getNotes(req, res) {
         try {
+            console.log(req.user);
             const { lessonId } = req.params;
             const notes = await CourseService.getNoteByLessonId(lessonId, req.user.userId);
             res.json(notes);

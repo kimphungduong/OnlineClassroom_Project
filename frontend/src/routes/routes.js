@@ -17,6 +17,9 @@ import Login from '~/pages/Login';
 import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
 import Logout from '~/pages/Logout';
+import DiscussionForum from '~/pages/Forum';
+import AddPost from '~/pages/AddForumPost';
+import ForumPostDetail from '~/pages/ForumPostDetail';
 
 // Public routes
 const publicRoutes = [
@@ -28,6 +31,9 @@ const publicRoutes = [
     { path: config.routes.search, component: Search, layout: null },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
+    { path : config.routes.forum, component: DiscussionForum, layout: HeaderOnly },
+    { path : config.routes.addPost, component: AddPost, layout: HeaderOnly },
+    { path : config.routes.forumPostDetail, component : ForumPostDetail, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

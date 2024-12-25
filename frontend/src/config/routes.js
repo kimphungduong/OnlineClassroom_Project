@@ -10,6 +10,9 @@ const routes = {
     login: '/login',
     dashboard: '/dashboard',
     course: '/course/:slugCourse/:slugLesson',
+    forum : '/forum',
+    addPost : '/add-post',
+    forumPostDetail : '/forum/id',
 };
 
 export default routes;
