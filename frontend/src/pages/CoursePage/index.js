@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Grid, Box, Tabs, Tab, Container } from '@mui/material';
+import { Grid, Box, Tabs, Tab, Container, Typography } from '@mui/material';
 import CourseBreadcrumbs from '~/layouts/components/CustomBreadcrumbs';
 import VideoPlayer from '~/layouts/components/VideoPlayer';
 import NotesSection from '~/layouts/components/NotesSection';
@@ -9,6 +9,7 @@ import {getCourse, getLesson} from '~/services/courseService';
 import {addNote, getNotes, updateNote, deleteNote} from '~/services/noteService';
 import { useRef } from 'react';
 import ChatRoom from '~/components/ChatRoom';
+import ReactQuill from 'react-quill';
 
 const CoursePage = () => {
   const { slugCourse, slugLesson } = useParams();
@@ -28,7 +29,7 @@ const CoursePage = () => {
       try {
         const courseResponse = await getCourse(slugCourse);
         setCourseData(courseResponse);
-
+        // gọi get Course
         if (slugLesson) {
           const lessonResponse = await getLesson(slugCourse, slugLesson);
           setLessonData(lessonResponse);
@@ -72,11 +73,26 @@ const CoursePage = () => {
           <VideoPlayer url={lessonData?.videoUrl} title={lessonData?.name} videoRef={videoRef} />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabIndex} onChange={handleChange} aria-label="tabs">
-              <Tab label="Các thông báo" />
+              <Tab label="Thông tin bài giảng" />
               <Tab label="Đánh giá và phản hồi" />
               <Tab label="Ghi chú" />
             </Tabs>
           </Box>
+          {tabIndex === 0 && (
+            <Box sx={{ mt: 3 }}>
+              <ReactQuill
+                value={lessonData?.description || ''}
+                readOnly={true}
+                theme="bubble"
+              />
+            </Box>
+          )}
+          {tabIndex === 1 && (
+            <div>
+              <h1>Đánh giá và phản hồi</h1>
+            </div>
+          )}
+          {tabIndex === 2 && (
           <NotesSection
             videoRef={videoRef}
             notesData={notesData}
@@ -108,7 +124,7 @@ const CoursePage = () => {
               }
               
             }}
-          />
+          />)}
         </Grid>
 
         {/* Phần Sidebar */}

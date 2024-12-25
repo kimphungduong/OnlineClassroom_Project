@@ -14,7 +14,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy danh sách khóa học');
     }
   }
-
+  // lấy danh sách Course là model ánh xạ vo database. Coures.find() trả về tất cả khoá học. sevice sẽ định nghĩa các hàm làm gì
   async getCourse(slug) {
     try {
       const course = await Course.findOne({ slug })

@@ -12,7 +12,7 @@ const courseApi = {
   getCourse: (courseSlug) => {
     return axiosInstance.get(`/course/${courseSlug}`);
   },
-
+// gọi cái trên localhost:5000/course/sinh-hoc-co-ban là nó trả về thôgn tin 1 khoá học 
   // API làm mới token
   getLesson: (courseSlug,lessonSlug) => {
     return axiosInstance.get(`/course/${courseSlug}/${lessonSlug}`);

@@ -7,12 +7,15 @@ const routes = {
     watch: '/watch',
     search: '/search',
     myCourse: '/my-course',
-    login: '/login',
     dashboard: '/dashboard',
     course: '/course/:slugCourse/:slugLesson',
     forum : '/forum',
     addPost : '/add-post',
     forumPostDetail : '/forum/id',
+    cart: '/cart',
+    login: '/login',
+    register: '/register',
+    forgotPassword: '/forgotPassword',
 };
 
 export default routes;
