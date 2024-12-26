@@ -1,60 +1,55 @@
 import React, { useState } from "react";
-import ReactMarkdown from "react-markdown";
 import {
-  Avatar,
-  Card,
-  CardContent,
   Typography,
   Divider,
-  TextField,
-  Button,
-  List,
-  ListItem,
-  IconButton,
-  Box,
 } from "@mui/material";
-import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import MarkdownIt from 'markdown-it';
-import MdEditor from 'react-markdown-editor-lite'
-import 'react-markdown-editor-lite/lib/index.css';
+
+import { PostCard, CommentList, CommentEditor } from "../../components/PostCardDetail";
+import {getForumPostDetail, addComment} from "../../services/courseService";
+import { useParams, useNavigate } from "react-router-dom";
+
 
 const ForumPostDetail = () => {
-const mdParser = new MarkdownIt();
+  const {slugCourse, postId} = useParams();
 
-  const author = {
-    name: "Nguyễn Văn A",
-    avatar: "https://via.placeholder.com/50",
-    date: "25/12/2024",
+  const [postVotes, setPostVotes] = useState(0);
+  const [votedPost, setVotedPost] = useState(false);
+  const [content, setContent] = useState("");
+
+  const [postContent, setPostContent] = useState({})
+
+  const [comments, setComments] = useState([]);
+  const [votedComments, setVotedComments] = useState({});
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const data = await getForumPostDetail(slugCourse, postId);
+      setPostContent(data);
+      setVotedPost(data.votes)
+      setComments(data.comments)
+    }
+
+    fetchData();
+  }, []);
+
+
+
+  const handlePostVote = (type) => {
+    if (votedPost) {
+      alert("Bạn đã vote cho bài viết này!");
+      return;
+    }
+    setPostVotes((prev) => (type === "upvote" ? prev + 1 : prev - 1));
+    setVotedPost(true);
   };
 
-  const markdownContent = `
-### Làm sao để có thể giải được bài toán tìm giá trị nhỏ nhất?
+  const handleCommentVote = (id, type) => {
+    if (votedComments[id]) {
+      alert("Bạn đã vote cho bình luận này!");
+      return;
+    }
 
-Bài toán được trích dẫn trong đề thi THPT 2022, câu số 38 dạng Vận Dụng, mình đã thử nhiều cách và tham khảo tài liệu nhiều nguồn, nhưng vẫn gặp khó khăn. Một số trang hướng dẫn bài toán có thể giải theo cách \`a, b, c\`. 
-Có ai có cách nào khác không?
-  `;
-
-  const [comments, setComments] = useState([
-    {
-      id: 1,
-      name: "Trần Thị B",
-      avatar: "https://via.placeholder.com/50",
-      date: "25/12/2024 10:00",
-      content: "Mình nghĩ bạn có thể thử sử dụng **phương pháp tối ưu hoá gradient descent**.",
-      votes: 10,
-    },
-    {
-      id: 2,
-      name: "Lê Văn C",
-      avatar: "https://via.placeholder.com/50",
-      date: "25/12/2024 11:00",
-      content: "Bạn thử kiểm tra các điều kiện ban đầu xem đã đầy đủ chưa nhé. ![img](https://raw.githubusercontent.com/mquangcao/CSC13009_EL/refs/heads/main/app/src/main/res/drawable/banana.jpg?token=GHSAT0AAAAAACZAUTHEB2QY2OUV4MRP7S4SZ3L2PQQ)",
-      votes: 7,
-    },
-  ]);
-
-  const handleVote = (id, type) => {
+    setVotedComments((prev) => ({ ...prev, [id]: type }));
     setComments((prevComments) =>
       prevComments.map((comment) =>
         comment.id === id
@@ -64,132 +59,52 @@ Có ai có cách nào khác không?
     );
   };
 
-  return (
-    <div style={{ maxWidth: "800px", margin: "0 auto", padding: "20px" }}>
-      {/* Phần bài đăng */}
-      <Card style={{ padding: "20px", boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)" }}>
-        <div style={{ display: "flex", alignItems: "center", marginBottom: "20px" }}>
-          <Avatar src={author.avatar} alt={author.name} />
-          <div style={{ marginLeft: "10px" }}>
-            <Typography variant="subtitle1" style={{ fontWeight: "bold" }}>
-              {author.name}
-            </Typography>
-            <Typography variant="subtitle2" color="textSecondary">
-              {author.date}
-            </Typography>
-          </div>
-        </div>
-        <Divider />
-        <CardContent>
-          <ReactMarkdown>{markdownContent}</ReactMarkdown>
-        </CardContent>
-      </Card>
+  const handleEditorChange = ({ text }) => {
+    setContent(text);
+  };
 
-      {/* Phần bình luận */}
+  const handleSubmit = async () => {
+    if (!content.trim()) {
+      alert("Vui lòng nhập nội dung bình luận trước khi gửi!");
+      return;
+    }
+
+    const newComment = await addComment(slugCourse, postId, { content : content });
+    console.log(newComment);
+
+    setComments([...comments, newComment]);
+    setContent("");
+  };
+
+  return (
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
+      <PostCard
+        avatar={postContent?.avatar || "https://via.placeholder.com/50"}
+        name={postContent?.name || "Người dùng"}
+        date={postContent?.createdAt || ""} 
+        title={postContent?.title || ""}
+        markdownContent={postContent?.content || ""}
+        postVotes={postContent?.votes?.reduce((acc, vote) => acc + vote.voteValue, 0) || 0}
+        votedPost={votedPost}
+        handlePostVote={handlePostVote}
+      />
+
       <div style={{ marginTop: "20px" }}>
         <Typography variant="h6" style={{ marginBottom: "10px" }}>
           Bình luận
         </Typography>
         <Divider />
-        <List>
-          {comments.map((comment) => (
-            <ListItem
-              key={comment.id}
-              alignItems="flex-start"
-              style={{
-                marginBottom: "20px",
-                border: "1px solid #ddd",
-                borderRadius: "8px",
-                padding: "10px",
-                boxShadow: "0 2px 6px rgba(0, 0, 0, 0.1)",
-              }}
-            >
-              {/* Cột upvote/downvote */}
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  marginRight: "15px",
-                }}
-              >
-                <IconButton
-                  color="primary"
-                  onClick={() => handleVote(comment.id, "upvote")}
-                  size="small"
-                >
-                  <ArrowUpwardIcon />
-                </IconButton>
-                <Typography variant="h6">{comment.votes}</Typography>
-                <IconButton
-                  color="secondary"
-                  onClick={() => handleVote(comment.id, "downvote")}
-                  size="small"
-                >
-                  <ArrowDownwardIcon />
-                </IconButton>
-              </Box>
-
-              {/* Nội dung bình luận */}
-              <Box sx={{ flexGrow: 1 }}>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}>
-                  <Avatar
-                    src={comment.avatar}
-                    alt={comment.name}
-                    style={{ width: "40px", height: "40px", marginRight: "10px" }}
-                  />
-                  <div>
-                    <Typography variant="subtitle2" style={{ fontWeight: "bold" }}>
-                      {comment.name}
-                    </Typography>
-                    <Typography variant="caption" color="textSecondary">
-                      {comment.date}
-                    </Typography>
-                  </div>
-                </div>
-                <ReactMarkdown>{comment.content}</ReactMarkdown>
-              </Box>
-            </ListItem>
-          ))}
-        </List>
+        <CommentList
+          comments={comments}
+          votedComments={votedComments}
+          handleCommentVote={handleCommentVote}
+        />
+        <CommentEditor
+          content={content}
+          handleEditorChange={handleEditorChange}
+          handleSubmit={handleSubmit}
+        />
       </div>
-
-      {/* Form thêm bình luận */}
-      <Card style={{ marginTop: "20px", padding: "15px", boxShadow: "0 2px 8px rgba(0,0,0,0.1)" }}>
-        <Typography variant="subtitle1" style={{ marginBottom: "10px", fontWeight: "bold" }}>
-          Thêm bình luận
-        </Typography>
-        <MdEditor style={{ height: '300px',  width : '100%'}} renderHTML={text => mdParser.render(text)} />
-        <Box
-            sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                marginTop: "20px",
-            }}
-            >
-            <Button
-                variant="contained"
-                color="primary"
-                sx={{
-                    width: "100%",
-                padding: "10px 20px",
-                fontSize: "16px",
-                borderRadius: "8px",
-                boxShadow: "0 4px 10px rgba(0, 0, 0, 0.2)",
-                transition: "all 0.3s ease",
-                "&:hover": {
-                    backgroundColor: "#004ba0",
-                    transform: "translateY(-2px)",
-                    boxShadow: "0 6px 14px rgba(0, 0, 0, 0.3)",
-                },
-                }}
-            >
-                Gửi
-            </Button>
-            </Box>
-
-      </Card>
     </div>
   );
 };

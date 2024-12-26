@@ -17,6 +17,27 @@ const courseApi = {
   getLesson: (courseSlug,lessonSlug) => {
     return axiosInstance.get(`/course/${courseSlug}/${lessonSlug}`);
   },
+
+
+  // Hi , toi la quang cao hehe
+  addPost: (courseSlug, data) => {
+    return axiosInstance.post(`/course/${courseSlug}/forum/add-post`, data);
+  },
+
+  // API lấy bài đăng từ diễn đàn
+  getForumPosts: (courseSlug) => {
+    return axiosInstance.get(`/course/${courseSlug}/forum`);
+  },
+
+  // API lấy chi tiết bài đăng
+  getForumPostDetail: (courseSlug, postId) => {
+    return axiosInstance.get(`/course/${courseSlug}/forum/${postId}`);
+  },
+
+  addComment: (courseSlug, postId, data) => {
+    return axiosInstance.post(`/course/${courseSlug}/forum/${postId}/add-comment`, data);
+  },
+
 };
 
 export default courseApi;

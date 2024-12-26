@@ -31,7 +31,7 @@ class CourseController{
             const lession = await CourseService.getLession(req.params.slug, req.params.slugLesson);
         res.json(lession);
         } catch (error) {
-            res.status(500).json({ message: 'Lỗi máy chủ' });
+            res.status(500).json({ message: 'Lỗi máy chủ 2' });
         }
     }
     async getCourseWithLessons(req, res) {
@@ -49,7 +49,6 @@ class CourseController{
     }
     async getNotes(req, res) {
         try {
-            console.log(req.user);
             const { lessonId } = req.params;
             const notes = await CourseService.getNoteByLessonId(lessonId, req.user.userId);
             res.json(notes);

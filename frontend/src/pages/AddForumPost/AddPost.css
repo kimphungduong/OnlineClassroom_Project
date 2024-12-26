@@ -67,3 +67,25 @@
   border-color: #096dd9;
   transform: translateY(0);
 }
+
+
+.add-post-label .required {
+  color: red;
+  margin-left: 4px;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+.add-post-input.error {
+  border-color: red;
+}
+
+.md-editor.error {
+  border: 1px solid red;
+}
+
+
