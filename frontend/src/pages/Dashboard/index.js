@@ -3,6 +3,7 @@ import { ToggleButton, ToggleButtonGroup, Box, Typography, Divider, Avatar, Cont
 import MyCourse from '~/pages/MyCourses';
 import ChangePassword from '~/layouts/components/ChangePassword';
 import EditProfileForm from '~/layouts/components/EditProfileForm';
+import {store} from '~/store';
 
 const Dashboard = () => {
     const [selectedContent, setSelectedContent] = useState('courses');
@@ -27,7 +28,7 @@ const Dashboard = () => {
                 }}
             >
                 <Avatar sx={{ width: 80, height: 80, margin: '0 auto' }} />
-                <Typography variant="h5" sx={{ marginTop: 2 }}>Quân Lê</Typography>
+                <Typography variant="h5" sx={{ marginTop: 2 }}>{store.getState().auth.name}</Typography>
                 <Typography variant="h6" color="textSecondary">
                     Headline
                 </Typography>
