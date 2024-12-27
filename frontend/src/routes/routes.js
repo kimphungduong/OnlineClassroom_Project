@@ -18,6 +18,7 @@ import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
 import CourseEdit from '~/pages/CourseEdit';
 import LessonEdit from '~/pages/LessonEdit';
+import LessonNew from '~/pages/LessonNew';
 import CourseStat from '~/pages/CourseStat';
 import MembersStat from '~/pages/MembersStat';
 
@@ -34,6 +35,7 @@ const publicRoutes = [
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
     { path: config.routes.courseEdit, component: CourseEdit, layout: HeaderOnly },
     { path: config.routes.lessonEdit, component: LessonEdit, layout: HeaderOnly },
+    { path: config.routes.lessonNew, component: LessonNew, layout: HeaderOnly },
     { path: config.routes.courseStat, component: CourseStat, layout: HeaderOnly },
     { path: config.routes.membersStat, component: MembersStat, layout: HeaderOnly },
 ];

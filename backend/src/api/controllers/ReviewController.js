@@ -1,13 +1,46 @@
-const Review = require('../models/Review');
-const Student = require('../models/Student'); // Đảm bảo import đúng model
+const ReviewService = require('../services/ReviewService');
 
-exports.getAllReviews = async (req, res) => {
-  try {
-    const reviews = await Review.find()
-      .populate('student', 'name'); // Populate student và chọn trường name
-    res.status(200).json(reviews);
-  } catch (error) {
-    console.error('Error fetching reviews:', error.message);
-    res.status(500).json({ message: 'Lỗi khi lấy danh sách đánh giá', error: error.message });
+class ReviewController {
+  async createReview(req, res) {
+    try {
+      const review = await ReviewService.createReview(req.body);
+      res.status(201).json(review);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
   }
-};
+
+  async getReviews(req, res) {
+    try {
+      const filters = req.query;
+      const reviews = await ReviewService.getReviews(filters);
+      res.status(200).json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async getReviewById(req, res) {
+    try {
+      const review = await ReviewService.getReviewById(req.params.id);
+      if (!review) {
+        return res.status(404).json({ message: 'Review not found' });
+      }
+      res.status(200).json(review);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+
+  async getCourseStats(req, res) {
+    try {
+      const stats = await ReviewService.getCourseStatsBySlug(req.params.slug);
+      res.status(200).json(stats);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+}
+
+module.exports = new ReviewController();

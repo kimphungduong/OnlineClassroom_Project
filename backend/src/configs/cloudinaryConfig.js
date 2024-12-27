@@ -3,9 +3,9 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '../APIsecrect.env') });
 
 cloudinary.config({
-  cloud_name: 'dginq7yqw',
-  api_key: '139616111469673',
-  api_secret: 'P5GZmEtXR1Ig2tzyoF6HeAH8eMk',
+  cloud_name: process.env.cloud_name,
+  api_key: process.env.api_key,
+  api_secret: process.env.api_secret,
 });
 //process.env.APIsecrect
 module.exports = cloudinary;

@@ -9,8 +9,9 @@ const routes = {
     dashboard: '/dashboard',
     course: '/course',
     courseEdit: '/course-edit/:slug',
-    lessonEdit: '/lesson-edit/:slug/sections/:sectionId/lesson/new',
-    courseStat: '/course-stat',
+    lessonEdit: '/lesson-edit/:slug/sections/:sectionId/lesson/:lessonId',
+    lessonNew: '/lesson-edit/:slug/sections/:sectionId/lesson/new',
+    courseStat: '/course-stat/:slug',
     membersStat: '/members-stat',
 };
 

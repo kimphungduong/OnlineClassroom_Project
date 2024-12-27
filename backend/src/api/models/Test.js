@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const submission = require('./submission');
+const submission = require('./Submission');
 
 const testSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },

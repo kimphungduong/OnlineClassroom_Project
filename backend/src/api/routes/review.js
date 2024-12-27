@@ -1,8 +1,17 @@
 const express = require('express');
-const router = express.Router();
-const reviewController = require('../controllers/ReviewController');
+const ReviewController = require('../controllers/ReviewController');
 
-// Lấy tất cả đánh giá
-router.get('/', reviewController.getAllReviews);
+const router = express.Router();
+
+
+// Get all reviews
+router.get('/', ReviewController.getReviews);
+
+// Get a review by ID
+router.get('/:id', ReviewController.getReviewById);
+
+
+// Get course stats by slug
+router.get('/:slug/stat', ReviewController.getCourseStats);
 
 module.exports = router;
