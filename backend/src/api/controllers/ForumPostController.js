@@ -1,4 +1,4 @@
-const { addPost, getAllPosts, getPost, addComment } = require('../services/ForumPostService');
+const { addPost, getAllPosts, getPost, addComment, addVote } = require('../services/ForumPostService');
 
 module.exports.addPost = async(req, res) => {
     try {
@@ -55,5 +55,21 @@ module.exports.addComment = async (req, res) => {
     }
     catch (error) {
         res.status(500).json({message : 'Lỗi khi thêm comment',  error });
+    }
+}
+
+module.exports.voteComment = async (req, res) => {
+    try {
+        const { slug, postId } = req.params;
+        const { commentId, value } = req.body;
+        const comment = await addVote(slug, postId, req.user.userId, commentId, value);
+
+        res.json({
+            success: true,
+            data : comment
+        })
+    }
+    catch (error) {
+        res.status(500).json({message : "Lỗi khi voteComment" , error})
     }
 }

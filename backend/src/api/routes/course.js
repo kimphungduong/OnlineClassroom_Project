@@ -2,7 +2,7 @@ const express = require ('express');
 const router =express.Router();
 
 const courseController= require('../controllers/CourseController');
-const { addPost, getAllPosts, getPost, addComment}= require('../controllers/ForumPostController');
+const { addPost, getAllPosts, getPost, addComment, voteComment}= require('../controllers/ForumPostController');
 
 router.get('/',courseController.getListCourse);
 router.get('/my-courses',courseController.getMyCourse);
@@ -12,6 +12,8 @@ router.get('/:slug/forum', getAllPosts);
 router.post('/:slug/forum/add-post', addPost);
 router.get('/:slug/forum/:postId', getPost)
 router.post('/:slug/forum/:postId/add-comment', addComment)
+router.post('/:slug/forum/:postId/vote-comment', voteComment)
+
 
 router.get('/:slug/:lessonId/notes',courseController.getNotes);
 router.get('/:slug/:slugLesson',courseController.getLession);

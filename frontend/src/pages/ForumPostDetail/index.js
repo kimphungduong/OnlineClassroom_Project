@@ -5,11 +5,13 @@ import {
 } from "@mui/material";
 
 import { PostCard, CommentList, CommentEditor } from "../../components/PostCardDetail";
-import {getForumPostDetail, addComment} from "../../services/courseService";
+import {getForumPostDetail, addComment, voteComment} from "../../services/courseService";
 import { useParams, useNavigate } from "react-router-dom";
 
 
 const ForumPostDetail = () => {
+  const [reload, setReload] = useState(false);
+
   const {slugCourse, postId} = useParams();
 
   const [postVotes, setPostVotes] = useState(0);
@@ -25,12 +27,15 @@ const ForumPostDetail = () => {
     const fetchData = async () => {
       const data = await getForumPostDetail(slugCourse, postId);
       setPostContent(data);
+      console.log("=====================================")
+      console.log(data)
+
       setVotedPost(data.votes)
       setComments(data.comments)
     }
 
     fetchData();
-  }, []);
+  }, [reload]);
 
 
 
@@ -43,20 +48,17 @@ const ForumPostDetail = () => {
     setVotedPost(true);
   };
 
-  const handleCommentVote = (id, type) => {
-    if (votedComments[id]) {
-      alert("Bạn đã vote cho bình luận này!");
-      return;
+  const handleCommentVote = async (id, type) => {
+    console.log(id)
+    const newComment = await voteComment(slugCourse, postId, id, type === "upvote" ? 1 : -1);
+    
+    const index = comments.findIndex(item => item._id === newComment._id);
+    if (index !== -1) {
+      comments[index].votes = newComment.votes;
+      comments[index].voted = true
     }
 
-    setVotedComments((prev) => ({ ...prev, [id]: type }));
-    setComments((prevComments) =>
-      prevComments.map((comment) =>
-        comment.id === id
-          ? { ...comment, votes: type === "upvote" ? comment.votes + 1 : comment.votes - 1 }
-          : comment
-      )
-    );
+    setReload(!reload);
   };
 
   const handleEditorChange = ({ text }) => {
@@ -70,7 +72,8 @@ const ForumPostDetail = () => {
     }
 
     const newComment = await addComment(slugCourse, postId, { content : content });
-    console.log(newComment);
+    newComment.voteCount = 0
+    newComment.voted = false
 
     setComments([...comments, newComment]);
     setContent("");
@@ -96,7 +99,6 @@ const ForumPostDetail = () => {
         <Divider />
         <CommentList
           comments={comments}
-          votedComments={votedComments}
           handleCommentVote={handleCommentVote}
         />
         <CommentEditor

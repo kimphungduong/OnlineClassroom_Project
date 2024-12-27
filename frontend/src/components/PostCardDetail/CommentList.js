@@ -12,7 +12,8 @@ import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 
-const CommentList = ({ comments, votedComments, handleCommentVote }) => (
+const CommentList = ({ comments, handleCommentVote }) => (
+    
     <List>
       {comments.map((comment) => (
         <ListItem
@@ -38,8 +39,7 @@ const CommentList = ({ comments, votedComments, handleCommentVote }) => (
             }}
           >
             <IconButton
-              color={votedComments[comment.id] === "upvote" ? "primary" : "default"}
-              onClick={() => handleCommentVote(comment.id, "upvote")}
+              onClick={() => handleCommentVote(comment._id, "upvote")}
               size="small"
               sx={{
                 width: "36px",
@@ -49,7 +49,7 @@ const CommentList = ({ comments, votedComments, handleCommentVote }) => (
                 transition: "all 0.2s ease",
                 "&:hover": { backgroundColor: "#e6f7ff" },
               }}
-              disabled={!!votedComments[comment.id]}
+              disabled={comment.voted}
             >
               <ArrowUpwardIcon fontSize="small" />
             </IconButton>
@@ -62,12 +62,11 @@ const CommentList = ({ comments, votedComments, handleCommentVote }) => (
                 color: "#333",
               }}
             >
-              {comment.votes}
+              {comment.voteCount}
             </Typography>
   
             <IconButton
-              color={votedComments[comment.id] === "downvote" ? "secondary" : "default"}
-              onClick={() => handleCommentVote(comment.id, "downvote")}
+              onClick={() => handleCommentVote(comment._id, "downvote")}
               size="small"
               sx={{
                 width: "36px",
@@ -77,7 +76,7 @@ const CommentList = ({ comments, votedComments, handleCommentVote }) => (
                 transition: "all 0.2s ease",
                 "&:hover": { backgroundColor: "#fff1f0" },
               }}
-              disabled={!!votedComments[comment.id]}
+              disabled={comment.voted}
             >
               <ArrowDownwardIcon fontSize="small" />
             </IconButton>
@@ -105,7 +104,7 @@ const CommentList = ({ comments, votedComments, handleCommentVote }) => (
                   {comment.name}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {comment.date}
+                  {comment.createdAt}
                 </Typography>
               </div>
             </div>

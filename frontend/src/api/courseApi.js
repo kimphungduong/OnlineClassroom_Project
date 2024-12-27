@@ -38,6 +38,10 @@ const courseApi = {
     return axiosInstance.post(`/course/${courseSlug}/forum/${postId}/add-comment`, data);
   },
 
+  voteComment: (courseSlug, postId, commentId, value) => {
+    return axiosInstance.post(`/course/${courseSlug}/forum/${postId}/vote-comment`, { commentId, value });
+  }
+
 };
 
 export default courseApi;

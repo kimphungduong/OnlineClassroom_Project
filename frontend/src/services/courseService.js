@@ -93,3 +93,17 @@ export async function addComment(courseSlug, postId, data) {
         throw error;
     }
 }
+
+export async function voteComment(courseSlug, postId, commentId, value) {
+    try {
+        const response = await courseApi.voteComment(courseSlug, postId, commentId, value);
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi vote comment");
+    } catch (error) {
+        console.error('Error voting comment:', error);
+        throw error;
+    }
+}
