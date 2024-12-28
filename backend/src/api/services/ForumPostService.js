@@ -32,8 +32,7 @@ module.exports.getAllPosts = async (slug) => {
         }
         const posts = await ForumPost.find({course: course._id});
 
-
-        return posts
+        return posts.reverse();
     } catch (error) {
         console.error("Lỗi lấy bài viết: " + error.message);
         throw error;

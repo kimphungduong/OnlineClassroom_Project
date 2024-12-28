@@ -14,8 +14,7 @@ const ForumPostDetail = () => {
 
   const {slugCourse, postId} = useParams();
 
-  const [postVotes, setPostVotes] = useState(0);
-  const [votedPost, setVotedPost] = useState(false);
+  const [post, setPost] = useState();
   const [content, setContent] = useState("");
 
   const [postContent, setPostContent] = useState({})
@@ -28,8 +27,16 @@ const ForumPostDetail = () => {
       setPostContent(data);
       console.log("=====================================")
       console.log(data)
+      setPost({
+        avatar: data.avatar,
+        name: data.name,
+        date: data.createdAt,
+        title: data.title,
+        markdownContent: data.content,
+        postVotes: data.voteCount,
+        votedPost: data.voted
+      });
 
-      setVotedPost(data.votes)
       setComments(data.comments)
     }
 
@@ -39,6 +46,13 @@ const ForumPostDetail = () => {
 
 
   const handlePostVote = async (type) => {
+    //handle before call API
+    setPost({
+      ...post,
+      postVotes: post.voteCount + (type === "upvote" ? 1 : -1),
+      votedPost: true
+    });
+
     const result = await votePost(slugCourse, postId, type === "upvote" ? 1 : -1);
 
     postContent.voted = result
@@ -46,14 +60,14 @@ const ForumPostDetail = () => {
   };
 
   const handleCommentVote = async (id, type) => {
-    const newComment = await voteComment(slugCourse, postId, id, type === "upvote" ? 1 : -1);
-    
-    const index = comments.findIndex(item => item._id === newComment._id);
+    const index = comments.findIndex(item => item._id === id);
     if (index !== -1) {
-      comments[index].votes = newComment.votes;
+      comments[index].votes = comments[index].votes + (type === "upvote" ? 1 : -1);
       comments[index].voted = true
     }
 
+    const newComment = await voteComment(slugCourse, postId, id, type === "upvote" ? 1 : -1);
+    
     setReload(!reload);
   };
 
@@ -78,13 +92,13 @@ const ForumPostDetail = () => {
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
       <PostCard
-        avatar={postContent?.avatar || "https://via.placeholder.com/50"}
-        name={postContent?.name || "Người dùng"}
-        date={postContent?.createdAt || ""} 
-        title={postContent?.title || ""}
-        markdownContent={postContent?.content || ""}
-        postVotes={postContent?.voteCount || 0}
-        votedPost={postContent?.voted ?? true}
+        avatar={post?.avatar || "https://via.placeholder.com/50"}
+        name={post?.name || "Người dùng"}
+        date={post?.date || ""} 
+        title={post?.title || ""}
+        markdownContent={post?.markdownContent || ""}
+        postVotes={post?.postVotes || 0}
+        votedPost={post?.votedPost ?? true}
         handlePostVote={handlePostVote}
       />
 
