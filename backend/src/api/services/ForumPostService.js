@@ -32,7 +32,21 @@ module.exports.getAllPosts = async (slug) => {
         }
         const posts = await ForumPost.find({course: course._id});
 
-        return posts.reverse();
+        const postsFull = posts.map(async post => {
+            const {name, avatar} = await Student.findOne({
+                _id :post.createdBy
+            })
+
+            return {
+                ...post.toObject(),
+                name,
+                avatar : "https://via.placeholder.com/50",
+                voteCount: post.votes.reduce((acc, curr) => acc + curr.voteValue, 0),
+                commentCount : post.comments.length
+            }
+        })
+
+        return await Promise.all(postsFull)
     } catch (error) {
         console.error("Lỗi lấy bài viết: " + error.message);
         throw error;
@@ -78,7 +92,7 @@ module.exports.getPost = async (slug, postId, userId) =>{
             avatar: "https://via.placeholder.com/50",
             name,
             ...post.toObject(),
-            voteCount : post.votes.length,
+            voteCount : post.votes.reduce((acc, curr) => acc + curr.voteValue, 0),
             voted : post.votes.some(vote => vote.voteBy.toString() === userId),
             comments : commentF.map(e=> {
                 return {

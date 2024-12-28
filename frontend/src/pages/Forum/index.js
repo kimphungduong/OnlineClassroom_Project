@@ -1,75 +1,80 @@
-import React from 'react';
-import { List, Card, Button, Pagination } from 'antd';
-import { LikeOutlined, CommentOutlined } from '@ant-design/icons';
+import React, { useState, useEffect } from 'react';
+import { List, Button, Pagination } from 'antd';
+import { CommentItem } from '../../components/PostCardDetail';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getForumPosts } from '../../services/courseService';
 import './DiscussionForum.css';
 
 
-const CommentItem = ({ author, title, description, likes, replies, onClick }) => {
-  return (
-    <Card 
-      className="comment-item" 
-      bordered={false} 
-      hoverable 
-      onClick={onClick} // Xử lý khi click
-    >
-      <h3 className="comment-title">{title}</h3>
-      <p className="comment-description">{description}</p>
-      <div className="comment-meta">
-        <span className="comment-like"><LikeOutlined /> {likes}</span>
-        <span className="comment-reply"><CommentOutlined /> {replies}</span>
-      </div>
-    </Card>
-  );
-};
 
 const DiscussionForum = () => {
   const { slugCourse } = useParams();
   const navigate = useNavigate();
 
-  const [forumPosts, setForumPosts] = React.useState([]);
+  const [forumPosts, setForumPosts] = useState([]); // Toàn bộ bài viết
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5 // Số bài viết trên mỗi trang
 
-  // Fetch comments from API
-  React.useEffect(() => {
-    async function fetchPost(slugCourse){
-      console.log(slugCourse)
-      const post = await getForumPosts(slugCourse);
-      
-      setForumPosts(post);
+  // Fetch toàn bộ bài viết từ API
+  useEffect(() => {
+    async function fetchPosts() {
+      try {
+        const posts = await getForumPosts(slugCourse); // Lấy toàn bộ bài viết
+        setForumPosts(posts); 
+      } catch (error) {
+        console.error('Lỗi khi lấy bài viết:', error);
+      }
     }
-    
-    fetchPost(slugCourse)
-    
+    fetchPosts();
   }, [slugCourse]);
 
+  // Xác định dữ liệu bài viết trên trang hiện tại
+  const paginatedPosts = forumPosts.slice(
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
+  );
+
+  console.log(paginatedPosts);
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page); // Cập nhật trang hiện tại
+  };
 
   return (
     <div className="discussion-forum">
       <h1 className="forum-title">Diễn đàn thảo luận</h1>
       <h2 className="forum-subtitle">Bổ trợ kiến thức toán 12 - Ôn thi THPT Quốc Gia</h2>
       <div className="create-post-wrapper">
-        <Button type="primary" 
-        className="create-post-button"
-        onClick={() => navigate(`/course/${slugCourse}/forum/add-post`)}
-        >Thêm bài đăng</Button>
+        <Button 
+          type="primary" 
+          className="create-post-button"
+          onClick={() => navigate(`/course/${slugCourse}/forum/add-post`)}
+        >
+          Thêm bài đăng
+        </Button>
       </div>
       <List
         itemLayout="vertical"
-        dataSource={forumPosts}
+        dataSource={paginatedPosts} 
         renderItem={(forumPost) => (
           <CommentItem
             key={forumPost._id}
-            author="quang cao"
             title={forumPost.title}
-            description={forumPost.content}
-            likes={forumPost.likes || "0"}
-            replies={forumPost.replies || "0"}
-            onClick={() => navigate(`/course/${slugCourse}/forum/${forumPost._id}`)} // Điều hướng khi click
+            authorName={forumPost.name}
+            authorAvatar={forumPost.avatar}
+            votes={forumPost.voteCount || "0"}
+            replies={forumPost.commentCount || "0"}
+            onClick={() => navigate(`/course/${slugCourse}/forum/${forumPost._id}`)} 
           />
         )}
       />
-      <Pagination defaultCurrent={1} total={50} className="pagination" />
+      <Pagination
+        current={currentPage}
+        total={forumPosts.length}
+        pageSize={pageSize}
+        onChange={handlePageChange}
+        className="pagination"
+      />
     </div>
   );
 };
