@@ -1,6 +1,7 @@
 const Course = require("../models/Course");
 const ForumPost = require("../models/ForumPost");
 const Student = require("../models/Student");
+const Teacher = require("../models/Teacher");
 const Comment = require("../models/Comment");
 
 module.exports.addPost = async(title, content, userId, slug) => {
@@ -33,9 +34,9 @@ module.exports.getAllPosts = async (slug) => {
         const posts = await ForumPost.find({course: course._id});
 
         const postsFull = posts.map(async post => {
-            const {name, avatar} = await Student.findOne({
-                _id :post.createdBy
-            })
+            const result = await Student.findOne({ _id: post.createdBy })
+                ?? await Teacher.findOne({ _id: post.createdBy });
+            const { name, avatar } = result || {};
 
             return {
                 ...post.toObject(),
@@ -66,9 +67,9 @@ module.exports.getPost = async (slug, postId, userId) =>{
             _id: postId
         })
 
-        const {name} = await Student.findOne({
-            _id :userId
-        })
+        const result = await Student.findOne({ _id: userId  })
+            ?? await Teacher.findOne({ _id: userId });
+        const { name, avatar } = result || {};
 
         const commentsPromises = post.comments.map(async commentId => {
             const comment = await Comment.findOne({ _id: commentId });
@@ -78,9 +79,12 @@ module.exports.getPost = async (slug, postId, userId) =>{
         const commentRaw = await Promise.all(commentsPromises);
 
         const comments = commentRaw.map(async comment =>{
-            const user = await Student.findOne({_id : comment.user})
+            const result = await Student.findOne({ _id: comment.user  })
+                ?? await Teacher.findOne({ _id: comment.user });
+            const { name, avatar } = result || {};
+
             return {
-                name : user.name,
+                name : name,
                 avatar : "https://via.placeholder.com/50",
                 ...comment
             }
@@ -125,11 +129,13 @@ module.exports.addComment = async(slug, postId, userId, content) =>{
         post.comments.push(comment._id)
         await post.save();
 
-        const user = await Student.findOne({_id : userId})
+        const result = await Student.findOne({ _id: userId  })
+            ?? await Teacher.findOne({ _id: userId });
+        const { name, avatar } = result || {};
 
         return {
             ...comment.toObject(),
-            name : user.name,
+            name : name,
             avatar : "https://via.placeholder.com/50",
         }
     }
