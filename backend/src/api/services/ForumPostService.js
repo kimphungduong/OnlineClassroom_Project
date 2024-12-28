@@ -76,12 +76,12 @@ module.exports.getPost = async (slug, postId, userId) =>{
         const commentF = await Promise.all(comments)
 
         return {
-            voted : true,
             avatar: "https://via.placeholder.com/50",
             name,
             ...post.toObject(),
+            voteCount : post.votes.length,
+            voted : post.votes.some(vote => vote.voteBy.toString() === userId),
             comments : commentF.map(e=> {
-                console.log(e)
                 return {
                     ...e,
                     voteCount : e.votes.reduce((acc, curr) => acc + curr.voteValue, 0),
@@ -139,9 +139,6 @@ module.exports.addVote = async (slug, postId, userId, commentId, value) => {
             _id : commentId
         })
 
-        console.log("check")
-        console.log(commentId)
-
         comment.votes.push({
             voteBy : userId,
             voteValue : value
@@ -157,3 +154,32 @@ module.exports.addVote = async (slug, postId, userId, commentId, value) => {
     }
 }
 
+module.exports.addVotePost = async (slug, postId, userId, value) => {
+    try
+    {
+        const courseId = await Course.findOne({ slug }).select('_id');
+
+        if (!courseId) {
+            throw new Error('Course không tồn tại.');
+        }
+
+        const post = await ForumPost.findOne({
+            course: courseId,
+            _id: postId
+        })
+
+
+        post.votes.push({
+            voteBy : userId,
+            voteValue : value
+        })
+
+        await post.save();
+
+        return true
+    }
+    catch (error) {
+        console.log(error)
+        throw error;
+    }
+}

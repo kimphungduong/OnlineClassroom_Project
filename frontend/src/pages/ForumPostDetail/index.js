@@ -5,7 +5,7 @@ import {
 } from "@mui/material";
 
 import { PostCard, CommentList, CommentEditor } from "../../components/PostCardDetail";
-import {getForumPostDetail, addComment, voteComment} from "../../services/courseService";
+import {getForumPostDetail, addComment, voteComment, votePost} from "../../services/courseService";
 import { useParams, useNavigate } from "react-router-dom";
 
 
@@ -21,7 +21,6 @@ const ForumPostDetail = () => {
   const [postContent, setPostContent] = useState({})
 
   const [comments, setComments] = useState([]);
-  const [votedComments, setVotedComments] = useState({});
 
   React.useEffect(() => {
     const fetchData = async () => {
@@ -39,17 +38,14 @@ const ForumPostDetail = () => {
 
 
 
-  const handlePostVote = (type) => {
-    if (votedPost) {
-      alert("Bạn đã vote cho bài viết này!");
-      return;
-    }
-    setPostVotes((prev) => (type === "upvote" ? prev + 1 : prev - 1));
-    setVotedPost(true);
+  const handlePostVote = async (type) => {
+    const result = await votePost(slugCourse, postId, type === "upvote" ? 1 : -1);
+
+    postContent.voted = result
+    setReload(!reload);
   };
 
   const handleCommentVote = async (id, type) => {
-    console.log(id)
     const newComment = await voteComment(slugCourse, postId, id, type === "upvote" ? 1 : -1);
     
     const index = comments.findIndex(item => item._id === newComment._id);
@@ -87,8 +83,8 @@ const ForumPostDetail = () => {
         date={postContent?.createdAt || ""} 
         title={postContent?.title || ""}
         markdownContent={postContent?.content || ""}
-        postVotes={postContent?.votes?.reduce((acc, vote) => acc + vote.voteValue, 0) || 0}
-        votedPost={votedPost}
+        postVotes={postContent?.voteCount || 0}
+        votedPost={postContent?.voted ?? true}
         handlePostVote={handlePostVote}
       />
 

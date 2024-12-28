@@ -107,3 +107,17 @@ export async function voteComment(courseSlug, postId, commentId, value) {
         throw error;
     }
 }
+
+export async function votePost(courseSlug, postId, value) {
+    try {
+        const response = await courseApi.votePost(courseSlug, postId, value);
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi vote post");
+    } catch (error) {
+        console.error('Error voting post:', error);
+        throw error;
+    }
+}
