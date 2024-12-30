@@ -59,7 +59,10 @@ const TestNew = () => {
     }
   };
   
-
+  const deleteQuestion = (index) => {
+    setQuestions((prevQuestions) => prevQuestions.filter((_, i) => i !== index));
+  };
+  
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
@@ -86,10 +89,11 @@ const TestNew = () => {
       </Box>
       {questions.map((question, index) => (
         <QuestionComponent
-          key={index}
+          key={question._id || index}
           question={question}
           index={index}
           onUpdate={(updatedQuestion) => updateQuestion(index, updatedQuestion)}
+          onDelete={deleteQuestion} // Truyền hàm xóa
         />
       ))}
       <Box mt={3} display="flex" justifyContent="flex-end">

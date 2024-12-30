@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, TextField, Typography, Grid, RadioGroup, FormControlLabel, Radio } from '@mui/material';
+import { Box, TextField, Typography, Grid, RadioGroup, FormControlLabel, Radio, Button } from '@mui/material';
 
-const QuestionComponent = ({ question, index, onUpdate }) => {
+const QuestionComponent = ({ question, index, onUpdate, onDelete }) => {
   const handleContentChange = (e) => {
     onUpdate({ ...question, content: e.target.value });
   };
@@ -65,6 +65,15 @@ const QuestionComponent = ({ question, index, onUpdate }) => {
         placeholder="Enter explanation for the question"
         sx={{ mt: 3 }}
       />
+      <Box mt={2} display="flex" justifyContent="flex-end">
+        <Button
+          variant="outlined"
+          color="error"
+          onClick={() => onDelete(index)} // Gọi callback để xóa câu hỏi
+        >
+          Delete Question
+        </Button>
+      </Box>
     </Box>
   );
 };
