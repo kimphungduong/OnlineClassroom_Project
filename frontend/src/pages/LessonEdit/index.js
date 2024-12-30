@@ -18,10 +18,10 @@ const LessonEdit = () => {
   useEffect(() => {
     const fetchLessonData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/course/${courseSlug}/${lessonId}`);
+        const response = await fetch(`http://localhost:5000/api/course/${courseSlug}/lesson/${lessonId}`);
         if (!response.ok) throw new Error('Failed to fetch lesson');
         const data = await response.json();
-
+        
         // Điền dữ liệu vào state
         setLessonData({ name: data.name, description: data.description });
         setVideoFile(data.videoUrl ? { name: data.videoUrl} : null);

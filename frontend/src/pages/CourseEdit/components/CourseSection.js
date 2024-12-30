@@ -73,6 +73,16 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
     });
   };
 
+  const handleEditTestClick = (testId) => {
+    navigate(`/test-edit/${slug}/sections/${section._id}/test/${testId}`, {
+      state: {
+        testId,
+        sectionId: section._id,
+        courseSlug: slug,
+      },
+    });
+    
+  };
   const handleDeleteLesson = async (lessonId) => {
     if (!window.confirm('Are you sure you want to delete this lesson? This will also delete all associated documents.')) {
       return;
@@ -81,7 +91,7 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
     try {
       // Gửi yêu cầu xóa bài học đến backend
       const response = await fetch(
-        `http://localhost:5000/api/course/${slug}/${section._id}/${lessonId}`,
+        `http://localhost:5000/api/course/${slug}/${section._id}/lesson/${lessonId}`,
         {
           method: 'DELETE',
         }
@@ -104,7 +114,36 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
       alert('Error deleting lesson');
     }
   };
-
+  const handleDeleteTest = async (testId) => {
+    if (!window.confirm('Are you sure you want to delete this test?')) {
+      return;
+    }
+  
+    try {
+      const response = await fetch(
+        `http://localhost:5000/api/course/${slug}/${section._id}/test/${testId}`,
+        {
+          method: 'DELETE',
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error('Failed to delete test');
+      }
+  
+      // Cập nhật danh sách bài học
+      const updatedLessons = section.lessons.filter((lesson) => lesson._id !== testId);
+      const updatedSection = { ...section, lessons: updatedLessons };
+      setSections((prevSections) =>
+        prevSections.map((s) => (s._id === section._id ? updatedSection : s))
+      );
+  
+      alert('Test deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting test:', error);
+      alert('Error deleting test');
+    }
+  };
   return (
     <Box
       sx={{
@@ -147,27 +186,48 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
         </Box>
       </Box>
       <Collapse in={expandedSection} timeout="auto" unmountOnExit>
-        <List sx={{ mt: 2 }}>
-          {section.lessons.map((lesson) => (
-            <ListItem
-              key={lesson._id}
-              sx={{ borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between' }}
-            >
-              <ListItemText primary={lesson.name} secondary={lesson.description} />
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                <IconButton
-                  color="secondary"
-                  onClick={() => handleEditLessonClick(lesson._id)}
-                >
-                  <EditIcon />
-                </IconButton>
-                <IconButton color="error" onClick={() => handleDeleteLesson(lesson._id)}>
-                  <DeleteIcon />
-                </IconButton>
-              </Box>
-            </ListItem>
-          ))}
-        </List>
+      <List sx={{ mt: 2 }}>
+        {section.lessons.map((lesson) => (
+          <ListItem
+            key={lesson._id}
+            sx={{ borderBottom: '1px solid #e0e0e0', display: 'flex', justifyContent: 'space-between' }}
+          >
+            <ListItemText
+              primary={lesson.name}
+              secondary={lesson.lessonType === 'Lesson' ? lesson.description : 'Bài kiểm tra'}
+            />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              {/* Kiểm tra loại bài giảng */}
+              {lesson.lessonType === 'Lesson' && (
+                <>
+                  <IconButton
+                    color="primary"
+                    onClick={() => handleEditLessonClick(lesson._id)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => handleDeleteLesson(lesson._id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+              )}
+              {lesson.lessonType === 'Test' && (
+                <>
+                  <IconButton
+                    color="secondary"
+                    onClick={() => handleEditTestClick(lesson._id)}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={() => handleDeleteTest(lesson._id)}>
+                    <DeleteIcon />
+                  </IconButton>
+                </>
+              )}
+            </Box>
+          </ListItem>
+        ))}
+      </List>
       </Collapse>
     </Box>
   );

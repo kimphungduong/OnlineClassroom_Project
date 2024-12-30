@@ -4,6 +4,7 @@ const courseRouter=require('./course');
 const reviewRouter=require('./review');
 const uploadRouter=require('./upload');
 const lessonRouter=require('./lesson');
+const questionRouter=require('./question');
 
 function requireLogin(req, res, next) {
     if (!req.session.userId) {
@@ -21,6 +22,7 @@ function router(app)
     app.use('/api/course', courseRouter);
     app.use('/api/review', reviewRouter);
     app.use('/api/upload', uploadRouter);
+    app.use('/api/question', questionRouter);
 }
 
 module.exports = router

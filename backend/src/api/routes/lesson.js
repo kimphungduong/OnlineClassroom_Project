@@ -4,8 +4,8 @@ const LessonController = require('../controllers/LessonController');
 
 // Tạo bài giảng mới
 router.post('/:sectionId/lesson', LessonController.createLesson);
-router.delete('/:sectionId/:lessonId', LessonController.deleteLesson);
+router.delete('/:sectionId/lesson/:lessonId', LessonController.deleteLesson);
 
-router.get('/:lessonId', LessonController.getLesson); // Lấy chi tiết bài học
+router.get('/lesson/:lessonId', LessonController.getLesson); // Lấy chi tiết bài học
 router.put('/:lessonId', LessonController.updateLesson); // Cập nhật bài học
 module.exports = router;

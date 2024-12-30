@@ -21,6 +21,8 @@ import LessonEdit from '~/pages/LessonEdit';
 import LessonNew from '~/pages/LessonNew';
 import CourseStat from '~/pages/CourseStat';
 import MembersStat from '~/pages/MembersStat';
+import TestNew from '~/pages/TestNew';
+import TestEdit from '~/pages/TestEdit';
 
 
 // Public routes
@@ -38,6 +40,8 @@ const publicRoutes = [
     { path: config.routes.lessonNew, component: LessonNew, layout: HeaderOnly },
     { path: config.routes.courseStat, component: CourseStat, layout: HeaderOnly },
     { path: config.routes.membersStat, component: MembersStat, layout: HeaderOnly },
+    { path: config.routes.testNew, component: TestNew, layout: HeaderOnly },
+    { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

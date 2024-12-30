@@ -31,7 +31,7 @@ const CourseEdit = () => {
 
         const data = await response.json();
         setSections(data || []);
-        setCourseName(data[0]?.lessons[0]?.course.name || '');
+        setCourseName(data[0]?.lessons[0]?.name || '');
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching course lessons:', error);
