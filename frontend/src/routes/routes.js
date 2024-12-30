@@ -6,6 +6,9 @@ import { TeacherRoute } from '~/auth';
 
 // Layouts
 import { HeaderOnly } from '~/layouts';
+//import { FooterOnly } from '~/layouts';
+import FooterOnly from '../layouts/FooterOnly';
+
 
 // Pages
 import Home from '~/pages/Home';
@@ -22,6 +25,8 @@ import LoginPage from '~/pages/LoginPage';
 import RegisterPage from '~/pages/RegisterPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
 
+//import Footer from '~/layouts/components/Footer';
+
 // Public routes
 const publicRoutes = [
     { path: config.routes.home, component: Home, layout: HeaderOnly },
@@ -32,7 +37,7 @@ const publicRoutes = [
     { path: config.routes.search, component: Search, layout: null },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
-    { path: config.routes.cart, component: CartPage, layout: HeaderOnly },
+    { path: config.routes.cart, component: CartPage, layout: HeaderOnly, layout: FooterOnly },
     { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
