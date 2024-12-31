@@ -8,6 +8,7 @@ router.get('/my-courses',courseController.getMyCourse);
 router.get('/:slug',courseController.getCourseWithLessons);
 router.get('/:slug/:lessonId/notes',courseController.getNotes);
 router.get('/:slug/:slugLesson',courseController.getLession);
+router.get('/:slug/:id/learn',courseController.getLessionById);
 router.post('/:lessonId/notes',courseController.addNote);
 // route là đường dẫn. có 4 loại gọi api cơ bản là 
 // POST nạp dataset mới (json)

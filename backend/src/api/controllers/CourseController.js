@@ -34,6 +34,14 @@ class CourseController{
             res.status(500).json({ message: 'Lỗi máy chủ' });
         }
     }
+    async getLessionById(req, res, next) {
+        try {
+            const lession = await CourseService.getLessionById(req.params.slug, req.params.id);
+        res.json(lession);
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi máy chủ' });
+        }
+    }
     async getCourseWithLessons(req, res) {
         try {
             const { slug } = req.params;
