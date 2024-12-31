@@ -1,63 +1,51 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import CartItem from "../../components/CartItem";
 import SummarySection from "../../components/SummarySection";
+import cartApi from "../../api/cartApi";
 
 const CartPage = () => {
-  const [courses, setCourses] = useState([
-    {
-      id: 1,
-      image: "https://via.placeholder.com/100", // URL ảnh placeholder
-      title: "Bổ trợ kiến thức toán 12 - Thi THPT Quốc gia",
-      author: "Đặng Thành Nam",
-      duration: 12,
-      lectures: 100,
-      rating: 2,
-      reviews: 50,
-      price: 1000000,
-      checked: true,
-    },
-    {
-      id: 2,
-      image: "https://via.placeholder.com/100", // URL ảnh placeholder
-      title: "Bổ trợ kiến thức toán 12 - Thi THPT Quốc gia",
-      author: "Đặng Thành Nam",
-      duration: 12,
-      lectures: 100,
-      rating: 2,
-      reviews: 50,
-      price: 1000000,
-      checked: false,
-    },
-  ]);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Xử lý khi checkbox được chọn
+  useEffect(() => {
+    const fetchCart = async () => {
+      try {
+        const response = await cartApi.getCart();
+        console.log("API response:", response.data);
+        setCourses(response.data.courseIds || []);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching cart data:", error.response?.data || error.message);
+        setLoading(false);
+      }
+    };
+
+    fetchCart();
+  }, []);
+
   const handleCheck = (id) => {
     setCourses((prevCourses) =>
       prevCourses.map((course) =>
-        course.id === id ? { ...course, checked: !course.checked } : course
+        course._id === id ? { ...course, checked: !course.checked } : course
       )
     );
   };
 
-  // Xử lý khi xóa khóa học
   const handleRemove = (id) => {
-    setCourses((prevCourses) => prevCourses.filter((course) => course.id !== id));
+    setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
   };
 
-  // Xử lý khi áp dụng mã giảm giá
-  const handleApplyDiscount = (code) => {
-    console.log("Applied discount code:", code);
-  };
-
-  // Tính tổng tiền
   const total = courses
     .filter((course) => course.checked)
     .reduce((sum, course) => sum + course.price, 0);
 
+  if (loading) {
+    return <Typography>Đang tải dữ liệu...</Typography>;
+  }
+
   return (
     <Box sx={{ display: "flex", justifyContent: "space-between", padding: 2 }}>
-      {/* Danh sách khóa học */}
       <Box sx={{ flex: 2, marginRight: 2 }}>
         <Typography variant="h4" gutterBottom>
           Giỏ hàng
@@ -66,18 +54,20 @@ const CartPage = () => {
           {courses.length} khóa học trong giỏ hàng
         </Typography>
         <Divider sx={{ marginBottom: 2 }} />
-        {courses.map((course) => (
-          <CartItem
-            key={course.id}
-            course={course}
-            onCheck={handleCheck}
-            onRemove={handleRemove} // Truyền hàm xóa vào đây
-          />
-        ))}
+        {courses.length === 0 ? (
+          <Typography>Giỏ hàng của bạn trống</Typography>
+        ) : (
+          courses.map((course) => (
+            <CartItem
+              key={course._id}
+              course={course}
+              onCheck={handleCheck}
+              onRemove={handleRemove}
+            />
+          ))
+        )}
       </Box>
-
-      {/* Tổng tiền và mã giảm giá */}
-      <SummarySection total={total} onApplyDiscount={handleApplyDiscount} />
+      <SummarySection total={total} />
     </Box>
   );
 };

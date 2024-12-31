@@ -6,7 +6,7 @@ class CartService {
         return await Cart.findOne({ userId }).populate({
         path: 'courseIds',
         model: 'Course', // Liên kết với bảng Course
-        select: 'name price description image rating' // Chỉ lấy các trường cần thiết
+        select: 'name price description image rating', // Chỉ lấy các trường cần thiết
       })
       .lean();
     }

@@ -22,13 +22,14 @@
   }
   
   .link {
-    color: white;
+    color: #ffffff;
     text-decoration: none;
     display: block;
     margin-bottom: 5px;
   
     &:hover {
       text-decoration: underline;
+      color: #4222e6; /* Màu trắng khi hover */
     }
   }
   
@@ -39,7 +40,7 @@
       margin-right: 10px;
   
       &:hover {
-        color: #1976d2; /* Đổi màu khi hover */
+        color: white; /* Đổi màu khi hover */
       }
     }
   }
@@ -67,5 +68,10 @@
     font-weight: bold; 
     color: #4b70d6;    
     margin-bottom: 1rem;
+  }
+
+  .footer a {
+    color: #ffffff !important; /* Màu trắng cho link */
+    text-decoration: none;
   }
   
