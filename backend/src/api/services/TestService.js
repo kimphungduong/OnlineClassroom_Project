@@ -72,6 +72,21 @@ class TestService {
   async updateTest(testId, updatedData) {
     return await Test.findByIdAndUpdate(testId, updatedData, { new: true });
   }
+
+  async addSubmissionToTest (submissionData) {
+    try {
+      const test = await Test.findById(submissionData.test);
+
+      if (!test) {
+        throw new Error('Test not found');
+      }
+  
+      test.submission.push(submissionData); // Thêm submission vào array
+      return await test.save() ;
+    } catch (error) {
+      console.error('Error adding submission to test:', error);
+    }
+  };
 }
 
 module.exports = new TestService();

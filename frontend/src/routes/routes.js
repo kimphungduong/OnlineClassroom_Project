@@ -23,6 +23,7 @@ import CourseStat from '~/pages/CourseStat';
 import MembersStat from '~/pages/MembersStat';
 import TestNew from '~/pages/TestNew';
 import TestEdit from '~/pages/TestEdit';
+import TestPage from '~/pages/TestPage';
 
 
 // Public routes
@@ -42,6 +43,7 @@ const publicRoutes = [
     { path: config.routes.membersStat, component: MembersStat, layout: HeaderOnly },
     { path: config.routes.testNew, component: TestNew, layout: HeaderOnly },
     { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly },
+    { path: config.routes.testPage, component: TestPage, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

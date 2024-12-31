@@ -53,6 +53,21 @@ class TestController {
       res.status(500).json({ message: 'Failed to update test', error: error.message });
     }
   }
+
+  async addSubmission(req, res) {
+    try {
+      const submissionData = req.body; // Lấy dữ liệu submission từ request body
+
+      const test = await TestService.addSubmissionToTest(submissionData);
+      if (!test) {
+        return res.status(404).json({ success: false, message: 'Test not found' });
+      }
+
+      res.status(201).json({ success: true, data: test });
+    } catch (error) {
+      res.status(500).json({ success: false, message: error.message });
+    }
+  }
 }
 
 module.exports = new TestController();

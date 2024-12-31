@@ -15,6 +15,7 @@ const routes = {
     membersStat: '/members-stat',
     testNew: '/test-edit/:slug/sections/:sectionId/test/new',
     testEdit: '/test-edit/:slug/sections/:sectionId/test/:testId',
+    testPage: '/test-take',
 
 };
 

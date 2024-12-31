@@ -14,4 +14,6 @@ router.get('/test/:testId', TestController.getTest);
 // Cập nhật bài kiểm tra
 router.put('/test/:testId', TestController.updateTest);
 
+router.put('/test/:testId/submission', TestController.addSubmission);
+
 module.exports = router;
