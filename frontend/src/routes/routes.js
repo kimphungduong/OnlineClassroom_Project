@@ -24,6 +24,8 @@ import CartPage from '~/pages/CartPage';
 import LoginPage from '~/pages/LoginPage';
 import RegisterPage from '~/pages/RegisterPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
+import PaymentPage from '~/pages/PaymentPage';
+
 
 //import Footer from '~/layouts/components/Footer';
 
@@ -41,6 +43,7 @@ const publicRoutes = [
     { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
+    { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

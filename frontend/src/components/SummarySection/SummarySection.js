@@ -37,7 +37,7 @@ const SummarySection = ({ total, onApplyDiscount }) => {
       </Button>
       <Divider sx={{ marginBottom: 2 }} />
       <Typography variant="body1" gutterBottom>
-        Khuyến mại
+        Khuyến mãi
       </Typography>
       <TextField
         placeholder="Nhập code"

@@ -13,6 +13,7 @@ const routes = {
     login: '/login',
     register: '/register',
     forgotPassword: '/forgotPassword',
+    payment: '/payment'
 };
 
 export default routes;
