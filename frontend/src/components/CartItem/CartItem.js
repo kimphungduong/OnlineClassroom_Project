@@ -12,7 +12,8 @@ const CartItem = ({ course, onCheck, onRemove }) => {
         <Typography variant="h6">{course.name}</Typography> 
         <Typography variant="body2" color="textSecondary">{course.description}</Typography>
         <Typography variant="body2" color="warning.main">{course.rating} ★</Typography>
-        
+        {/* Lấy tên giáo viên */}
+        <Typography variant="body2" color="textSecondary">{course.teacher?.name || "Không rõ"}</Typography>
       </Box>
       {/* Giá và checkbox */}
       <Box sx={{ textAlign: "center", marginRight: 2 }}>
