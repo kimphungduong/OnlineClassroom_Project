@@ -17,6 +17,8 @@ const courseApi = {
   getLesson: (courseSlug,lessonSlug) => {
     return axiosInstance.get(`/course/${courseSlug}/${lessonSlug}`);
   },
+
+  
 };
 
 export default courseApi;

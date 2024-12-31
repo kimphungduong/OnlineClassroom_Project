@@ -7,7 +7,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');  
 const cookieParser = require('cookie-parser'); // Thêm cookie-parser để xử lý cookie
-const socketHandler = require('../src/api/socket');
+const socketHandler = require('./socket');
 
 const db = require('./configs/db');
 db.connect();
