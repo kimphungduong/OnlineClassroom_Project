@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Typography, Checkbox } from "@mui/material";
+import { Box, Typography, Checkbox, IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const CartItem = ({ course, onCheck }) => {
+const CartItem = ({ course, onCheck, onRemove }) => {
   return (
     <Box
       sx={{
@@ -37,12 +38,22 @@ const CartItem = ({ course, onCheck }) => {
         </Typography>
       </Box>
       {/* Giá và checkbox */}
-      <Box sx={{ textAlign: "center" }}>
+      <Box sx={{ textAlign: "center", marginRight: 2 }}>
         <Typography variant="h6">₫ {course.price.toLocaleString()}</Typography>
         <Checkbox
           checked={course.checked}
           onChange={() => onCheck(course.id)}
         />
+      </Box>
+      {/* Icon thùng rác */}
+      <Box>
+        <IconButton
+          color="error"
+          onClick={() => onRemove(course.id)}
+          aria-label="Xóa khóa học"
+        >
+          <DeleteIcon />
+        </IconButton>
       </Box>
     </Box>
   );

@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import CartItem from "../../components/CartItem";
 import SummarySection from "../../components/SummarySection";
-// console.log("CartItem:", CartItem);
-// console.log("SummarySection:", SummarySection);
 
 const CartPage = () => {
   const [courses, setCourses] = useState([
@@ -33,6 +31,7 @@ const CartPage = () => {
     },
   ]);
 
+  // Xử lý khi checkbox được chọn
   const handleCheck = (id) => {
     setCourses((prevCourses) =>
       prevCourses.map((course) =>
@@ -41,10 +40,17 @@ const CartPage = () => {
     );
   };
 
+  // Xử lý khi xóa khóa học
+  const handleRemove = (id) => {
+    setCourses((prevCourses) => prevCourses.filter((course) => course.id !== id));
+  };
+
+  // Xử lý khi áp dụng mã giảm giá
   const handleApplyDiscount = (code) => {
     console.log("Applied discount code:", code);
   };
 
+  // Tính tổng tiền
   const total = courses
     .filter((course) => course.checked)
     .reduce((sum, course) => sum + course.price, 0);
@@ -61,7 +67,12 @@ const CartPage = () => {
         </Typography>
         <Divider sx={{ marginBottom: 2 }} />
         {courses.map((course) => (
-          <CartItem key={course.id} course={course} onCheck={handleCheck} />
+          <CartItem
+            key={course.id}
+            course={course}
+            onCheck={handleCheck}
+            onRemove={handleRemove} // Truyền hàm xóa vào đây
+          />
         ))}
       </Box>
 
