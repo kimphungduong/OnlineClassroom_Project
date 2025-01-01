@@ -18,6 +18,7 @@ router.post('/:slug/forum/:postId/vote-post', votePost)
 
 router.get('/:slug/:lessonId/notes',courseController.getNotes);
 router.get('/:slug/:slugLesson',courseController.getLession);
+router.get('/:slug/:id/learn',courseController.getLessionById);
 router.post('/:lessonId/notes',courseController.addNote);
 
 

@@ -78,7 +78,7 @@ class CourseService {
       // Tính toán tiến độ học tập
       const coursesWithProgress = courses.map(course => {
         const studentProgress = course.studentProgress.find(progress => progress.student.toString() === userId);
-        const totalLessons = course.lessons.length;
+        const totalLessons = course.sections.reduce((total, section) => total + section.lessons.length, 0);
         const completedLessons = studentProgress ? studentProgress.lessonsCompleted.length : 0;
         const progress = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
   
@@ -100,6 +100,23 @@ class CourseService {
         throw new Error('Khóa học không tồn tại');
       }
       const lesson = await Lesson.findOne({ slug: slugLesson, course: course._id });
+      // lấy danh sách bài giảng
+
+      if (!lesson) {
+        throw new Error('Bài học không tồn tại');
+      }
+      return lesson;
+    }catch (error) {
+      throw new Error('Lỗi khi lấy thông tin bài học');
+    }
+  }
+  async getLession(slug, lessionId) {
+    try {
+      const course = await Course.findOne({ slug });
+      if (!course) {
+        throw new Error('Khóa học không tồn tại');
+      }
+      const lesson = await Lesson.findOne({ _id: lessionId, course: course._id });
       // lấy danh sách bài giảng
 
       if (!lesson) {
