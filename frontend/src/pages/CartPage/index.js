@@ -1,18 +1,21 @@
+// CartPage.js
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import CartItem from "../../components/CartItem";
 import SummarySection from "../../components/SummarySection";
 import cartApi from "../../api/cartApi";
+import paymentApi from "../../api/paymentApi"; // Import API payment
+import { useNavigate } from "react-router-dom";
 
 const CartPage = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCart = async () => {
       try {
         const response = await cartApi.getCart();
-        console.log("API response:", response.data);
         setCourses(response.data.courseIds || []);
         setLoading(false);
       } catch (error) {
@@ -34,6 +37,27 @@ const CartPage = () => {
 
   const handleRemove = (id) => {
     setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
+  };
+
+  const handlePayment = async () => {
+    try {
+      const selectedCourses = courses.filter((course) => course.checked);
+      if (selectedCourses.length === 0) {
+        alert("Vui lòng chọn ít nhất một khóa học để thanh toán.");
+        return;
+      }
+
+      const itemIds = selectedCourses.map((course) => course._id);
+      const response = await paymentApi.create(itemIds); // Gọi API tạo thanh toán
+      const paymentId = response.data._id; // Lấy mã thanh toán từ API
+      const qrCode = response.data.qrCode; 
+
+      // Điều hướng đến trang thanh toán và gửi danh sách khóa học
+      navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses } });
+    } catch (error) {
+      console.error("Error during payment creation:", error);
+      alert("Có lỗi xảy ra khi tạo giao dịch thanh toán.");
+    }
   };
 
   const total = courses
@@ -67,7 +91,7 @@ const CartPage = () => {
           ))
         )}
       </Box>
-      <SummarySection total={total} />
+      <SummarySection total={total} onPayment={handlePayment} />
     </Box>
   );
 };

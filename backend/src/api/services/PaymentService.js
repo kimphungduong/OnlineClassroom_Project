@@ -9,30 +9,75 @@ class PaymentService {
     // Lấy giao dịch theo ID
     async getPaymentById(paymentId) {
         try {
-            return await Payment.findById(paymentId);
+            const payment = await Payment.findById(paymentId)
+            .populate({
+                path: 'course',
+                model: 'Course', // Liên kết với bảng Course
+                select: 'name price description image rating teacher', // Chỉ lấy các trường cần thiết
+                populate: { path: 'teacher', model: 'Teacher', select: 'name -_id' }
+            }).select('-student'); 
+            if (!payment) {
+                throw new Error("Payment not found");
+            }
+            
+            // Tạo thông tin QR Code dựa trên giao dịch
+            const bankInfo = {
+                id: process.env.BANK_ID,
+                accountNo: process.env.ACCOUNT_NO,
+                accountName: process.env.ACCOUNT_NAME,
+                template: process.env.TEMPLATE,
+            };
+
+            var qrCode = `https://img.vietqr.io/image/${bankInfo.id}-${bankInfo.accountNo}-${bankInfo.template}.png?amount=${payment.amount}&addInfo=${encodeURIComponent(payment.description)}&accountName=${bankInfo.accountName}`;
+            const result = {
+                ...payment.toObject(),
+                qrCode,
+            };
+    
+            return result;
         } catch (error) {
             throw new Error(`Error retrieving payment by ID: ${error.message}`);
         }
     }
 
     // Tạo giao dịch mới
-    async createPayment(userId, itemIds) {
+    async createPayment(itemIds, userId) {
         try {
             //Kiểm tra itemIds có tồn tại không
-            const items = await Cart.find({ courseIds: { $in: itemIds } })
-            .populate('course');
-            if (items.length !== itemIds.length) {
-                throw new Error("Invalid item IDs");
+            const cart = await Cart.findOne({ courseIds: { $all: itemIds }, userId: userId })
+            .populate({
+                path: 'courseIds',
+                model: 'Course', // Liên kết với bảng Course
+                select: 'name price description image rating teacher', // Chỉ lấy các trường cần thiết
+                populate: { path: 'teacher', model: 'Teacher', select: 'name' }
+            })
+            if (!cart) {
+                throw new Error('Cart not found');
             }
+            console.log(cart.courseIds);
+            // Lọc các khóa học trong giỏ hàng theo itemIds
+            const order = cart.courseIds.filter(course =>
+                itemIds.includes(course._id.toString())
+              );
+              
+            if (order.length !== itemIds.length) {
+                throw new Error('Some items are not in the cart');
+            }
+
+            // Tính tổng số tiền
+            const amount = order.reduce((total, course) => total + course.price, 0);
+
+
             const newPayment = new Payment({
-                userId,
-                amount: items.reduce((total, item) => total + item.price, 0),
-                paymentMethod: "bank",
-                courses: items.map(item => item.courseId),
+                student: userId,
+                amount: amount,
+                method: "bank",
+                course: itemIds,
                 status: "pending",
             });
 
             await newPayment.save();
+
             return newPayment;
         } catch (error) {
             throw new Error(`Error creating payment: ${error.message}`);
@@ -56,11 +101,24 @@ class PaymentService {
             let elapsed = 0;
 
             while (elapsed < timeout) {
-                const isPaid = await checkPaid(payment.amount, payment.description);
+                //const isPaid = await checkPaid(payment.amount, payment.description);
+                const isPaid = await checkPaid(12050, "74431842761-OrderID6764512e7b1005eda9688255-CHUYEN TIEN-OQCH39994664-MOMO74431842761MOMO");
 
                 if (isPaid.success) {
                     payment.status = "completed";
                     await payment.save();
+
+                    //Thêm học sinh vào khóa học
+                    const courses = await Course.find({ _id: { $in: payment.course } });
+                    courses.forEach(async course => {
+                        course.students.push(payment.student);
+                        await course.save();
+                    });
+                    //Bổ sung khóa học vào thông tin học viên
+                    const student = await Student.findById(payment.student);
+                    student.courses.push(...payment.course);
+                    await student.save();
+
 
                     return payment;
                 }
@@ -76,7 +134,21 @@ class PaymentService {
             throw new Error(`Error processing payment: ${error.message}`);
         }
     }
-
+    // Hủy thanh toán
+    async cancelPayment(paymentId) {
+        try {
+            const payment = await Payment.findById(paymentId);
+            if (!payment) {
+                throw new Error("Payment not found");
+            }
+            // Cancel payment logic here
+            payment.status = "failed";
+            await payment.save();
+            return payment;
+        } catch (error) {
+            throw new Error(`Error cancelling payment: ${error.message}`);
+        }
+    }
     async getAllPayments() {
         try {
             return await Payment.find().sort({ createdAt: -1 });

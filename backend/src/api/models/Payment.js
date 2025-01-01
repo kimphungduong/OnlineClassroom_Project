@@ -1,19 +1,20 @@
 const mongoose = require('mongoose');
 
 const paymentSchema = new mongoose.Schema({
-  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
+  course: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }],
   student: { type: mongoose.Schema.Types.ObjectId, ref: 'Student', required: true },
   method: { type: String, required: true },
   status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
   amount: { type: Number, required: true },
-  desciption: { type: String, required: true, unique: true },
-  purchasedAt: { type: Date, required: true }
+  description: { type: String, unique: true }
+},{
+  timestamps: true
 });
 
 paymentSchema.pre('save', function(next) {
   if (this.isNew) {
       const timestamp = Date.now();
-      this.desciption = `PAY-${this._id}-${timestamp}`;
+      this.description = `PAY-${this._id}-${timestamp}`;
   }
   next();
 });

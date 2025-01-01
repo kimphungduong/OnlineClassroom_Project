@@ -72,7 +72,7 @@ function Header() {
     };
 
     const userMenu = [
-        { icon: <FontAwesomeIcon icon={faUser} />, title: 'Hồ sơ của tôi', to: '/@hoaa' },
+        { icon: <FontAwesomeIcon icon={faUser} />, title: 'Hồ sơ của tôi', to: '/dashboard' },
         { icon: <FontAwesomeIcon icon={faGear} />, title: 'Cài đặt', to: '/settings' },
         ...MENU_ITEMS,
         { icon: <FontAwesomeIcon icon={faSignOut} />, title: 'Đăng xuất', to: '/logout', separate: true },
@@ -111,25 +111,25 @@ function Header() {
                                 {currentUser ? (
                                     <>
                                         <Tippy delay={[0, 50]} content="Khóa học của tôi" placement="bottom">
-                                            <a className={cx('action-btn')} to="/">
+                                            <Link className={cx('action-btn')} to="/my-course">
                                                 Khóa học của tôi
-                                            </a>
+                                            </Link>
                                         </Tippy>
                                         <Tippy delay={[0, 50]} content="Giỏ hàng" placement="bottom">
-                                            <button className={cx('action-btn')}>
+                                            <Link className={cx('action-btn')} to="/cart">
                                                 <FontAwesomeIcon icon={faShoppingCart} />
-                                            </button>
+                                            </Link>
                                         </Tippy>
                                         <Tippy delay={[0, 50]} content="Thông báo" placement="bottom">
-                                            <button className={cx('action-btn')}>
+                                            <Link className={cx('action-btn')}>
                                                 <FontAwesomeIcon icon={faBell} />
                                                 <span className={cx('badge')}>12</span>
-                                            </button>
+                                            </Link>
                                         </Tippy>
                                     </>
                                 ) : (
                                     <>
-                                        <Button text>Đăng ký</Button>
+                                        <Button text to="/register">Đăng ký</Button>
                                         <Button primary to="/login">
                                             Đăng nhập
                                         </Button>
