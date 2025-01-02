@@ -3,6 +3,8 @@ const { checkPaid } = require('../../api/helpers/checkPayment');
 const Payment = require('../models/Payment');
 const Cart = require('../models/Cart');
 const Course = require('../models/Course');
+const Student = require('../models/Student');
+
 
 class PaymentService {
 
@@ -102,7 +104,7 @@ class PaymentService {
 
             while (elapsed < timeout) {
                 //const isPaid = await checkPaid(payment.amount, payment.description);
-                const isPaid = await checkPaid(12050, "74431842761-OrderID6764512e7b1005eda9688255-CHUYEN TIEN-OQCH39994664-MOMO74431842761MOMO");
+                const isPaid = await checkPaid(12050, "OrderID6764512e7b1005eda9688255");
 
                 if (isPaid.success) {
                     payment.status = "completed";
@@ -110,13 +112,27 @@ class PaymentService {
 
                     //Thêm học sinh vào khóa học
                     const courses = await Course.find({ _id: { $in: payment.course } });
+                    if (!courses) {
+                        throw new Error("Course not found");
+                    }
                     courses.forEach(async course => {
+                        if (course.students.includes(payment.student)) {
+                            throw new Error("Student already registered");
+                        }
                         course.students.push(payment.student);
                         await course.save();
                     });
+
                     //Bổ sung khóa học vào thông tin học viên
-                    const student = await Student.findById(payment.student);
-                    student.courses.push(...payment.course);
+                    const studentId = payment.student.toString();
+                    const student = await Student.findById(studentId);
+                    if (!student) {
+                        throw new Error("Student not found");
+                    }
+                    if (student.registeredCourses.includes(payment.course)) {
+                        throw new Error("Course already registered");
+                    }
+                    student.registeredCourses.push(...payment.course);
                     await student.save();
 
 
