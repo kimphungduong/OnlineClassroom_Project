@@ -1,10 +1,7 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 //const bcrypt = require('bcrypt');
 const User = require('../models/User');
-const Teacher = require('../models/Teacher');
-const Student = require('../models/Student');
 const { OAuth2Client } = require('google-auth-library');
 const AuthService = require('../services/AuthService');
 
@@ -102,5 +99,33 @@ class AuthController{
         res.status(500).json({ message: 'Lỗi máy chủ' });
       }
     }
+    async sendVerifyCode(req, res, next) {
+      const { email } = req.body;
+      try {
+        await AuthService.sendVerificationCodeWithSendGrid(email);
+        res.json({ message: 'Email đã được gửi' });
+      } catch (error) {
+        res.status(500).json({ message: 'Lỗi máy chủ' });
+      }
+    }
+    async verifyCode(req, res, next) {
+      const { email ,verifyCode } = req.body;
+      try {
+        const token = await AuthService.verifyCode(email, verifyCode);
+        res.json(token);
+      } catch (error) {
+        res.status(400).json({ message: error.message });
+      }
+    }
+    async resetPassword(req, res, next) {
+      const { token, password } = req.body;
+      try {
+        await AuthService.resetPassword(token, password);
+        res.json({ message: 'Đặt lại mật khẩu thành công' });
+      } catch (error) {
+        res.status(400).json({ message: error.message });
+      }
+    }
+
 }
 module.exports = new AuthController;

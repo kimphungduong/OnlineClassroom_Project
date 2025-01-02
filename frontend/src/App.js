@@ -50,17 +50,17 @@ function AppContent() {
 
     //     checkAndRefreshToken();
     // }, []);
-    const [rehydrated, setRehydrated] = useState(false);
-    const auth = useSelector((state) => state.auth);
+    // const [rehydrated, setRehydrated] = useState(false);
+    // const auth = useSelector((state) => state.auth);
   
-    useEffect(() => {
-      // Đảm bảo Redux Persist đã hoàn thành rehydrate
-      persistor.subscribe(() => {
-        if (persistor.getState().bootstrapped) {
-          setRehydrated(true);
-        }
-      });
-    }, []);
+    // useEffect(() => {
+    //   // Đảm bảo Redux Persist đã hoàn thành rehydrate
+    //   persistor.subscribe(() => {
+    //     if (persistor.getState().bootstrapped) {
+    //       setRehydrated(true);
+    //     }
+    //   });
+    // }, []);
     return (
 
         <Router>

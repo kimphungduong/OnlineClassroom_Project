@@ -21,7 +21,7 @@ import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
 import Logout from '~/pages/Logout';
 import CartPage from '~/pages/CartPage';
-import LoginPage from '~/pages/LoginPage';
+import Login from '~/pages/Login';
 import RegisterPage from '~/pages/RegisterPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
 import PaymentPage from '~/pages/PaymentPage';
@@ -41,7 +41,7 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
     { path: config.routes.cart, component: CartPage, layout: HeaderOnly},
-    { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
+    { path: config.routes.login, component: Login, layout: HeaderOnly },
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
     { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly },

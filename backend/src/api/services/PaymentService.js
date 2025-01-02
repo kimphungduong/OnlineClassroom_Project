@@ -61,7 +61,16 @@ class PaymentService {
             const order = cart.courseIds.filter(course =>
                 itemIds.includes(course._id.toString())
               );
-              
+            //Kiểm tra học sinh đã mua những khóa đó chưa
+            const student = await Student.findById(userId);
+            if (!student) {
+                throw new Error('Student not found');
+            }
+            for (const course of order) {
+                if (student.registeredCourses.includes(course._id)) {
+                    throw new Error('Student already registered');
+                }
+            }  
             if (order.length !== itemIds.length) {
                 throw new Error('Some items are not in the cart');
             }
@@ -109,19 +118,26 @@ class PaymentService {
                 if (isPaid.success) {
                     payment.status = "completed";
                     await payment.save();
-
+                    //Xóa ra khỏi giỏ hàng
+                    const cart = await Cart.findOne({ userId: payment.student });
+                    if (!cart) {
+                        throw new Error("Cart not found");
+                    }
+                    cart.courseIds = cart.courseIds.filter(course => !payment.course.includes(course));
+                    await cart.save();
+                    
                     //Thêm học sinh vào khóa học
                     const courses = await Course.find({ _id: { $in: payment.course } });
                     if (!courses) {
                         throw new Error("Course not found");
                     }
-                    courses.forEach(async course => {
+                    for (const course of courses) {
                         if (course.students.includes(payment.student)) {
                             throw new Error("Student already registered");
                         }
                         course.students.push(payment.student);
                         await course.save();
-                    });
+                    }
 
                     //Bổ sung khóa học vào thông tin học viên
                     const studentId = payment.student.toString();
@@ -156,6 +172,9 @@ class PaymentService {
             const payment = await Payment.findById(paymentId);
             if (!payment) {
                 throw new Error("Payment not found");
+            }
+            if (payment.status !== "pending") {
+                throw new Error("Payment is not pending");
             }
             // Cancel payment logic here
             payment.status = "failed";

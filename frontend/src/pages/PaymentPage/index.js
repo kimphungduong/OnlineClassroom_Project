@@ -28,7 +28,7 @@ const PaymentPage = () => {
     paymentApi
       .process(paymentId) // Gọi API để kiểm tra giao dịch
       .then((response) => {
-        if (response.data.message === "Payment completed successfully") {
+        if (response.status === 200) {
           setSuccessMessage(response.data.message); // Cập nhật thông báo thành công
         }
       })
@@ -88,9 +88,10 @@ const PaymentPage = () => {
         <Typography variant="subtitle1" color="textSecondary" gutterBottom>
           Mô tả: {description}
         </Typography>
+        { status=="pending" && (
         <Button variant="outlined" color="error" onClick={handleCancel} sx={{ marginTop: 2 }}>
           Hủy thanh toán
-        </Button>
+        </Button>)}
       </Box>
 
       {/* Thông báo thanh toán thành công */}
