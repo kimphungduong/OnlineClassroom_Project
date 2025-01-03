@@ -43,7 +43,7 @@ const publicRoutes = [
     { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
-    { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly }
+    { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly, auth: TeacherRoute },
 ];
 
 const privateRoutes = [];
