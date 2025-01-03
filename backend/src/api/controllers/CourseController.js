@@ -1,6 +1,41 @@
 const CourseService = require('../services/CourseService.js');
 
 class CourseController{
+
+  async createCourse(req, res) {
+    try {
+      const courseData = req.body;
+      // console.log(courseData);
+
+      // Gọi service để tạo khóa học
+      const course = await CourseService.createCourse(courseData);
+
+      // Trả về khóa học đã tạo
+      return res.status(201).json(course);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Có lỗi xảy ra khi tạo khóa học.', error: error.message });
+    }
+  }
+  async updateCourse(req, res) {
+    const { courseSlug } = req.params; // Lấy slug từ URL
+    const courseData = req.body; // Lấy dữ liệu cập nhật từ body request
+
+    try {
+      // Gọi service để cập nhật khóa học
+      const updatedCourse = await CourseService.updateCourse(courseSlug, courseData);
+
+      if (!updatedCourse) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+
+      res.status(200).json(updatedCourse); // Trả về dữ liệu khóa học đã cập nhật
+    } catch (error) {
+      console.error("Error in updateCourse controller:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
     async getListCourse(req, res, next) {
         try {
         const courses = await CourseService.getListCourse();
@@ -27,7 +62,14 @@ class CourseController{
     res.status(500).json({ message: 'Lỗi máy chủ' });
     }
   }
-
+  async getCourseInfo(req, res, next) {
+    try {
+    const course = await CourseService.getCourseInfo(req.params.slug);
+    res.json(course);
+    } catch (error) {
+    res.status(500).json({ message: 'Lỗi máy chủ' });
+    }
+  }
   // Lấy danh sách tất cả bài giảng thuộc khóa học
   async getLessonsByCourseSlug(req, res, next) {
       try {

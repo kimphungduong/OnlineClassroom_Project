@@ -5,7 +5,12 @@ const CourseController = require('../controllers/CourseController');
 const LessonRoutes = require('../routes/lesson');
 const TestRoutes = require('../routes/test');
 
+
 router.get('/', CourseController.getListCourse);
+router.post('/new', CourseController.createCourse);
+router.get('/course-info/:slug', CourseController.getCourseInfo);
+router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
+
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/lessons', CourseController.getLessonsByCourseSlug); // Corrected endpoint
 

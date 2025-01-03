@@ -17,7 +17,7 @@ const LessonActions = ({
     try {
       const formData = new FormData();
       formData.append(key, file.file); // `file.file` must be a Blob/File object
-      console.log(file);
+      console.log("file : " + file);
       const response = await apiCall(formData);
       return response.data;
     } catch (error) {

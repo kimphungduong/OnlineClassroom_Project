@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
-
+import { useEffect } from 'react';
 const UploadVideo = ({ onSubmit, onCancel }) => {
   const [video, setVideo] = useState(null);
 
@@ -79,6 +79,7 @@ const UploadVideo = ({ onSubmit, onCancel }) => {
     </Paper>
   );
 };
+
 const UploadDocuments = ({ onSubmit, onCancel }) => {
   const [documents, setDocuments] = useState([]);
 
@@ -165,4 +166,85 @@ const UploadDocuments = ({ onSubmit, onCancel }) => {
   );
 };
 
-export { UploadVideo, UploadDocuments };
+
+const UploadImage = ({ onPreview, imagePreviewUrl }) => {
+  const [imageFile, setImageFile] = useState(null); // Lưu trữ File object
+  const [imagePreview, setImagePreview] = useState(imagePreviewUrl || null); // Lưu trữ URL preview
+
+  useEffect(() => {
+    if (imagePreviewUrl) {
+      setImagePreview(imagePreviewUrl); // Hiển thị ảnh cũ nếu có
+    }
+  }, [imagePreviewUrl]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+
+      // Tạo URL preview từ file ảnh
+      reader.onload = () => {
+        setImageFile(file); // Lưu File object
+        setImagePreview(reader.result); // Cập nhật URL preview
+        onPreview(file, reader.result); // Gửi file và preview URL cho component cha
+      };
+
+      // Đọc file dưới dạng data URL
+      reader.readAsDataURL(file);
+    }
+  };
+
+  return (
+    <Paper elevation={3} sx={{ p: 3, borderRadius: 2, mb: 3 }}>
+      <Typography variant="h6" sx={{ mb: 2 }}>
+        Upload Image
+      </Typography>
+      <Box
+        sx={{
+          border: "2px dashed #aaa",
+          borderRadius: 2,
+          textAlign: "center",
+          p: 4,
+          backgroundColor: "#f9f9f9",
+          position: "relative",
+        }}
+      >
+        <input
+          type="file"
+          id="file-input-image"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+        <label htmlFor="file-input-image">
+          <UploadFileIcon fontSize="large" color="action" />
+          <Typography variant="body1" sx={{ mt: 1 }}>
+            Click or drag an image file to upload
+          </Typography>
+          <Typography variant="caption" color="text.secondary">
+            Support for image uploads only.
+          </Typography>
+        </label>
+      </Box>
+
+      {/* Hiển thị ảnh preview hoặc ảnh từ URL cũ */}
+      {imagePreview && (
+        <Box sx={{ mt: 2, textAlign: "center" }}>
+          <img
+            src={imagePreview}
+            alt="preview"
+            style={{
+              maxWidth: "100%",
+              maxHeight: 200,
+              objectFit: "cover",
+              borderRadius: 4,
+              boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+            }}
+          />
+        </Box>
+      )}
+    </Paper>
+  );
+};
+
+export { UploadImage, UploadVideo, UploadDocuments };

@@ -6,6 +6,34 @@ const Student = require('../models/Student');
 const Note = require('../models/Note');
 
 class CourseService {
+
+  async createCourse(courseData) {
+    try {
+      const course = new Course(courseData);
+
+      await course.save();
+
+      return course;
+    } catch (error) {
+      // Nếu có lỗi trong quá trình lưu, ném lỗi
+      throw new Error('Không thể tạo khóa học: ' + error.message);
+    }
+  }
+  async updateCourse(courseSlug, courseData) {
+    try {
+      // Tìm và cập nhật thông tin khóa học dựa vào slug
+      const updatedCourse = await Course.findOneAndUpdate(
+        { slug: courseSlug }, // Điều kiện tìm kiếm
+        courseData,           // Dữ liệu cập nhật
+        { new: true }         // Tùy chọn để trả về dữ liệu đã cập nhật
+      );
+
+      return updatedCourse; // Trả về khóa học đã cập nhật (hoặc null nếu không tìm thấy)
+    } catch (error) {
+      console.error("Error in updateCourse service:", error);
+      throw new Error("Database update failed");
+    }
+  }
   async getListCourse() {
     try {
       const courses = await Course.find({});
@@ -20,6 +48,18 @@ class CourseService {
       const course = await Course.findOne({ slug })
           .populate('teacher')
           .populate('sections.lessons');
+        if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
+      if (!course) {
+        throw new Error('Khóa học không tồn tại');
+      }
+      return course;
+    } catch (error) {
+      throw new Error('Lỗi khi lấy thông tin khóa học');
+    }
+  }
+  async getCourseInfo(slug) {
+    try {
+      const course = await Course.findOne({ slug }).select('name subject image description price ');
         if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
       if (!course) {
         throw new Error('Khóa học không tồn tại');

@@ -1,6 +1,12 @@
 import axiosInstance from './axiosInstance';
 
 const courseApi = {
+  createCourse: (courseData) => {
+    return axiosInstance.post('/course/new', courseData);
+  },
+  updateCourse: (courseSlug, courseData) => {
+    return axiosInstance.put(`/course/course-info/${courseSlug}/edit`, courseData);
+  },
   // API đăng nhập
   getListCourse: () => {
     return axiosInstance.get('/course');
@@ -11,6 +17,9 @@ const courseApi = {
   // API đăng ký
   getCourse: (courseSlug) => {
     return axiosInstance.get(`/course/${courseSlug}`);
+  },
+  getCourseInfo: (courseSlug) => {
+    return axiosInstance.get(`/course/course-info/${courseSlug}`);
   },
 // gọi cái trên localhost:5000/course/sinh-hoc-co-ban là nó trả về thôgn tin 1 khoá học 
   // API làm mới token

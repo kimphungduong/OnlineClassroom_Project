@@ -49,7 +49,21 @@ class UploadService {
       throw new Error('Lỗi khi upload tài liệu');
     }
   }
-
+  async uploadImage(file) {
+    try {
+      const result = await cloudinary.uploader.upload(file.path, {
+        folder: 'course_images', // Thư mục lưu trữ trên Cloudinary
+        resource_type: 'image', // Định dạng là ảnh
+      });
+      return {
+        link: result.secure_url, // Đường dẫn đến hình ảnh
+        public_id: result.public_id, // ID công khai để tham chiếu trong tương lai
+      };
+    } catch (error) {
+      throw new Error('Lỗi khi upload hình ảnh');
+    }
+  }
+  
   async deleteFile(url, resource_type) {
     try {
       const publicId = extractPublicIdFromUrl(url);

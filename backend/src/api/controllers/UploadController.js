@@ -23,6 +23,16 @@ class UploadController {
     }
   }
 
+  async uploadImage(req, res) {
+    try {
+      const imageDetails = await UploadService.uploadImage(req.file);
+      res.status(200).json(imageDetails); // Includes URL and public_id for each file
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      res.status(500).json({ message: 'Lỗi khi upload hình ảnh' });
+    }
+  }
+
   async deleteFile(req, res) {
     try {
       const {url , resource_type} = req.body; 

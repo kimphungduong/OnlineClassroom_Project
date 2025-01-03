@@ -26,6 +26,14 @@ const documentStorage = new CloudinaryStorage({
   },
 });
 
+const imageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'course_images',
+    resource_type: 'image',
+  },
+});
+
 const videoUpload = multer({
   storage: videoStorage
 }).single('video');
@@ -34,4 +42,8 @@ const documentUpload = multer({
   storage: documentStorage
 }).single('document');
 
-module.exports = { videoUpload, documentUpload };
+const imageUpload = multer({
+  storage: imageStorage
+}).single('image');
+
+module.exports = {imageUpload, videoUpload, documentUpload };

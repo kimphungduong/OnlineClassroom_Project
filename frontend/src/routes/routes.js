@@ -16,6 +16,10 @@ import Search from '~/pages/Search';
 //import Login from '~/pages/Login';
 import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
+
+import CourseNew from '~/pages/CourseNew';
+import EditCourseInfo from '~/pages/EditCourseInfo';
+
 import CourseEdit from '~/pages/CourseEdit';
 import LessonEdit from '~/pages/LessonEdit';
 import LessonNew from '~/pages/LessonNew';
@@ -41,7 +45,11 @@ const publicRoutes = [
     { path: config.routes.search, component: Search, layout: null },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
+
+    { path: config.routes.courseNew, component: CourseNew, layout: HeaderOnly },
+    { path: config.routes.editCourseInfo, component: EditCourseInfo, layout: HeaderOnly },
     { path: config.routes.courseEdit, component: CourseEdit, layout: HeaderOnly },
+
     { path: config.routes.lessonEdit, component: LessonEdit, layout: HeaderOnly },
     { path: config.routes.lessonNew, component: LessonNew, layout: HeaderOnly },
     { path: config.routes.courseStat, component: CourseStat, layout: HeaderOnly },
@@ -49,6 +57,7 @@ const publicRoutes = [
     { path: config.routes.testNew, component: TestNew, layout: HeaderOnly },
     { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly },
     { path: config.routes.testPage, component: TestPage, layout: HeaderOnly },
+
     { path: config.routes.cart, component: CartPage, layout: HeaderOnly },
     { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },

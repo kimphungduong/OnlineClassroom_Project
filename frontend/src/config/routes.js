@@ -8,6 +8,10 @@ const routes = {
     search: '/search',
     myCourse: '/my-course',
     dashboard: '/dashboard',
+
+    courseNew: '/course-new/',
+    editCourseInfo: '/course-info/:slug',
+
     courseEdit: '/course-edit/:slug',
     lessonEdit: '/lesson-edit/:slug/sections/:sectionId/lesson/:lessonId',
     lessonNew: '/lesson-edit/:slug/sections/:sectionId/lesson/new',
