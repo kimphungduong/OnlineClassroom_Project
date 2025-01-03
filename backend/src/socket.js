@@ -168,9 +168,6 @@ module.exports = (io) => {
 
         const receiverSocketId = userSocketMap[receiverID];
         if (receiverSocketId) {
-          console.log("======")
-          console.log(userId)
-          console.log("======")
           // Gửi tin nhắn đến người nhận qua socket ID
           io.to(receiverSocketId).emit("chat message", {
             sender: "student",
@@ -214,6 +211,23 @@ module.exports = (io) => {
       }
     });
 
+    socket.on("selectStudent", async ({receiverID, courseID}) => {
+      await Message.updateMany(
+          {
+            $and: [
+              { course: courseID },
+              {
+                $or: [
+                  { sender: userId, receiver: receiverID },
+                  { receiver: userId, sender: receiverID },
+                ],
+              },
+            ],
+          },
+          { $set: { readed: true } } // Cập nhật tất cả các tài liệu với readed = true
+      );
+    })
+
     // Xử lý sự kiện lấy tất cả đoạn chat
     socket.on("getAllMsg", async () => {
       const chatRoom = await Message.find({
@@ -224,8 +238,7 @@ module.exports = (io) => {
       })
       const uniqueMessages = []
       const seen = new Set()
-
-      console.log(userId)
+      
       chatRoom
           .sort((a, b) => b.sentAt - a.sentAt)
           .forEach((e) => {
@@ -258,7 +271,8 @@ module.exports = (io) => {
           courseName : course.name,
           studentName : student.name,
           studentAvatar : "https://via.placeholder.com/50",
-          courseId : course._id
+          courseId : course._id,
+          readed : e.readed
         }
       })
 

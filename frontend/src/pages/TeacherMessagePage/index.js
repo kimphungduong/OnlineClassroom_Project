@@ -30,6 +30,7 @@ const TeacherMessages = () => {
     // Lắng nghe sự kiện trả về các cuộc hội thoại
     socketInstance.on('getAllMsg', (allMsg) => {
       setConversations(allMsg);
+      
     });
 
     // Lắng nghe sự kiện tin nhắn mới
@@ -55,6 +56,7 @@ const TeacherMessages = () => {
 
   useEffect(() => {
     socket?.emit('getAllMsg');
+    handleSelectStudent(currentStudentRef.current)
   }, [messages, loadRoom]);
 
   const handleSendMessage = () => {
@@ -64,6 +66,7 @@ const TeacherMessages = () => {
       message: newMessage,
       sender: 'teacher',
       timestamp: new Date().toISOString(),
+      
     };
 
     socket.emit("teacher chat message", {
@@ -78,10 +81,16 @@ const TeacherMessages = () => {
 
   const handleSelectStudent = (conversation) => {
     setCurrentStudent(conversation);
+    if(!socket) return
     socket.emit("loadMessaged", {
       receiverID: conversation.studentId,
       courseID: conversation.courseId,
     });
+
+    socket.emit("selectStudent", {
+      receiverID: conversation.studentId,
+      courseID: conversation.courseId,
+    })
 
     socket.on("loadMessaged", (loadedMessages) => {
       setMessages(loadedMessages);
@@ -123,6 +132,12 @@ const TeacherMessages = () => {
               <ListItemText
                 primary={conversation.studentName}
                 secondary={conversation.courseName}
+                primaryTypographyProps={{
+                  fontWeight: conversation.readed === false ? 'bold' : 'normal', // In đậm nếu unread là true
+                }}
+                secondaryTypographyProps={{
+                  color: '#757575',
+                }}
                 sx={{ color: '#424242' }}
               />
             </ListItem>
