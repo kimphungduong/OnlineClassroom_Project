@@ -33,6 +33,8 @@ const courseSchema = new mongoose.Schema({
       },
     }],
   }],
+},{
+  timestamps: true,
 });
 
 courseSchema.plugin(mongooseDelete,{overrideMethods: 'all',deletedAt: true});

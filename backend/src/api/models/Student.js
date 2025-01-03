@@ -9,7 +9,13 @@ const studentSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true, unique: true },
   role: { type: String, default: 'student' },
-  registeredCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
+  registeredCourses: [
+    {
+      course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }, // Tham chiếu đến khóa học
+      startDate: { type: Date }, // Thời gian bắt đầu (liên quan đến học viên)
+      endDate: { type: Date }   // Thời gian kết thúc (liên quan đến học viên)
+    }
+  ],
   notifications: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Notification' }],
   createdAt: { type: Date, default: Date.now }
 });

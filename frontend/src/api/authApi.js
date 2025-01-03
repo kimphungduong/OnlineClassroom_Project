@@ -31,11 +31,11 @@ const authApi = {
   sendVerifyCode: (email) => {
     return axiosInstance.post('/send-verify-code', { email });
   },
-  verifyCode: (email, code) => {
-    return axiosInstance.post('/verify-code', { email, code });
+  verifyCode: (email, verifyCode) => {
+    return axiosInstance.post('/verify-code', { email, verifyCode });
   },
-  resetPassword: (email, password) => {
-    return axiosInstance.post('/reset-password', { email, password });
+  resetPassword: (token, password) => {
+    return axiosInstance.post('/reset-password', { token, password });
   },
 };
 

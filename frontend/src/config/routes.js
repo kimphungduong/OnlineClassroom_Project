@@ -14,6 +14,8 @@ const routes = {
     register: '/register',
     forgotPassword: '/forgotPassword',
     payment: '/payment/:paymentId',
+    verify: '/verify-code',
+    resetPassword: '/reset-password',
 };
 
 export default routes;

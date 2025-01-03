@@ -26,6 +26,8 @@ import RegisterPage from '~/pages/RegisterPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
 import PaymentPage from '~/pages/PaymentPage';
 import DefaultLayout from '~/layouts';
+import VerifyPage from '~/pages/VerifyPage';
+import ResetPasswordPage from '~/pages/ResetPassword';
 
 
 //import Footer from '~/layouts/components/Footer';
@@ -45,6 +47,8 @@ const publicRoutes = [
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
     { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly },
+    { path: config.routes.verify, component: VerifyPage, layout: HeaderOnly },
+    { path: config.routes.resetPassword, component: ResetPasswordPage, layout: HeaderOnly },
 ];
 
 const privateRoutes = [];

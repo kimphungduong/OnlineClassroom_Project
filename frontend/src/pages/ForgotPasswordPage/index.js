@@ -1,22 +1,31 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Button,
-  Divider,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Box, Button, Divider, TextField, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import authApi from "~/api/authApi"; // Đường dẫn tới authApi.js
 
 const ForgotPasswordPage = () => {
   const [email, setEmail] = useState("");
+  const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     setEmail(event.target.value);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log("Đặt lại mật khẩu cho email:", email);
+    setLoading(true);
+    try {
+      await authApi.sendVerifyCode(email);
+      setMessage("Mã xác thực đã được gửi đến email của bạn.");
+      // Chuyển hướng sang trang VerifyCodePage và truyền email
+      navigate("/verify-code", { state: { email } });
+    } catch (error) {
+      setMessage("Không thể gửi mã xác thực. Vui lòng thử lại.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -30,12 +39,9 @@ const ForgotPasswordPage = () => {
         boxShadow: 3,
       }}
     >
-      {/* Tiêu đề */}
       <Typography variant="h4" align="center" gutterBottom>
         Quên mật khẩu
       </Typography>
-
-      {/* Mô tả */}
       <Typography
         variant="body2"
         align="center"
@@ -45,10 +51,7 @@ const ForgotPasswordPage = () => {
       >
         Chúng tôi sẽ gửi cho bạn một đường liên kết qua email để bạn có thể đặt lại mật khẩu của mình
       </Typography>
-
-      {/* Form */}
       <form onSubmit={handleSubmit}>
-        {/* Trường nhập email */}
         <TextField
           label="Email"
           variant="outlined"
@@ -58,22 +61,27 @@ const ForgotPasswordPage = () => {
           value={email}
           onChange={handleChange}
         />
-
-        {/* Nút đặt lại mật khẩu */}
         <Button
           type="submit"
           variant="contained"
           fullWidth
+          disabled={loading}
           sx={{ marginTop: 2, textTransform: "none" }}
         >
-          Đặt lại mật khẩu
+          {loading ? "Đang gửi..." : "Đặt lại mật khẩu"}
         </Button>
       </form>
-
-      {/* Dòng phân cách */}
+      {message && (
+        <Typography
+          variant="body2"
+          color={message.includes("gửi") ? "green" : "red"}
+          align="center"
+          sx={{ marginTop: 2 }}
+        >
+          {message}
+        </Typography>
+      )}
       <Divider sx={{ margin: "20px 0" }}>khác</Divider>
-
-      {/* Đăng nhập */}
       <Box sx={{ textAlign: "center" }}>
         <Typography variant="body2">
           Đã có tài khoản?{" "}
