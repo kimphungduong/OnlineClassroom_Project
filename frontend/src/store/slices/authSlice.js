@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import authApi from '~/api/authApi';
 
+
 let isRefreshing = false;
 
 // Async thunk for login
@@ -27,16 +28,35 @@ export const refreshToken = createAsyncThunk('auth/refresh-token', async (_, thu
   }
 });
 
+export const register = createAsyncThunk('auth/register', async (userInfo, thunkAPI) => {
+  try {
+    const response = await authApi.register(userInfo);
+    return response.data;
+  } catch (error) {
+    return thunkAPI.rejectWithValue(error.response ? error.response.data : error.message);
+  }
+});
+
+// Async thunk for logout
+export const logoutAccount = createAsyncThunk('auth/logout', async (_, thunkAPI) => {
+  try {
+    await authApi.logout();
+  } catch (error) {
+    console.error('Error logging out:', error);
+  }
+});
+
 const authSlice = createSlice({
   name: 'auth',
   initialState: {
     accessToken: localStorage.getItem('accessToken') || null,
     role: localStorage.getItem('role') || null,
+    name: null,
     status: 'idle',
     error: null,
   },
   reducers: {
-    logout: (state) => {
+    logout: async (state) => {
       state.accessToken = null;
       state.role = null;
     },
@@ -44,6 +64,10 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.role = action.payload.role;
     },
+    getSate: (state) => {
+      return state;
+    }
+    
   },
   extraReducers: (builder) => {
     builder
@@ -54,6 +78,7 @@ const authSlice = createSlice({
         state.status = 'succeeded';
         state.accessToken = action.payload.accessToken;
         state.role = action.payload.role;
+        state.name = action.payload.name;
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';
@@ -67,11 +92,33 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.role = action.payload.role;
       })
-      .addCase(refreshToken.rejected, (state, action) => {
+      .addCase(refreshToken.rejected, async(state, action) => {
         state.status = 'failed';
         state.error = action.payload;
         state.accessToken = null;
         state.role = null;
+        // try {
+        //   await authApi.logout();
+        // } catch (error) {
+        //   console.error('Error logging out:', error);
+        // }
+            // Reset Redux Persist
+      })
+      .addCase(logoutAccount.fulfilled, (state) => {
+        state.accessToken = null;
+        state.role = null;
+      })
+      .addCase(register.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(register.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.accessToken = action.payload.accessToken;
+        state.role = action.payload.role;
+      })
+      .addCase(register.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
       });
   },
 });

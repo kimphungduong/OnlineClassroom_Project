@@ -6,6 +6,7 @@ import LessonActions from './components/LessonActions';
 import FileList from './components/FileList';
 import { UploadVideo, UploadDocuments } from '../../components/UploadFile/index';
 
+
 const LessonNew = () => {
   const location = useLocation();
   const navigate = useNavigate();

@@ -1,12 +1,11 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { publicRoutes } from '~/routes';
 import DefaultLayout from '~/layouts';
-import React, { useEffect } from 'react';
-import { Provider, useDispatch } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { store, persistor } from './store';
-import { logout, refreshToken } from './store/slices/authSlice';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
+import { store, persistor } from './store';
 
 function AppContent() {
     // const dispatch = useDispatch();
@@ -51,8 +50,19 @@ function AppContent() {
 
     //     checkAndRefreshToken();
     // }, []);
-
+    const [rehydrated, setRehydrated] = useState(false);
+    const auth = useSelector((state) => state.auth);
+  
+    useEffect(() => {
+      // Đảm bảo Redux Persist đã hoàn thành rehydrate
+      persistor.subscribe(() => {
+        if (persistor.getState().bootstrapped) {
+          setRehydrated(true);
+        }
+      });
+    }, []);
     return (
+
         <Router>
             <div className="App">
                 <Routes>
@@ -93,11 +103,9 @@ function AppContent() {
 
 function App() {
     return (
-        <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-                <AppContent />
-            </PersistGate>
-        </Provider>
+        <ThemeProvider theme={theme}>
+            <AppContent />
+        </ThemeProvider>
     );
 }
 

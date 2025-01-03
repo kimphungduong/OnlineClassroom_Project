@@ -3,6 +3,7 @@ import { Box, TextField, Button, IconButton } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
+import { courseApi } from '~/api';
 
 const AddSectionForm = ({ slug, setSections }) => {
   const [newSectionName, setNewSectionName] = useState('');
@@ -15,9 +16,8 @@ const AddSectionForm = ({ slug, setSections }) => {
     }
   
     try {
-      const response = await axios.post(`http://localhost:5000/api/course/${slug}/section`, {
-        title: newSectionName,
-      });
+      const response = await courseApi.addSection(slug, { title: newSectionName });
+
   
       const updatedSections = response.data.sections;
       setSections((prevSections) =>

@@ -4,6 +4,7 @@ const slug = require('mongoose-slug-updater');
 
 mongoose.plugin(slug);
 
+
 const lessonSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String },

@@ -10,14 +10,15 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import axios from "axios";
+import testApi from "~/api/testApi";
 
 const QuizPage = () => {
   const [quizData, setQuizData] = useState(null); // State để lưu bài test
   const [answers, setAnswers] = useState({});
   const [elapsedTime, setElapsedTime] = useState(0); // Timer for elapsed time
   const [loading, setLoading] = useState(true); // State để hiển thị trạng thái tải dữ liệu
-  const slug = 'sinh-hoc-co-ban';
-  const testId = '677262f8379b50431e5db02b';
+  const slug = 'lap-trinh-python';
+  const testId = '6776e98cb151d64c41648512';
 //   const { testId, slug } = useParams();  
   // Timer functionality
   useEffect(() => {
@@ -32,9 +33,10 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/course/${slug}/test/${testId}`
-        );
+        const response = await testApi.getTest(slug, testId);
+        //  axios.get(
+        //   `http://localhost:5000/api/course/${slug}/test/${testId}`
+        // );
         setQuizData(response.data); // Lưu dữ liệu test vào state
         setLoading(false);
       } catch (error) {
@@ -75,10 +77,11 @@ const QuizPage = () => {
     };
     console.log("Submission Data:", submissionData);
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/course/${slug}/test/${testId}/submission`,
-        submissionData
-      );
+      const response = await testApi.addSubmission(slug, testId, submissionData);
+      // axios.put(
+      //   `http://localhost:5000/api/course/${slug}/test/${testId}/submission`,
+      //   submissionData
+      // );
       console.log("API Response:", response.data);
       alert(`Quiz submitted successfully! Your score is ${score}%`);
     } catch (error) {

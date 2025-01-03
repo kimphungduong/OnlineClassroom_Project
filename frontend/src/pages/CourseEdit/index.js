@@ -12,6 +12,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import CourseBreadcrumbs from './components/CourseBreadcrumbs';
 import CourseSection from './components/CourseSection';
 import AddSectionForm from './components/AddSectionForm';
+import courseApi from '../../api/courseApi';
 
 const CourseEdit = () => {
   const { slug } = useParams();
@@ -26,10 +27,10 @@ const CourseEdit = () => {
     const fetchCourseWithLessons = async () => {
       try {
         if (!slug) throw new Error('Slug không tồn tại');
-        const response = await fetch(`http://localhost:5000/api/course/${slug}/lessons`);
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        const response = await courseApi.getLessonsByCourseSlug(slug);
+        if (!response) throw new Error(`HTTP error! status: ${response.status}`);
 
-        const data = await response.json();
+        const data = await response.data;
         setSections(data || []);
         setCourseName(data[0]?.lessons[0]?.name || '');
         setIsLoading(false);

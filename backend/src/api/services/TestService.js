@@ -17,7 +17,7 @@ class TestService {
       course: course._id, // Liên kết tới khóa học
     });
     await test.save();
-
+    console.log(test);
     // Thêm bài kiểm tra vào section
     section.lessons.push({ lessonId: test._id, lessonType: 'Test' });
     await course.save();

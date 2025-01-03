@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -15,33 +16,81 @@ import {
   Pagination,
   LinearProgress,
 } from "@mui/material";
+import courseApi from "../../api/courseApi";
 
 // Dữ liệu tĩnh
-const members = [
-  {
-    name: "Phan Hồng Phúc",
-    email: "phuc@gmail.com",
-    submissions: 2, // Số lần làm bài kiểm tra
-    totalTests: 3,  // Tổng số bài kiểm tra
-  },
-  {
-    name: "Dương Kim Phụng",
-    email: "Phung@gmail.com",
-    submissions: 1,
-    totalTests: 3,
-  },
-  {
-    name: "Lê Minh Quân",
-    email: "Quan@gmail.com",
-    submissions: 3,
-    totalTests: 3,
-  },
-];
+// const members = [
+//   {
+//     name: "Phan Hồng Phúc",
+//     email: "phuc@gmail.com",
+//     submissions: 2, // Số lần làm bài kiểm tra
+//     totalTests: 3,  // Tổng số bài kiểm tra
+//   },
+//   {
+//     name: "Dương Kim Phụng",
+//     email: "Phung@gmail.com",
+//     submissions: 1,
+//     totalTests: 3,
+//   },
+//   {
+//     name: "Lê Minh Quân",
+//     email: "Quan@gmail.com",
+//     submissions: 3,
+//     totalTests: 3,
+//   },
+//   {
+//     name: "Lê Minh Quân",
+//     email: "Quan@gmail.com",
+//     submissions: 3,
+//     totalTests: 3,
+//   },
+//   {
+//     name: "Lê Minh Quân",
+//     email: "Quan@gmail.com",
+//     submissions: 3,
+//     totalTests: 3,
+//   },
+//   {
+//     name: "Lê Minh Quân",
+//     email: "Quan@gmail.com",
+//     submissions: 3,
+//     totalTests: 3,
+//   },
+//   {
+//     name: "Lê Minh Quân",
+//     email: "Quan@gmail.com",
+//     submissions: 3,
+//     totalTests: 3,
+//   },
+//   {
+//     name: "Lê Minh Quân",
+//     email: "Quan@gmail.com",
+//     submissions: 3,
+//     totalTests: 3,
+//   },
+// ];
 
 const MembersStat = () => {
+  const [members, setMembers] = useState([]);
   const [filteredMembers, setFilteredMembers] = useState(members);
   const [currentPage, setCurrentPage] = useState(1);
   const membersPerPage = 5;
+  // const slug = 'lap-trinh-python';
+  const { slug } = useParams(); 
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const response = await courseApi.getStudentProgress(slug);
+        console.log(response.data);
+        setMembers(response.data);
+        setFilteredMembers(response.data); // Set dữ liệu ban đầu
+      } catch (error) {
+        console.error("Error fetching members:", error);
+      }
+    };
+    fetchMembers();
+  }, []);
 
   const handleSearch = (e) => {
     const value = e.target.value.toLowerCase();
@@ -91,7 +140,7 @@ const MembersStat = () => {
           </TableHead>
           <TableBody>
             {currentMembers.map((member, index) => {
-              const progress = (member.submissions / member.totalTests) * 100;
+              const progress = (member.lessonsCompleted / member.totalLessons) * 100;
               return (
                 <TableRow key={index}>
                   <TableCell>
@@ -104,7 +153,7 @@ const MembersStat = () => {
                   <TableCell>
                     <Box display="flex" flexDirection="column" gap={1}>
                       <Typography variant="body2">
-                        {`${member.submissions}/${member.totalTests}`}
+                        {`${member.lessonsCompleted}/${member.totalLessons}`}
                       </Typography>
                       <LinearProgress
                         variant="determinate"

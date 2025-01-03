@@ -12,17 +12,36 @@ const courseApi = {
   getCourse: (courseSlug) => {
     return axiosInstance.get(`/course/${courseSlug}`);
   },
-
+// gọi cái trên localhost:5000/course/sinh-hoc-co-ban là nó trả về thôgn tin 1 khoá học 
   // API làm mới token
   getLesson: (courseSlug,lessonSlug) => {
     return axiosInstance.get(`/course/${courseSlug}/${lessonSlug}`);
   },
 
-  getCourseReviews: (slug, page) =>
-    axiosInstance.get(`/review/${slug}/stat?page=${page}&limit=5`),
+  // Get lessons of a course
+  getLessonsByCourseSlug: (courseSlug) => {
+    return axiosInstance.get(`/course/${courseSlug}/lessons`);
+  },
 
-  updateSectionTitle: (courseSlug, sectionId, title) => {
-    return axiosInstance.put(`/course/${courseSlug}/sections/${sectionId}`, { title });
+  getStudentProgress: (slug) => {
+    return axiosInstance.get(`/course/${slug}/progress`);
+  },
+
+  // Get lesson by ID for learning
+  getLessonById: (courseSlug, lessonId) => {
+    return axiosInstance.get(`/course/${courseSlug}/${lessonId}/learn`);
+  },
+
+  updateSectionTitle: (courseSlug, sectionId, titleData) => {
+    return axiosInstance.put(`/course/${courseSlug}/section/${sectionId}`, titleData);
+  },
+  // Add a new section to a course
+  addSection: (courseSlug, sectionData) => {
+    return axiosInstance.post(`/course/${courseSlug}/section`, sectionData);
+  },
+  // Delete a section by ID
+  deleteSection: (courseSlug, sectionId) => {
+    return axiosInstance.delete(`/course/${courseSlug}/section/${sectionId}`);
   },
 };
 

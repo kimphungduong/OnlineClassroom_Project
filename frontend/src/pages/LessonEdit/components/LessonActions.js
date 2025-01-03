@@ -1,5 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
+import uploadApi from '~/api/uploadApi';
+import lessonApi from '~/api/lessonApi';
 
 const LessonActions = ({
   lessonData,
@@ -11,25 +13,15 @@ const LessonActions = ({
   setIsSubmitting,
   navigate,
 }) => {
-  const uploadFile = async (endpoint, file, key) => {
-    const formData = new FormData();
-    formData.append(key, file.file);
-
+  const uploadFile = async (apiCall, file, key) => {
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || 'File upload failed');
-      }
-
-      const result = await response.json();
-      return result;
+      const formData = new FormData();
+      formData.append(key, file.file); // `file.file` must be a Blob/File object
+      console.log(file);
+      const response = await apiCall(formData);
+      return response.data;
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error(`Error uploading ${key}:`, error);
       throw error;
     }
   };
@@ -44,7 +36,8 @@ const LessonActions = ({
 
     try {
         const videoResult = videoFile?.file
-        ? await uploadFile('http://localhost:5000/api/upload/video', videoFile, 'video')
+        ? await uploadFile(uploadApi.uploadVideo, videoFile, 'video')
+        //  uploadFile('http://localhost:5000/api/upload/video', videoFile, 'video')
         : { link: videoFile?.link || videoFile?.name || '', duration: videoFile?.duration || 0 };
     
       // Upload tài liệu nếu có tài liệu mới
@@ -52,7 +45,8 @@ const LessonActions = ({
         lessonFiles.map((file) =>
           file.link // Nếu file có thuộc tính `link` (file cũ), giữ nguyên
             ? { link: file.link, name: file.name }
-            : uploadFile('http://localhost:5000/api/upload/document', file, 'document')
+            : uploadFile(uploadApi.uploadDocument, file, 'document')
+            // uploadFile('http://localhost:5000/api/upload/document', file, 'document')
         )
       );
 
@@ -66,18 +60,19 @@ const LessonActions = ({
           link: doc.link,
         })),
       };
-      // alert(JSON.stringify(lessonPayload, null, 2));
+      alert(JSON.stringify(lessonPayload, null, 2));
       // alert(lessonId);
-      const response = await fetch(
-        `http://localhost:5000/api/course/${courseSlug}/${lessonId}`,
-        {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(lessonPayload),
-        }
-      );
+      const response = await lessonApi.updateLesson(courseSlug, lessonId, lessonPayload);
+      //  fetch(
+      //   `http://localhost:5000/api/course/${courseSlug}/${lessonId}`,
+      //   {
+      //     method: 'PUT',
+      //     headers: { 'Content-Type': 'application/json' },
+      //     body: JSON.stringify(lessonPayload),
+      //   }
+      // );
 
-      if (!response.ok) throw new Error('Failed to update lesson');
+      if (!response) throw new Error('Failed to update lesson');
       alert('Lesson updated successfully!');
       navigate(-1);
     } catch (error) {

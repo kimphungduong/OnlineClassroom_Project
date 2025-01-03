@@ -5,7 +5,8 @@ import axios from 'axios';
 import QuestionComponent from './components/Question';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
-
+import testApi from '~/api/testApi';
+import questionApi from '~/api/questionApi';
 const TestEdit = () => {
   const { testId, courseSlug } = useParams();  // Receive state from navigation
   const navigate = useNavigate();
@@ -22,7 +23,7 @@ const TestEdit = () => {
 
           return;
         }
-        const response = await axios.get(`http://localhost:5000/api/course/${courseSlug}/test/${testId}`);
+        const response = await testApi.getTest(courseSlug, testId);
         const testData = response.data;
         
         // Update state with fetched data
@@ -66,11 +67,11 @@ const TestEdit = () => {
         questions.map(async (question) => {
           if (question._id) {
             // Update existing question
-            await axios.put(`http://localhost:5000/api/question/${question._id}`, question);
+            await questionApi.updateQuestion(question._id, question);
             return question;
           } else {
             // Create new question
-            const response = await axios.post('http://localhost:5000/api/question', question);
+            const response = await questionApi.createQuestion(question);
             return response.data.question; // Get created question data
           }
         })
@@ -85,7 +86,7 @@ const TestEdit = () => {
         questions: questionIds,
       };
 
-      await axios.put(`http://localhost:5000/api/course/${courseSlug}/test/${testId}`, payload);
+      await testApi.updateTest(courseSlug, testId, payload); 
       
       alert('Test updated successfully!');
       navigate(-1); // Navigate back to the previous page

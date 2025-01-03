@@ -5,6 +5,7 @@ import CourseOverview from "./components/CourseOverview";
 import ReviewList from "./components/ReviewList";
 import PaginationControl from "./components/PaginationControl";
 import { useLocation, useNavigate } from 'react-router-dom';
+import reviewApi from '../../api/reviewApi';
 
 const CourseStat = () => {
   const { slug } = useParams();
@@ -21,12 +22,11 @@ const CourseStat = () => {
     const fetchReviews = async () => {
       try {
         if (!slug) throw new Error("Slug không tồn tại");
-        const response = await fetch(
-          `http://localhost:5000/api/review/${slug}/stat?page=${page}&limit=5`
-        );
-        if (!response.ok) throw new Error("Failed to fetch reviews");
+        const response = await reviewApi.getCourseStats(slug, page, 5);
+
+        if (!response) throw new Error("Failed to fetch reviews");
   
-        const data = await response.json();
+        const data = await response.data;
         setReviews(data.reviews || []);
         setTotalStudents(data.totalReviews || 0);
         setAverageRating(data.averageRating?.toFixed(1) || 0);
@@ -43,7 +43,7 @@ const CourseStat = () => {
     <Container sx={{ mt: 4, mb: 4 }}>
       <Typography variant="h4" sx={{ mb: 3, fontWeight: "bold" }}>
         Thống kê khóa học
-      </Typography>
+      </Typography> 
       <CourseOverview totalStudents={totalStudents} averageRating={averageRating} />
       <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
         Các đánh giá và phản hồi

@@ -6,6 +6,7 @@ import LessonActions from './components/LessonActions';
 import FileList from './components/FileList';
 import { UploadVideo, UploadDocuments } from '../../components/UploadFile';
 import { useLocation, useNavigate } from 'react-router-dom';
+import lessonApi from '~/api/lessonApi';
 
 const LessonEdit = () => {
   const { courseSlug, lessonId } = useParams(); // Lấy courseSlug và lessonId từ URL
@@ -18,9 +19,10 @@ const LessonEdit = () => {
   useEffect(() => {
     const fetchLessonData = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/api/course/${courseSlug}/lesson/${lessonId}`);
-        if (!response.ok) throw new Error('Failed to fetch lesson');
-        const data = await response.json();
+        const response = await lessonApi.getLesson(courseSlug, lessonId);
+        // fetch(`http://localhost:5000/api/course/${courseSlug}/lesson/${lessonId}`);
+        if (!response) throw new Error('Failed to fetch lesson');
+        const data = await response.data;
         
         // Điền dữ liệu vào state
         setLessonData({ name: data.name, description: data.description });

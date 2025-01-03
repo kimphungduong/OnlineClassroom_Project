@@ -4,7 +4,7 @@ import CourseCard from '~/layouts/components/CourseCard';
 import React, { useEffect, useState } from 'react';
 import classNames from 'classnames/bind';
 import styles from './MyCourses.module.scss';
-import { getListCourse } from '~/services/courseService';
+import { getMyCourse } from '~/services/courseService';
 
 
 const cx = classNames.bind(styles);
@@ -15,7 +15,7 @@ const MyCourses = () => {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const data = await getListCourse();
+                const data = await getMyCourse();
                 setCourses(data);
             } catch (error) {
                 console.error('Error fetching courses:', error);

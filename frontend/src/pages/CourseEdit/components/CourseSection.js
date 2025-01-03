@@ -18,6 +18,9 @@ import DeleteSectionButton from './DeleteSectionButton';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import courseApi from '~/api/courseApi';
+import testApi from '~/api/testApi';
+import lessonApi from '~/api/lessonApi';
 
 const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedSectionId }) => {
   const [expandedSection, setExpandedSection] = useState(false);
@@ -35,10 +38,7 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
 
   const handleSaveSectionTitle = async () => {
     try {
-      const response = await axios.put(
-        `http://localhost:5000/api/course/${slug}/section/${section._id}`,
-        { title: newSectionTitle }
-      );
+      const response = await courseApi.updateSectionTitle(slug, section._id, { title: newSectionTitle });
   
       // Cập nhật danh sách sections từ phản hồi của API
       setSections((prevSections) =>
@@ -90,14 +90,8 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
   
     try {
       // Gửi yêu cầu xóa bài học đến backend
-      const response = await fetch(
-        `http://localhost:5000/api/course/${slug}/${section._id}/lesson/${lessonId}`,
-        {
-          method: 'DELETE',
-        }
-      );
-  
-      if (!response.ok) {
+      const response = await lessonApi.deleteLesson(slug, section._id, lessonId);
+      if (!response) {
         throw new Error('Failed to delete lesson');
       }
   
@@ -120,14 +114,9 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
     }
   
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/course/${slug}/${section._id}/test/${testId}`,
-        {
-          method: 'DELETE',
-        }
-      );
+      const response = await testApi.deleteTest(slug, section._id, testId);
   
-      if (!response.ok) {
+      if (!response) {
         throw new Error('Failed to delete test');
       }
   

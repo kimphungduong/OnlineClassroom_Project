@@ -1,5 +1,7 @@
 import React from 'react';
 import { Box, Button } from '@mui/material';
+import uploadApi from '~/api/uploadApi';
+import lessonApi from '~/api/lessonApi';
 
 const LessonActions = ({
   lessonData,
@@ -11,26 +13,15 @@ const LessonActions = ({
   setIsSubmitting,
   navigate,
 }) => {
-  const uploadFile = async (endpoint, file, key) => {
-    const formData = new FormData();
-    formData.append(key, file.file); // `file.file` phải là một Blob/File object
-  
+  const uploadFile = async (apiCall, file, key) => {
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        body: formData,
-      });
-  
-      if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || 'File upload failed');
-      }
-  
-      const result = await response.json();
-      console.log('Upload result:', result);
-      return result;
+      const formData = new FormData();
+      formData.append(key, file.file); // `file.file` must be a Blob/File object
+      console.log(file);
+      const response = await apiCall(formData);
+      return response.data;
     } catch (error) {
-      console.error('Error uploading file:', error);
+      console.error(`Error uploading ${key}:`, error);
       throw error;
     }
   };
@@ -45,18 +36,19 @@ const LessonActions = ({
   
     try {
       // Upload video if exists
+      // alert(JSON.stringify(videoFile, null, 2));
       const videoResult = videoFile
-        ? await uploadFile('http://localhost:5000/api/upload/video', videoFile, 'video')
+        ? await uploadFile(uploadApi.uploadVideo, videoFile, 'video')
         : null;
-      // alert(JSON.stringify(videoResult, null, 2));
-
+      console.log(videoResult);
       // Upload documents
       const documentResults = await Promise.all(
         lessonFiles.map((file) =>
-          uploadFile('http://localhost:5000/api/upload/document', file, 'document')
+          uploadFile(uploadApi.uploadDocument, file, 'document')
         )
       );
       // alert(JSON.stringify(documentResults, null, 2));
+      console.log(documentResults);
 
       // Prepare lesson payload
       const lessonPayload = {
@@ -69,18 +61,12 @@ const LessonActions = ({
         })),
       };
   
-      // alert(JSON.stringify(lessonPayload, null, 2));
-      const response = await fetch(
-        `http://localhost:5000/api/course/${courseSlug}/${sectionId}/lesson`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(lessonPayload),
-        }
-      );
+
+      alert(JSON.stringify(lessonPayload, null, 2));
+      const response = await lessonApi.createLesson(courseSlug, sectionId, lessonPayload);
 
       
-      if (!response.ok) throw new Error('Failed to save lesson');
+      if (!response) throw new Error('Failed to save lesson');
       alert('Lesson created successfully!');
       navigate(-1);
     } catch (error) {

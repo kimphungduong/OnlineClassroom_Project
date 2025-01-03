@@ -2,16 +2,15 @@ import React from 'react';
 import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
+import courseApi from '~/api/courseApi';
 
 const DeleteSectionButton = ({ slug, sectionId, setSections }) => {
     const handleDeleteSection = async () => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa phần này?')) return;
         
         try {
-            const response = await axios.delete(
-            `http://localhost:5000/api/course/${slug}/section/${sectionId}`
-            );
-            
+            const response = await courseApi.deleteSection(slug, sectionId);
+
             const updatedSections = response.data.sections;
             setSections((prevSections) =>
             updatedSections.map((section) =>

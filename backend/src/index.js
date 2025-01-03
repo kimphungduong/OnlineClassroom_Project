@@ -4,14 +4,22 @@ const morgan = require('morgan');
 const path = require('path');
 const methodOverride = require('method-override');
 const http = require('http');
+const { Server } = require('socket.io');
 const cors = require('cors');  
 const cookieParser = require('cookie-parser'); // Thêm cookie-parser để xử lý cookie
+const socketHandler = require('./socket');
 
 const db = require('./configs/db');
 db.connect();
 
 const app = express();
 const httpServer = http.createServer(app);
+const io = new Server(httpServer,{
+  cors: {
+    origin: "http://localhost:3001", // Frontend URL
+    methods: ["GET", "POST"],
+  },
+});
 const port = process.env.PORT || 3000;
 
 const route = require('./api/routes'); 
@@ -41,6 +49,7 @@ app.get('/protected', authenticateJWT, (req, res) => {
   res.json({ message: 'This is a protected route', user: req.user });
 });
 
+
 app.get('/logout', (req, res) => {
     req.session.destroy(() => {
         res.clearCookie('connect.sid');
@@ -48,7 +57,7 @@ app.get('/logout', (req, res) => {
     });
 });
 
-
+socketHandler(io);
 
 httpServer.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

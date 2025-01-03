@@ -16,16 +16,21 @@ const courseSchema = new mongoose.Schema({
   subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
   sections: [{
     title: { type: String, required: true },
-    lessons: [{ type: mongoose.Schema.Types.Mixed, refPath: 'lessonsType' }]
+    lessons: [{ type: mongoose.Schema.Types.Mixed, refPath: 'lessonsType' }],
+    lessonsType: { type: String, enum: ['Lesson', 'Test'] },
   }],
-  lessonsType: { type: String, enum: ['Lesson', 'Test'] },
   updatedAt: { type: Date, default: null },
   slug: { type: String, slug: 'name', unique: true },
   createdAt: { type: Date, required: true, default: Date.now },
   studentProgress: [{
     student: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
-    lessonsCompleted: [{ type: mongoose.Schema.Types.ObjectId, refPath: 'lessonsType' }],
-  
+    lessonsCompleted: [{
+      lessons: {type: mongoose.Schema.Types.ObjectId, refPath: 'lessonsCompletedType'},
+      lessonsType: {
+        type: String,
+        enum: ['Lesson', 'Test'],
+      },
+    }],
   }],
 });
 

@@ -1,23 +1,41 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { persistStore, persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage'; // Sử dụng localStorage
-import authReducer from '~/store/slices/authSlice';
+import storage from 'redux-persist/lib/storage';
+import authReducer from './slices/authSlice'; // Đảm bảo bạn đã import đúng đường dẫn
 import { composeWithDevTools } from 'redux-devtools-extension';
+import customizationReducer from './slices/customizationReducer';
 
 const persistConfig = {
   key: 'auth',
   storage, // Lưu state vào localStorage
-  whitelist: ['accessToken', 'role'], // Chỉ lưu những state cần thiết
+  whitelist: ['accessToken', 'role', 'name'], // Chỉ lưu những state cần thiết
 };
 
-const persistedAuthReducer = persistReducer(persistConfig, authReducer);
+const initialState = {
+  accessToken: null,
+  role: null,
+  name: null,
+  // các state khác nếu có
+};
+
+const rootReducer = (state, action) => {
+  if (action.type === 'RESET_STORE') {
+    return {
+      ...state,
+      auth: initialState,
+    };
+  }
+  return authReducer(state, action);
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
   reducer: {
-    auth: persistedAuthReducer,
+    auth: persistedReducer,
+    customization: customizationReducer,
   },
   devTools: composeWithDevTools(),
 });
 
 export const persistor = persistStore(store);
-

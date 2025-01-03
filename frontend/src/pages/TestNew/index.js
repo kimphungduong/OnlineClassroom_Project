@@ -4,6 +4,8 @@ import { AddCircle } from '@mui/icons-material';
 import axios from 'axios';
 import QuestionComponent from './components/Question';
 import { useLocation, useNavigate } from 'react-router-dom';
+import questionApi from '~/api/questionApi';
+import testApi from '~/api/testApi';
 
 const TestNew = () => {
   const location = useLocation();
@@ -30,35 +32,35 @@ const TestNew = () => {
     setQuestions(updatedQuestions);
   };
 
-  const handleCreateTest = async () => {
-    try {
-      // 1. Gửi các câu hỏi lên database
-      alert(JSON.stringify(questions, null, 2));
-      const questionResponses = await Promise.all(
-        questions.map(async (question) => {
-          const response = await axios.post('http://localhost:5000/api/question', question);
-          return response.data.question; // Return the saved question from the response
-        })
-      );
-      // 2. Lấy danh sách ID của các câu hỏi đã lưu
-      const questionIds = questionResponses.map((q) => q._id);
-      alert(JSON.stringify(questionResponses, null, 2));
-      // 3. Gửi API để tạo Test
-      const payload = {
-        name: testName,
-        questions: questionIds,
-      };
-      alert(JSON.stringify(payload, null, 2));
-      const testResponse = await axios.post(`http://localhost:5000/api/course/${courseSlug}/${sectionId}/test`, payload);
-
-      alert('Test created successfully!');
-      navigate(-1);
-    } catch (error) {
-      console.error('Error creating test:', error);
-      alert('Failed to create test.');
-    }
-  };
-  
+    const handleCreateTest = async () => {
+      try {
+        // 1. Gửi các câu hỏi lên database
+        alert(JSON.stringify(questions, null, 2));
+        const questionResponses = await Promise.all(
+          questions.map(async (question) => {
+            const response = await questionApi.createQuestion(question);
+            return response.data; // Return the saved question from the response
+          })
+        );
+        // 2. Lấy danh sách ID của các câu hỏi đã lưu
+        const questionIds = questionResponses.map((q) => q.question._id);
+        alert(JSON.stringify(questionResponses, null, 2));
+        // 3. Gửi API để tạo Test
+        const payload = {
+          name: testName,
+          questions: questionIds,
+        };
+        alert(JSON.stringify(payload, null, 2));
+        const testResponse = await testApi.createTest(courseSlug, sectionId, payload);
+        
+        alert('Test created successfully!');
+        navigate(-1);
+      } catch (error) {
+        console.error('Error creating test:', error);
+        alert('Failed to create test.');
+      }
+    };
+    
   const deleteQuestion = (index) => {
     setQuestions((prevQuestions) => prevQuestions.filter((_, i) => i !== index));
   };
