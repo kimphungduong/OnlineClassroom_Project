@@ -95,6 +95,7 @@ class CourseService {
   }
   async getLession(slug, slugLesson) {
     try {
+      console.log("CHECKED")
       const course = await Course.findOne({ slug });
       if (!course) {
         throw new Error('Khóa học không tồn tại');
@@ -110,7 +111,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin bài học');
     }
   }
-  async getLession(slug, lessionId) {
+  /*async getLession(slug, lessionId) {
     try {
       const course = await Course.findOne({ slug });
       if (!course) {
@@ -126,7 +127,7 @@ class CourseService {
     }catch (error) {
       throw new Error('Lỗi khi lấy thông tin bài học');
     }
-  }
+  }*/
   async getNoteByLessonId(lessonId, userId) {
     try {
       const notes = await Note.find({ lesson: lessonId, student: userId }).lean();

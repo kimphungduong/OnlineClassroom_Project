@@ -26,9 +26,9 @@ const CourseSidebar = ({ slugCourse ,sections }) => {
           <AccordionDetails>
           <List>
               {section.lessons.map((lesson,index) => (
-                <ListItem key={lesson._id} disablePadding>
+                <ListItem key={lesson?._id} disablePadding>
                   <ListItemButton onClick={() => handleLessonClick(lesson.slug)}>
-                    <ListItemText primary={`${index + 1}. ${lesson.name}`} secondary={lesson.description} />
+                    <ListItemText primary={`${index + 1}. ${lesson?.name}`} secondary={lesson?.description} />
                   </ListItemButton>
                 </ListItem>
               ))}

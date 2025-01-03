@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const Message = require("./api/models/Message");
 const User = require("./api/models/User");
 const Course = require("./api/models/Course");
+const Student = require("./api/models/Student");
 
 // Map ánh xạ userId với socket.id
 const userSocketMap = {};
@@ -42,9 +43,11 @@ module.exports = (io) => {
             { sender: userId, receiver: receiverID },
             { receiver: userId, sender: receiverID },
           ],
-        }).sort({ createdAt: 1 });
+        })
 
-        const modifiedMessages = messages.map((msg) => {
+        const a = messages.sort((a, b) => a.sentAt - b.sentAt)
+
+        const modifiedMessages = a.map((msg) => {
           if (socket.role === 'student') {
             return {
               ...msg._doc,
@@ -67,6 +70,43 @@ module.exports = (io) => {
         socket.emit("error", { message: "Failed to load messages" });
       }
     });
+
+    socket.on("loadMessaged" , async ({receiverID, courseID}) => {
+
+      try {
+        const chatRoom = await Message.find({
+          $and: [
+            { course: courseID },
+            {
+              $or: [
+                { sender: userId, receiver: receiverID },
+                { receiver: userId, sender: receiverID },
+              ],
+            },
+          ],
+        }).sort({ createdAt: -1 })
+
+        const student = await Student.findOne({ _id : receiverID })
+
+        const data = chatRoom
+            .sort((a, b) => a.sentAt - b.sentAt)
+            .map(e => {
+          return {
+            message : e.content,
+            sender : e.sender.toString() === userId ? "teacher" : "student",
+            timestamp : e.sentAt,
+            avatar : "https://via.placeholder.com/50"
+          }
+        })
+
+        socket.emit("loadMessaged", data);
+      }
+      catch (error) {
+        console.error("Error loading messages:", error);
+        socket.emit("error", { message: "Failed to load messages" });
+      }
+    })
+
 
     // Tải tin nhắn gần đây
     socket.on("recent-messages", async () => {
@@ -122,16 +162,22 @@ module.exports = (io) => {
           sender: userId,
           receiver: receiverID,
           content: data.message,
+          course : data.courseId
         });
         await newMessage.save();
 
-        const receiverSocketId = userSocketMap[data.receiver];
+        const receiverSocketId = userSocketMap[receiverID];
         if (receiverSocketId) {
+          console.log("======")
+          console.log(userId)
+          console.log("======")
           // Gửi tin nhắn đến người nhận qua socket ID
           io.to(receiverSocketId).emit("chat message", {
-            sender: userId,
+            sender: "student",
             message: data.message,
             timestamp: new Date(),
+            avatar : "https://via.placeholder.com/50",
+            studentId : userId
           });
         }
       } catch (error) {
@@ -139,6 +185,93 @@ module.exports = (io) => {
         socket.emit("error", { message: "Failed to send message" });
       }
     });
+
+    socket.on("teacher chat message", async ({message, courseId,receiverID }) => {
+      try {
+        const newMessage = new Message({
+          sender: userId,
+          receiver: receiverID,
+          content: message,
+          course : courseId
+        });
+        await newMessage.save();
+
+        const receiverSocketId = userSocketMap[receiverID];
+        if (receiverSocketId) {
+
+          // Gửi tin nhắn đến người nhận qua socket ID
+          io.to(receiverSocketId).emit("teacher chat message", {
+            sender: 'Teacher',
+            receiver : "Bạn",
+            content: message,
+            sentAt: new Date(),
+
+          });
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+        socket.emit("error", { message: "Failed to send message" });
+      }
+    });
+
+    // Xử lý sự kiện lấy tất cả đoạn chat
+    socket.on("getAllMsg", async () => {
+      const chatRoom = await Message.find({
+        $or: [
+          { sender: userId },
+          { receiver: userId },
+        ],
+      })
+      const uniqueMessages = []
+      const seen = new Set()
+
+      console.log(userId)
+      chatRoom
+          .sort((a, b) => b.sentAt - a.sentAt)
+          .forEach((e) => {
+            const key = [
+              e.course.toString(),
+              [e.sender, e.receiver].sort().join('_'),
+            ].join('|');
+
+            if (!seen.has(key)) {
+              uniqueMessages.push(e);
+              seen.add(key);
+            }
+          })
+
+      const chatRoomData = uniqueMessages.map(async (e, i) => {
+        const course = await Course.findOne({
+          _id : e.course
+        })
+        const studentId = e.sender.toString() === userId ? e.receiver : e.sender
+        const student = await Student.findOne({ _id : studentId })
+
+        if(course === null){
+          return null
+        }
+
+        return {
+          id : i,
+          teacherId : userId,
+          studentId,
+          courseName : course.name,
+          studentName : student.name,
+          studentAvatar : "https://via.placeholder.com/50",
+          courseId : course._id
+        }
+      })
+
+      const chatRoomHeader = await Promise.all(chatRoomData)
+
+      const receiverSocketId = userSocketMap[userId];
+
+      if (receiverSocketId) {
+        // Gửi tin nhắn đến người nhận qua socket ID
+        io.to(receiverSocketId).emit("getAllMsg", chatRoomHeader);
+      }
+
+    })
 
     // Xử lý sự kiện ngắt kết nối
     socket.on("disconnect", () => {

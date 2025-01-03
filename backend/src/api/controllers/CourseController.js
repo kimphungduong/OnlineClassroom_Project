@@ -28,6 +28,7 @@ class CourseController{
     }
     async getLession(req, res, next) {
         try {
+
             const lession = await CourseService.getLession(req.params.slug, req.params.slugLesson);
         res.json(lession);
         } catch (error) {

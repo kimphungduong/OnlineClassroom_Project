@@ -1,41 +1,91 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, TextField, Button, Paper, Avatar, List, ListItem, ListItemText } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
-import { useNavigate } from 'react-router-dom';
+import initializeSocket from '~/services/socketService';
 
 const TeacherMessages = () => {
-  const [conversations, setConversations] = useState([
-    { id: 1, name: 'Student A', lastMessage: 'I have a problem with a topup' },
-    { id: 2, name: 'Student B', lastMessage: 'Can you explain this topic?' },
-    { id: 3, name: 'Student C', lastMessage: 'Thank you for the help!' },
-  ]);
+  const [conversations, setConversations] = useState([]);
+  const [socket, setSocket] = useState(null);
 
   const [currentStudent, setCurrentStudent] = useState(conversations[0]);
-  const [messages, setMessages] = useState([
-    { content: 'I have a problem with a topup', sender: 'student', timestamp: '2025-01-01T13:08:00Z' },
-    { content: 'Bạn có vấn đề gì?', sender: 'teacher', timestamp: '2025-01-01T13:09:00Z' },
-  ]); // Sample messages
+  const [messages, setMessages] = useState([]); 
   const [newMessage, setNewMessage] = useState('');
+  const [loadRoom, setLoadRoom] = useState(false);
+  
+  const currentStudentRef = useRef();
+  const messagesEndRef = useRef(null); // Ref để cuộn xuống cuối danh sách tin nhắn
+
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' }); // Cuộn xuống cuối danh sách
+    }
+  };
+
+  useEffect(() => {
+    const socketInstance = initializeSocket();
+    setSocket(socketInstance);
+
+    socketInstance.emit('getAllMsg');
+
+    // Lắng nghe sự kiện trả về các cuộc hội thoại
+    socketInstance.on('getAllMsg', (allMsg) => {
+      setConversations(allMsg);
+    });
+
+    // Lắng nghe sự kiện tin nhắn mới
+    socketInstance.on('chat message', (msg) => {
+      setLoadRoom((prev) => !prev);
+      if (currentStudentRef.current && msg.studentId === currentStudentRef.current.studentId) {
+        setMessages((prevMessages) => [...prevMessages, msg]);
+      }
+    });
+
+    return () => {
+      socketInstance.disconnect(); // Ngắt kết nối khi rời phòng
+    };
+  }, []);
+
+  useEffect(() => {
+    currentStudentRef.current = currentStudent;
+  }, [currentStudent]);
+
+  useEffect(() => {
+    scrollToBottom(); // Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
+  }, [messages]);
+
+  useEffect(() => {
+    socket?.emit('getAllMsg');
+  }, [messages, loadRoom]);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
 
     const message = {
-      content: newMessage,
+      message: newMessage,
       sender: 'teacher',
       timestamp: new Date().toISOString(),
     };
+
+    socket.emit("teacher chat message", {
+      message: newMessage,
+      courseId: currentStudent.courseId,
+      receiverID: currentStudent.studentId,
+    });
 
     setMessages((prev) => [...prev, message]);
     setNewMessage('');
   };
 
-  const handleSelectStudent = (student) => {
-    setCurrentStudent(student);
-    // Reset messages or load specific messages for this student
-    setMessages([
-      { content: `Conversation with ${student.name}`, sender: 'student', timestamp: '2025-01-01T13:00:00Z' },
-    ]);
+  const handleSelectStudent = (conversation) => {
+    setCurrentStudent(conversation);
+    socket.emit("loadMessaged", {
+      receiverID: conversation.studentId,
+      courseID: conversation.courseId,
+    });
+
+    socket.on("loadMessaged", (loadedMessages) => {
+      setMessages(loadedMessages);
+    });
   };
 
   return (
@@ -53,22 +103,26 @@ const TeacherMessages = () => {
           Học sinh
         </Typography>
         <List>
-          {conversations.map((student) => (
+          {conversations.map((conversation) => (
             <ListItem
-              key={student.id}
+              key={conversation?.id || ""}
               button
-              selected={currentStudent.id === student.id}
-              onClick={() => handleSelectStudent(student)}
+              selected={currentStudent?.id === conversation.id}
+              onClick={() => handleSelectStudent(conversation)}
               sx={{
                 '&.Mui-selected': {
                   backgroundColor: '#e3f2fd',
+                  fontWeight: 'bold',
+                },
+                '&.Mui-selected:hover': {
+                  backgroundColor: '#bbdefb',
                 },
               }}
             >
-              <Avatar sx={{ bgcolor: '#64b5f6', mr: 2 }}>{student.name.charAt(0)}</Avatar>
+              <Avatar src={conversation.studentAvatar} sx={{ mr: 1 }} />
               <ListItemText
-                primary={student.name}
-                secondary={student.lastMessage}
+                primary={conversation.studentName}
+                secondary={conversation.courseName}
                 sx={{ color: '#424242' }}
               />
             </ListItem>
@@ -90,7 +144,7 @@ const TeacherMessages = () => {
             boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
           }}
         >
-          <Typography variant="h6">{currentStudent.name}</Typography>
+          <Typography variant="h6">{currentStudent?.studentName ? currentStudent?.courseName + " - Học viên : " + currentStudent?.studentName : ""}</Typography>
         </Box>
 
         {/* Messages List */}
@@ -108,18 +162,15 @@ const TeacherMessages = () => {
           {messages.map((message, index) => (
             <Box
               key={index}
-              sx={{              alignSelf: message.sender === 'teacher' ? 'flex-end' : 'flex-start',
+              sx={{
+                alignSelf: message.sender === 'teacher' ? 'flex-end' : 'flex-start',
                 maxWidth: '70%',
                 display: 'flex',
                 flexDirection: message.sender === 'teacher' ? 'row-reverse' : 'row',
                 alignItems: 'center',
               }}
             >
-              {message.sender === 'student' && (
-                <Avatar sx={{ bgcolor: '#ff5722', width: 36, height: 36, mr: 1 }}>
-                  {message.sender.charAt(0).toUpperCase()}
-                </Avatar>
-              )}
+              {message.sender === 'student' && <Avatar sx={{ mr: 1 }} src={message.avatar} />}
               <Paper
                 sx={{
                   p: 2,
@@ -129,7 +180,7 @@ const TeacherMessages = () => {
                 }}
               >
                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                  {message.content}
+                  {message.message}
                 </Typography>
                 <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
                   {new Date(message.timestamp).toLocaleTimeString()}
@@ -137,47 +188,56 @@ const TeacherMessages = () => {
               </Paper>
             </Box>
           ))}
+
+          {/* Ref element để cuộn xuống */}
+          <div ref={messagesEndRef} />
         </Box>
-  
+
         {/* Message Input */}
-        <Box
-          sx={{
-            p: 2,
-            backgroundColor: '#ffffff',
-            borderTop: '1px solid #e0e0e0',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-          }}
-        >
-          <TextField
-            fullWidth
-            placeholder="Nhập tin nhắn"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => {
+        {messages.length > 0 && (
+          <Box
+            sx={{
+              p: 2,
+              backgroundColor: '#ffffff',
+              borderTop: '1px solid #e0e0e0',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 2,
+            }}
+          >
+            <TextField
+              fullWidth
+              placeholder="Nhập tin nhắn"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={(e) => {
                 if (e.key === 'Enter') {
-                  e.preventDefault(); // Ngăn form gửi mặc định (nếu có)
+                  e.preventDefault();
                   handleSendMessage();
                 }
               }}
-            variant="outlined"
-            size="medium"
-            sx={{ flex: 1 }}
-          />
-          <Button
-            variant="contained"
-            onClick={handleSendMessage}
-            disabled={!newMessage.trim()}
-            startIcon={<SendIcon />}
-            sx={{ textTransform: 'none', backgroundColor: '#42a5f5', '&:hover': { backgroundColor: '#1e88e5' } }}
-          >
-            Gửi
-          </Button>
-        </Box>
+              variant="outlined"
+              size="medium"
+              sx={{ flex: 1 }}
+            />
+            <Button
+              variant="contained"
+              onClick={handleSendMessage}
+              disabled={!newMessage.trim()}
+              startIcon={<SendIcon />}
+              sx={{
+                textTransform: 'none',
+                backgroundColor: '#42a5f5',
+                '&:hover': { backgroundColor: '#1e88e5' },
+              }}
+            >
+              Gửi
+            </Button>
+          </Box>
+        )}
       </Box>
     </Box>
   );
-  };
-  
-  export default TeacherMessages;
+};
+
+export default TeacherMessages;
