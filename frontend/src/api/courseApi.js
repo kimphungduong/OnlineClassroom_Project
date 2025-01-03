@@ -98,13 +98,28 @@ const courseApi = {
 
   // API đăng ký
   getCourse: (courseSlug) => {
-    return axiosInstance.get(`/${courseSlug}`);
+    return axiosInstance.get(`/${courseSlug}`).then(response => {
+      console.log('Course data:', response.data); // Thêm log dữ liệu
+      return response;
+    });
+  },
+
+  getCoursesBySubject: (subjectSlug) => {
+    return axiosInstance.get(`/subject/${subjectSlug}`).then(response => {
+      console.log('Course data:', response.data); // Thêm log dữ liệu
+      return response;
+    });
   },
 
   // API làm mới token
   getLesson: (courseSlug,lessonSlug) => {
     return axiosInstance.get(`/${courseSlug}/${lessonSlug}`);
   },
+
+  searchCourses: (query) => {
+    return axiosInstance.get('/search', { params: { query } }); // Gửi từ khóa vào query string
+  }
+
 };
 
 export default courseApi;

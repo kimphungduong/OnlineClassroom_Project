@@ -8,6 +8,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
+import { getListCourse } from '~/services/courseService';
 
 const cx = classNames.bind(styles);
 
@@ -15,57 +16,25 @@ const Home = () => {
     const [courses, setCourses] = useState([]);
 
     useEffect(() => {
-        const mockCourses = [
-            {
-                id: 1,
-                title: 'Khóa học 1',
-                teacher: 'Giáo viên A',
-                rating: 4.5,
-                price: 500000,
-                image: 'https://via.placeholder.com/352x195',
-            },
-            {
-                id: 2,
-                title: 'Khóa học 2',
-                teacher: 'Giáo viên B',
-                rating: 4.7,
-                price: 650000,
-                image: 'https://via.placeholder.com/352x195',
-            },
-            {
-                id: 3,
-                title: 'Khóa học 3',
-                teacher: 'Giáo viên C',
-                rating: 4.2,
-                price: 300000,
-                image: 'https://via.placeholder.com/352x195',
-            },
-            {
-                id: 4,
-                title: 'Khóa học 4',
-                teacher: 'Giáo viên D',
-                rating: 4.9,
-                price: 700000,
-                image: 'https://via.placeholder.com/352x195',
-            },
-            {
-                id: 5,
-                title: 'Khóa học 5',
-                teacher: 'Giáo viên E',
-                rating: 4.4,
-                price: 700000,
-                image: 'https://via.placeholder.com/352x195',
-            },
-            {
-                id: 6,
-                title: 'Khóa học 6',
-                teacher: 'Giáo viên F',
-                rating: 4.2,
-                price: 700000,
-                image: 'https://via.placeholder.com/352x195',
-            },
-        ];
-        setCourses(mockCourses);
+        const fetchCourses = async () => {
+            try {
+                const fetchedCourses = await getListCourse();
+                const normalizedCourses = fetchedCourses.map(course => ({
+                    id: course._id,
+                    title: course.name,
+                    teacher: course.teacher?.name || 'Chưa cập nhật',
+                    rating: course.rating,
+                    price: course.price,
+                    image: course.image,
+                    slug: course.slug,
+                }));
+                setCourses(normalizedCourses);
+            } catch (error) {
+                console.error('Lỗi khi tải danh sách khóa học:', error);
+            }
+        };
+
+        fetchCourses();
     }, []);
 
     const NextArrow = ({ onClick }) => (

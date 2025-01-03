@@ -10,46 +10,50 @@ const cx = classNames.bind(styles);
 const CourseCardHome = ({ course }) => {
     return (
         <Card className={cx('course-card')}>
-            <img src={course.image} alt={course.title} className={cx('course-card-image')} />
+            <img 
+                src={course.image || 'https://via.placeholder.com/352x195'} 
+                alt={course.title || 'No title'} 
+                className={cx('course-card-image')} 
+            />
             <CardContent className={cx('course-card-content')}>
-                {/* Tiêu đề khóa học (Lớn hơn) */}
+                {/* Tiêu đề khóa học */}
                 <Typography 
                     variant="h3" 
                     component="div" 
                     className={cx('course-card-title')}
-                    sx={{ fontSize: '2rem' }} // Adjust font size
+                    sx={{ fontSize: '2rem' }}
                 >
-                    {course.title}
+                    {course.title || 'No title available'}
                 </Typography>
 
-                {/* Tên giáo viên (Nhỏ hơn một chút, nhưng vẫn dễ đọc) */}
+                {/* Tên giáo viên */}
                 <Typography 
                     variant="body1" 
                     color="text.secondary" 
                     className={cx('course-card-teacher')}
-                    sx={{ fontSize: '1.8rem' }} // Adjust font size
+                    sx={{ fontSize: '1.8rem' }}
                 >
-                    {course.teacher}
+                    {course.teacher || 'Unknown teacher'}
                 </Typography>
 
-                {/* Rating (Lớn hơn một chút) */}
+                {/* Rating */}
                 <Box display="flex" alignItems="center" gap={1} className={cx('course-card-rating')}>
-                    <Rating value={course.rating} readOnly precision={0.1} sx={{ fontSize: '1.5rem' }} /> {/* Lớn hơn */}
+                    <Rating value={course.rating || 0} readOnly precision={0.1} sx={{ fontSize: '1.5rem' }} />
                     <Typography 
                         variant="body1" 
                         color="text.secondary"
-                        sx={{ fontSize: '1.8rem' }} // Adjust font size
+                        sx={{ fontSize: '1.8rem' }}
                     >
-                        ({course.rating})
+                        ({course.rating || 0})
                     </Typography>
                 </Box>
 
-                {/* Giá tiền (Lớn hơn một chút) */}
+                {/* Giá tiền */}
                 <Typography 
                     variant="h6" 
                     color="text.primary" 
                     className={cx('course-card-price')}
-                    sx={{ fontSize: '1.8rem' }} // Adjust font size
+                    sx={{ fontSize: '1.8rem' }}
                 >
                     {course.price ? `${course.price.toLocaleString()} VND` : 'Chưa cập nhật'}
                 </Typography>
@@ -58,35 +62,21 @@ const CourseCardHome = ({ course }) => {
                 <Box display="flex" justifyContent="center" gap={2} mt={2}>
                     <Button
                         component={Link}
-                        to={`/courses/${course.id}/details`}
+                        to={`/detail/${course.slug || 'default-slug'}`}
                         variant="contained"
                         className={cx('course-card-button')}
-                        sx={{ 
-                            fontSize: '1.2rem', // Điều chỉnh kích thước chữ cho nút
-                            backgroundColor: '#6C8BB9', // Màu nền xanh dương
-                            color: 'white', // Màu chữ trắng
-                            '&:hover': {
-                                backgroundColor: '#5a7699', // Màu nền khi hover
-                            },
-                        }}
+                        sx={{ fontSize: '1.2rem' }}
                     >
                         Xem chi tiết
                     </Button>
                     <Button
                         component={Link}
-                        to={`/courses/${course.id}/buy`}
+                        to={`/buy/${course.slug || 'default-slug'}`}
                         variant="contained"
                         className={cx('course-card-button')}
-                        sx={{ 
-                            fontSize: '1.2rem', // Điều chỉnh kích thước chữ cho nút
-                            backgroundColor: '#6C8BB9', // Màu nền xanh dương
-                            color: 'white', // Màu chữ trắng
-                            '&:hover': {
-                                backgroundColor: '#5a7699', // Màu nền khi hover
-                            },
-                        }}
+                        sx={{ fontSize: '1.2rem' }}
                     >
-                        Mua ngay
+                        Thêm giỏ hàng
                     </Button>
                 </Box>
             </CardContent>
@@ -96,12 +86,13 @@ const CourseCardHome = ({ course }) => {
 
 CourseCardHome.propTypes = {
     course: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        title: PropTypes.string.isRequired,
-        teacher: PropTypes.string.isRequired,
-        rating: PropTypes.number.isRequired,
-        price: PropTypes.number.isRequired,
-        image: PropTypes.string.isRequired,
+        id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+        title: PropTypes.string,
+        teacher: PropTypes.string,
+        rating: PropTypes.number,
+        price: PropTypes.number,
+        image: PropTypes.string,
+        slug: PropTypes.string,
     }).isRequired,
 };
 

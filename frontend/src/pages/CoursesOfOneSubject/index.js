@@ -10,6 +10,7 @@ import classNames from 'classnames/bind';
 import styles from './CoursesOfOneSubject.module.scss';
 import FilterBar from '~/layouts/components/FilterBar';
 import { useParams } from 'react-router-dom';
+import { getCoursesBySubject } from '~/services/courseService';
 
 const cx = classNames.bind(styles);
 
@@ -20,55 +21,29 @@ const CoursesOfOneSubject = () => {
     const [showFilter, setShowFilter] = useState(false);
 
     useEffect(() => {
-        // Giả lập dữ liệu khóa học cho từng môn học
-        const mockCourses = {
-            'toan-hoc': [
-                {
-                    id: 1,
-                    title: 'Khóa học Toán 1',
-                    teacher: 'Giáo viên A',
-                    rating: 4.5,
-                    price: 500000,
-                    image: 'https://via.placeholder.com/352x195',
-                    description: 'Mô tả ngắn gọn về khóa học Toán 1',
-                },
-                {
-                    id: 2,
-                    title: 'Khóa học Toán 2',
-                    teacher: 'Giáo viên B',
-                    rating: 4.7,
-                    price: 650000,
-                    image: 'https://via.placeholder.com/352x195',
-                    description: 'Mô tả ngắn gọn về khóa học Toán 2',
-                },
-            ],
-            'vat-ly': [
-                {
-                    id: 3,
-                    title: 'Khóa học Vật lý 1',
-                    teacher: 'Giáo viên C',
-                    rating: 4.2,
-                    price: 300000,
-                    image: 'https://via.placeholder.com/352x195',
-                    description: 'Mô tả ngắn gọn về khóa học Vật lý 1',
-                },
-                {
-                    id: 4,
-                    title: 'Khóa học Vật lý 2',
-                    teacher: 'Giáo viên D',
-                    rating: 4.9,
-                    price: 700000,
-                    image: 'https://via.placeholder.com/352x195',
-                    description: 'Mô tả ngắn gọn về khóa học Vật lý 2',
-                },
-            ],
-            // Thêm dữ liệu cho các môn học khác
+        const fetchCourses = async () => {
+            try {
+                const subjectCourses = await getCoursesBySubject(subjectName);
+                const validCourses = subjectCourses.map((course) => ({
+                    id: course._id,
+                    title: course.name || 'No title available',
+                    teacher: course.teacher?.name || 'N/A', // Lấy tên giáo viên từ object teacher
+                    rating: course.rating || 0,
+                    price: course.price || 0,
+                    image: course.image || 'https://via.placeholder.com/352x195',
+                    description: course.description || '', // Nếu cần sử dụng
+                    slug: course.slug, // Đảm bảo truyền slug để điều hướng
+                }));
+                setCourses(validCourses);
+                setFilteredCourses(validCourses);
+            } catch (error) {
+                console.error('Error fetching courses by subject:', error);
+            }
         };
-
-        const subjectCourses = mockCourses[subjectName] || [];
-        setCourses(subjectCourses);
-        setFilteredCourses(subjectCourses);
+    
+        fetchCourses();
     }, [subjectName]);
+    
 
     const handleFilterChange = (filters) => {
         const { rating, price } = filters;

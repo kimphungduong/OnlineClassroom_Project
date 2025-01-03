@@ -8,7 +8,7 @@ const routes = {
     login: '/login',
     dashboard: '/dashboard',
     course: '/course',
-    detail: '/detail',
+    detail: '/detail/:slug', // Tham số động cho chi tiết khóa học
     subject: '/subject/:subjectName', // Tham số động cho môn học
 };
 
