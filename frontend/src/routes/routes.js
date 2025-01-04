@@ -9,6 +9,7 @@ import { HeaderOnly } from '~/layouts';
 //import { FooterOnly } from '~/layouts';
 import FooterOnly from '../layouts/FooterOnly';
 
+import { HeaderTabs } from '~/layouts';
 
 // Pages
 import Home from '~/pages/Home';
@@ -19,6 +20,8 @@ import Search from '~/pages/Search';
 //import Login from '~/pages/Login';
 import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
+import Detail from '~/pages/Detail';
+import CoursesOfOneSubject from '~/pages/CoursesOfOneSubject';
 
 import CourseNew from '~/pages/CourseNew';
 import EditCourseInfo from '~/pages/EditCourseInfo';
@@ -52,7 +55,7 @@ const publicRoutes = [
     { path: config.routes.watch, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.logout, component: Logout, layout: HeaderOnly },
     { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly, auth: StudentRoute },
-    { path: config.routes.search, component: Search, layout: null },
+    { path: config.routes.search, component: Search, layout: HeaderOnly },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
     { path: config.routes.cart, component: CartPage, layout: HeaderOnly},
@@ -75,6 +78,8 @@ const publicRoutes = [
     { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly },
     { path: config.routes.verify, component: VerifyPage, layout: HeaderOnly },
     { path: config.routes.resetPassword, component: ResetPasswordPage, layout: HeaderOnly },
+    { path: config.routes.detail, component: Detail, layout: HeaderOnly },
+    { path: config.routes.subject, component: CoursesOfOneSubject, layout: HeaderTabs }, 
 ];
 
 const privateRoutes = [];

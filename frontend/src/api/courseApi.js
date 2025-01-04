@@ -16,7 +16,17 @@ const courseApi = {
   },
   // API đăng ký
   getCourse: (courseSlug) => {
-    return axiosInstance.get(`/course/${courseSlug}`);
+    return axiosInstance.get(`/course/${courseSlug}`).then(response => {
+      console.log('Course data:', response.data); // Thêm log dữ liệu
+      return response;
+    });
+  },
+
+  getCoursesBySubject: (subjectSlug) => {
+    return axiosInstance.get(`/subject/${subjectSlug}`).then(response => {
+      console.log('Course data:', response.data); // Thêm log dữ liệu
+      return response;
+    });
   },
   getCourseInfo: (courseSlug) => {
     return axiosInstance.get(`/course/course-info/${courseSlug}`);
@@ -53,6 +63,11 @@ const courseApi = {
   deleteSection: (courseSlug, sectionId) => {
     return axiosInstance.delete(`/course/${courseSlug}/section/${sectionId}`);
   },
+
+  searchCourses: (query) => {
+    return axiosInstance.get('/search', { params: { query } }); // Gửi từ khóa vào query string
+  }
+
 };
 
 export default courseApi;

@@ -80,18 +80,27 @@ class CourseController{
         res.status(500).json({ message: 'Lỗi máy chủ', error: error.message });
       }
   }
-    async getLession(req, res, next) {
-        try {
-            const lession = await CourseService.getLession(req.params.slug, req.params.slugLesson);
-        res.json(lession);
-        } catch (error) {
-            res.status(500).json({ message: 'Lỗi máy chủ' });
-        }
+  async getLession(req, res, next) {
+      try {
+          const lession = await CourseService.getLession(req.params.slug, req.params.slugLesson);
+      res.json(lession);
+      } catch (error) {
+          res.status(500).json({ message: 'Lỗi máy chủ' });
+      }
+  }
+  async getLessionById(req, res, next) {
+      try {
+          const lession = await CourseService.getLessionById(req.params.slug, req.params.id);
+      res.json(lession);
+    } catch (error) {
+      res.status(500).json({ message: 'Lỗi máy chủ' });
     }
-    async getLessionById(req, res, next) {
+  }
+
+    async getCoursesBySubject(req, res, next) {
         try {
-            const lession = await CourseService.getLessionById(req.params.slug, req.params.id);
-        res.json(lession);
+            const courses = await CourseService.getCoursesBySubject(req.params.subjectSlug);
+            res.json(courses);
         } catch (error) {
             res.status(500).json({ message: 'Lỗi máy chủ' });
         }
@@ -202,6 +211,21 @@ class CourseController{
   };  
 
  
+
+    async searchCourses(req, res, next) {
+        try {
+            const { query } = req.query; // Lấy từ khóa tìm kiếm từ query string
+            if (!query) {
+                return res.status(400).json({ message: 'Thiếu từ khóa tìm kiếm' });
+            }
+
+            const courses = await CourseService.searchCourses(query); // Gọi hàm tìm kiếm trong CourseService
+            res.json(courses); // Trả về danh sách khóa học
+        } catch (error) {
+            res.status(500).json({ message: 'Lỗi máy chủ' });
+        }
+    }
+
 }
 
 module.exports = new CourseController();

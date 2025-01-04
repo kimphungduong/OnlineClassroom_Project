@@ -31,6 +31,13 @@ router.get('/:slug/:lessonId/notes',CourseController.getNotes);
 router.get('/:slug/:slugLesson',CourseController.getLession);
 router.get('/:slug/:id/learn',CourseController.getLessionById);
 router.post('/:lessonId/notes',CourseController.addNote);
+
+
+router.get('/subject/:subjectSlug', CourseController.getCoursesBySubject);
+router.get('/', CourseController.getListCourse);
+router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
+router.get('/:slug', CourseController.getCourse);
+router.get('/:slug/:slugLesson', CourseController.getLession);
 // route là đường dẫn. có 4 loại gọi api cơ bản là 
 // POST nạp dataset mới (json)
 // GET trả về dataset cần (json)
