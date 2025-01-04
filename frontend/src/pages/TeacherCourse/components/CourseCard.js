@@ -43,7 +43,7 @@ const CourseCard = ({ course }) => {
           variant="outlined"
           onClick={() => handleNavigate(`/members-stat/${course.slug}`)}
         >
-          Tiến độ
+          Tiến độ học sinh
         </Button>
         <Button
           size="small"
