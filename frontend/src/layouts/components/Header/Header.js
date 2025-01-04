@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { Grid2 as Grid, IconButton, Drawer, List, ListItem, ListItemText, Box, Container } from '@mui/material';
+import React, { useState, memo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Grid2 as Grid, IconButton, Drawer, List, ListItem, ListItemText, Box, Container, Popover,Typography, } from '@mui/material';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBars,
@@ -27,6 +28,7 @@ import images from '~/assets/images';
 import classNames from 'classnames/bind';
 import { useMediaQuery } from '@mui/material'; // Import useMediaQuery
 import {store} from '~/store'; // Import Redux store
+import initializeSocket from '~/services/socketService';
 
 const cx = classNames.bind(styles);
 
@@ -54,12 +56,35 @@ const MENU_ITEMS = [
 ];
 
 function Header() {
+    console.log("Header render");
+    const navigate = useNavigate();
     const currentUser = store.getState().auth.accessToken !==null; // Get current user from Redux store
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchVisible, setSearchVisible] = useState(false); // State to control search visibility
+    const [socket, setSocket] = useState(null); // State to store socket instance
+    const [totalNotification, setTotalNotification] = useState(0); // State to store total notification
 
     // Check screen size using useMediaQuery
     const isMobile = useMediaQuery('(max-width:768px)'); // Screen size smaller than 768px
+
+    React.useEffect(() => {
+        const socketInstance = initializeSocket();
+        setSocket(socketInstance);
+
+        socketInstance.on('lenNotification', (len) => {
+            setTotalNotification(len);
+        });
+
+        socketInstance.emit('getLenNotification');
+
+        socketInstance.on('getLenNotification', (len) => {
+            setTotalNotification(len);
+        })
+
+        return () => {
+            socketInstance.disconnect(); // Ngắt kết nối khi rời phòng
+        };
+    },[]);
 
     const handleMenuChange = (menuItem) => {
         switch (menuItem.type) {
@@ -85,6 +110,9 @@ function Header() {
     const toggleSearchVisibility = () => {
         setSearchVisible(!searchVisible);
     };
+
+
+
 
     return (
         <header className={cx('wrapper')}>
@@ -121,10 +149,14 @@ function Header() {
                                             </button>
                                         </Tippy>
                                         <Tippy delay={[0, 50]} content="Thông báo" placement="bottom">
-                                            <button className={cx('action-btn')}>
-                                                <FontAwesomeIcon icon={faBell} />
-                                                <span className={cx('badge')}>12</span>
-                                            </button>
+                                        <IconButton
+                                            className={cx('action-btn')}
+                                            onClick={()=> navigate('/notification') }
+                                            
+                                        >
+                                            <FontAwesomeIcon icon={faBell} />
+                                            {totalNotification > 0 && (<span className={cx('badge')}>{totalNotification}</span>)}
+                                        </IconButton>
                                         </Tippy>
                                     </>
                                 ) : (

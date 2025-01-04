@@ -25,6 +25,7 @@ import LoginPage from '~/pages/LoginPage';
 import RegisterPage from '~/pages/RegisterPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
 import TeacherMessagePage from '~/pages/TeacherMessagePage';
+import NotificationPage from '~/pages/NotificationPage';
 
 // Public routes
 const publicRoutes = [
@@ -44,6 +45,7 @@ const publicRoutes = [
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
     { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly, auth: TeacherRoute },
+    { path : config.routes.notification, component : NotificationPage, layout : HeaderOnly },
 ];
 
 const privateRoutes = [];

@@ -3,11 +3,17 @@ const Message = require("./api/models/Message");
 const User = require("./api/models/User");
 const Course = require("./api/models/Course");
 const Student = require("./api/models/Student");
+const {getLengthNotificationsUnRead} = require("./api/services/NotificationService");
 
+let ioInstance;
 // Map ánh xạ userId với socket.id
 const userSocketMap = {};
 
-module.exports = (io) => {
+module.exports.getUserSocketId = (userId) => userSocketMap[userId];
+
+module.exports.initSocket = (io) => {
+  ioInstance = io
+
   // Middleware xác thực JWT cho Socket.IO
   io.use((socket, next) => {
     const token = socket.handshake.auth.token;
@@ -212,6 +218,7 @@ module.exports = (io) => {
     });
 
     socket.on("selectStudent", async ({receiverID, courseID}) => {
+      console.log("quang check")
       await Message.updateMany(
           {
             $and: [
@@ -230,63 +237,75 @@ module.exports = (io) => {
 
     // Xử lý sự kiện lấy tất cả đoạn chat
     socket.on("getAllMsg", async () => {
-      const chatRoom = await Message.find({
-        $or: [
-          { sender: userId },
-          { receiver: userId },
-        ],
-      })
-      const uniqueMessages = []
-      const seen = new Set()
-      
-      chatRoom
-          .sort((a, b) => b.sentAt - a.sentAt)
-          .forEach((e) => {
-            const key = [
-              e.course.toString(),
-              [e.sender, e.receiver].sort().join('_'),
-            ].join('|');
-
-            if (!seen.has(key)) {
-              uniqueMessages.push(e);
-              seen.add(key);
-            }
-          })
-
-      const chatRoomData = uniqueMessages.map(async (e, i) => {
-        const course = await Course.findOne({
-          _id : e.course
+      try {
+        console.log("check msg")
+        const chatRoom = await Message.find({
+          $or: [
+            { sender: userId },
+            { receiver: userId },
+          ],
         })
-        const studentId = e.sender.toString() === userId ? e.receiver : e.sender
-        const student = await Student.findOne({ _id : studentId })
+        const uniqueMessages = []
+        const seen = new Set()
 
-        if(course === null){
-          return null
+        chatRoom
+            .sort((a, b) => b.sentAt - a.sentAt)
+            .forEach((e) => {
+              const key = [
+                e.course.toString(),
+                [e.sender, e.receiver].sort().join('_'),
+              ].join('|');
+
+              if (!seen.has(key)) {
+                uniqueMessages.push(e);
+                seen.add(key);
+              }
+            })
+
+        const chatRoomData = uniqueMessages.map(async (e, i) => {
+          const course = await Course.findOne({
+            _id : e.course
+          })
+          const studentId = e.sender.toString() === userId ? e.receiver : e.sender
+          const student = await Student.findOne({ _id : studentId })
+
+          if(course === null){
+            return null
+          }
+
+          return {
+            id : i,
+            teacherId : userId,
+            studentId,
+            courseName : course.name,
+            studentName : student.name,
+            studentAvatar : "https://via.placeholder.com/50",
+            courseId : course._id,
+            readed : e.readed
+          }
+        })
+
+        const chatRoomHeader = await Promise.all(chatRoomData)
+
+        const receiverSocketId = userSocketMap[userId];
+
+        if (receiverSocketId) {
+          // Gửi tin nhắn đến người nhận qua socket ID
+          io.to(receiverSocketId).emit("getAllMsg", chatRoomHeader);
         }
-
-        return {
-          id : i,
-          teacherId : userId,
-          studentId,
-          courseName : course.name,
-          studentName : student.name,
-          studentAvatar : "https://via.placeholder.com/50",
-          courseId : course._id,
-          readed : e.readed
-        }
-      })
-
-      const chatRoomHeader = await Promise.all(chatRoomData)
-
-      const receiverSocketId = userSocketMap[userId];
-
-      if (receiverSocketId) {
-        // Gửi tin nhắn đến người nhận qua socket ID
-        io.to(receiverSocketId).emit("getAllMsg", chatRoomHeader);
+      }
+      catch (e) {
+        console.error("Error : " + e)
       }
 
     })
 
+    socket.on("getLenNotification", async () => {
+
+      const len = await getLengthNotificationsUnRead(userId)
+      socket.emit("getLenNotification", len);
+
+    })
     // Xử lý sự kiện ngắt kết nối
     socket.on("disconnect", () => {
       delete userSocketMap[userId]; // Xóa socket.id khỏi map
@@ -294,3 +313,11 @@ module.exports = (io) => {
     });
   });
 };
+
+
+module.exports.getIo = () => {
+  if (!ioInstance) {
+    throw new Error("Socket.io not initialized!");
+  }
+  return ioInstance;
+}

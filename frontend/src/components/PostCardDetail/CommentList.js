@@ -10,6 +10,8 @@ import {
 } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 
 const CommentList = ({ comments, handleCommentVote }) => (
@@ -104,7 +106,7 @@ const CommentList = ({ comments, handleCommentVote }) => (
                   {comment.name}
                 </Typography>
                 <Typography variant="caption" color="textSecondary">
-                  {comment.createdAt}
+                  {formatDistanceToNow(parseISO(comment.createdAt), { addSuffix: true, locale: vi })}
                 </Typography>
               </div>
             </div>

@@ -11,6 +11,8 @@ import {
 } from "@mui/material";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 const PostCard = ({
   avatar,
@@ -99,7 +101,7 @@ const PostCard = ({
             {name}
           </Typography>
           <Typography variant="subtitle2" color="textSecondary">
-            {date}
+            {formatDistanceToNow(parseISO(date), { addSuffix: true, locale: vi })}
           </Typography>
         </div>
       </div>

@@ -5,6 +5,7 @@ const noteRouter=require('./note');
 const settingRouter=require('./setting');
 const paymentRouter=require('./payment');
 const cartRouter=require('./cart');
+const notificationRouter=require('./notification');
 const {authenticateJWT, authorizeTeacher, authorizeStudent}=require('../middlewares/AuthMiddleware');
 
 function router(app)
@@ -15,7 +16,7 @@ function router(app)
     app.use('/api/setting',authenticateJWT , settingRouter);
     app.use('/api/payment',authenticateJWT , paymentRouter);
     app.use('/api/cart',authenticateJWT , cartRouter);
-    
+    app.use('/api/notification', authenticateJWT, notificationRouter);
 
 }
 

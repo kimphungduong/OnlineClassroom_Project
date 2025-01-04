@@ -3,6 +3,7 @@ const ForumPost = require("../models/ForumPost");
 const Student = require("../models/Student");
 const Teacher = require("../models/Teacher");
 const Comment = require("../models/Comment");
+const {addCommentForumNotification} = require("./NotificationService")
 
 module.exports.addPost = async(title, content, userId, slug) => {
     try {
@@ -132,6 +133,8 @@ module.exports.addComment = async(slug, postId, userId, content) =>{
         const result = await Student.findOne({ _id: userId  })
             ?? await Teacher.findOne({ _id: userId });
         const { name, avatar } = result || {};
+
+        addCommentForumNotification(courseId, userId, postId)
 
         return {
             ...comment.toObject(),

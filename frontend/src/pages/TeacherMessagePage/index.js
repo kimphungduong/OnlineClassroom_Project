@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, TextField, Button, Paper, Avatar, List, ListItem, ListItemText } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import initializeSocket from '~/services/socketService';
+import { formatDistanceToNow, parseISO } from 'date-fns';
+import { vi } from 'date-fns/locale';
 
 const TeacherMessages = () => {
   const [conversations, setConversations] = useState([]);
@@ -30,15 +32,23 @@ const TeacherMessages = () => {
     // Lắng nghe sự kiện trả về các cuộc hội thoại
     socketInstance.on('getAllMsg', (allMsg) => {
       setConversations(allMsg);
-      
     });
 
     // Lắng nghe sự kiện tin nhắn mới
     socketInstance.on('chat message', (msg) => {
       setLoadRoom((prev) => !prev);
+
+      if(!currentStudentRef.current) return;
+
       if (currentStudentRef.current && msg.studentId === currentStudentRef.current.studentId) {
         setMessages((prevMessages) => [...prevMessages, msg]);
       }
+
+      socketInstance.emit("selectStudent", {
+        receiverID: currentStudentRef.current.studentId,
+        courseID: currentStudentRef.current.courseId,
+      })
+
     });
 
     return () => {
@@ -48,7 +58,7 @@ const TeacherMessages = () => {
 
   useEffect(() => {
     currentStudentRef.current = currentStudent;
-  }, [currentStudent]);
+  }, [conversations,currentStudent]);
 
   useEffect(() => {
     scrollToBottom(); // Cuộn xuống cuối mỗi khi danh sách tin nhắn thay đổi
@@ -56,8 +66,9 @@ const TeacherMessages = () => {
 
   useEffect(() => {
     socket?.emit('getAllMsg');
+    if(!currentStudentRef.current) return;
     handleSelectStudent(currentStudentRef.current)
-  }, [messages, loadRoom]);
+  }, [loadRoom]);
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
@@ -80,8 +91,19 @@ const TeacherMessages = () => {
   };
 
   const handleSelectStudent = (conversation) => {
+    currentStudentRef.current = conversation;
     setCurrentStudent(conversation);
     if(!socket) return
+
+    const newConversations = conversations.map((item) => {
+      if (item.id === conversation.id) {
+        return { ...item, readed: true };
+      }
+      return item;
+    })
+
+    setConversations(newConversations);
+
     socket.emit("loadMessaged", {
       receiverID: conversation.studentId,
       courseID: conversation.courseId,
@@ -113,10 +135,10 @@ const TeacherMessages = () => {
         </Typography>
         <List>
           {conversations.map((conversation) => (
+            console.log(conversation),
             <ListItem
               key={conversation?.id || ""}
               button
-              selected={currentStudent?.id === conversation.id}
               onClick={() => handleSelectStudent(conversation)}
               sx={{
                 '&.Mui-selected': {
@@ -198,7 +220,7 @@ const TeacherMessages = () => {
                   {message.message}
                 </Typography>
                 <Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
-                  {new Date(message.timestamp).toLocaleTimeString()}
+                  {formatDistanceToNow(parseISO(message.timestamp), { addSuffix: true, locale: vi })}
                 </Typography>
               </Paper>
             </Box>
