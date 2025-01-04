@@ -1,10 +1,10 @@
 const mongoose = require('mongoose');
-const submission = require('./submission');
-const Question = require('./question');
+const submission = require('./Submission');
+const Question = require('./Question');
 
 const testSchema = new mongoose.Schema({
-  name: { type: String, required: true, unique: true },
-  lesson: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson', required: true },
+  name: { type: String, required: true},
+  course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true },
   questions: [{type: mongoose.Schema.Types.ObjectId, ref: 'Question'}],  // Danh sách câu hỏi
   createdAt: { type: Date, default: Date.now },
   submission: [submission]

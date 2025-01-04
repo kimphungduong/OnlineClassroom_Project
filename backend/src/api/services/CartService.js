@@ -19,7 +19,7 @@ class CartService {
         } else {
             cart.courseIds = [...cart.courseIds, ...courseIds]; // Thêm vào cuối mảng items
         }
-        return await cart.save();
+        return await cart.save(); 
     }
 
     async removeFromCart(userId, courseId) {

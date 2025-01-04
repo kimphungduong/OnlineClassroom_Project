@@ -13,7 +13,7 @@ const courseSchema = new mongoose.Schema({
   image: { type: String, required: true },
   teacher: { type: mongoose.Schema.Types.ObjectId, ref: 'Teacher', required: true },
   students: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Student' }],
-  subjects: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Subject' }],
+  subject: { type: mongoose.Schema.Types.ObjectId, ref: 'Subject' },
   sections: [{
     title: { type: String, required: true },
     lessons: [{ type: mongoose.Schema.Types.Mixed, refPath: 'lessonsType' }],
