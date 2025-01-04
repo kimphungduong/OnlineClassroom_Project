@@ -4,11 +4,11 @@ class CourseController{
 
   async createCourse(req, res) {
     try {
-      const courseData = req.body;
-      // console.log(courseData);
-
+      const courseData = req.body; // Lấy dữ liệu từ body request
+      const teacherId = req.user.userId; // Lấy thông tin teacher từ middleware xác thực (req.user)
+  
       // Gọi service để tạo khóa học
-      const course = await CourseService.createCourse(courseData);
+      const course = await CourseService.createCourse(courseData, teacherId);
 
       // Trả về khóa học đã tạo
       return res.status(201).json(course);

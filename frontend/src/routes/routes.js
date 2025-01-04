@@ -17,6 +17,7 @@ import Search from '~/pages/Search';
 import Dashboard from '~/pages/Dashboard';
 import CoursePage from '~/pages/CoursePage';
 
+import TeacherCourse from '~/pages/TeacherCourse';
 import CourseNew from '~/pages/CourseNew';
 import EditCourseInfo from '~/pages/EditCourseInfo';
 
@@ -46,6 +47,7 @@ const publicRoutes = [
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
 
+    { path: config.routes.teacherCourse, component: TeacherCourse, layout: HeaderOnly },
     { path: config.routes.courseNew, component: CourseNew, layout: HeaderOnly },
     { path: config.routes.editCourseInfo, component: EditCourseInfo, layout: HeaderOnly },
     { path: config.routes.courseEdit, component: CourseEdit, layout: HeaderOnly },

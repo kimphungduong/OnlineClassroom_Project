@@ -88,9 +88,6 @@ const CourseEdit = () => {
         {courseName ? `Chỉnh sửa bài giảng: ${courseName}` : 'Chỉnh sửa bài giảng'}
       </Typography>
 
-      <Button variant="contained" color="secondary" sx={{ mb: 3 }} onClick={handleViewStats}>
-        Xem thống kê khóa học
-      </Button>
 
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         {sections.map((section) => (
