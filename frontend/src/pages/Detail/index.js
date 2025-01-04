@@ -35,7 +35,7 @@ const CourseDetailPage = () => {
   }
 
   // Cập nhật dữ liệu khi course có đầy đủ các trường
-  const benefits = course.benefits || []; // Nếu benefits không có, gán là mảng rỗng
+  const benefits = course.description || []; // Nếu benefits không có, gán là mảng rỗng
 
   return (
     <Container maxWidth={false} disableGutters sx={{ padding: '0', position: 'relative' }}>
@@ -70,7 +70,7 @@ const CourseDetailPage = () => {
           <Typography variant="body1">(87 rating)</Typography>
         </Box>
         <Typography variant="body1" paragraph sx={{ mt: 2, ml: 30 }}>
-          {course.lessons.length} bài giảng
+          {course.sections.length} bài giảng
         </Typography>
       </Box>
 
@@ -85,7 +85,7 @@ const CourseDetailPage = () => {
         <Typography variant="h5" gutterBottom>
           Bạn sẽ học được gì?
         </Typography>
-        {benefits.length > 0 ? (
+        {/* {benefits.length > 0 ? (
           <ul style={{ paddingLeft: '20px' }}>
             {benefits.map((benefit, index) => (
               <li key={index}>
@@ -95,7 +95,7 @@ const CourseDetailPage = () => {
           </ul>
         ) : (
           <Typography variant="body1">Chưa có thông tin về lợi ích khóa học.</Typography>
-        )}
+        )} */}
       </Box>
 
       {/* Phần 3: Box nổi - Đè lên */}

@@ -1,47 +1,140 @@
-import React, { useState } from 'react';
-import { Grid, Box,Tabs, Tab, Container } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Grid, Box, Tabs, Tab, Container, Typography } from '@mui/material';
 import CourseBreadcrumbs from '~/layouts/components/CustomBreadcrumbs';
 import VideoPlayer from '~/layouts/components/VideoPlayer';
 import NotesSection from '~/layouts/components/NotesSection';
 import CourseSidebar from '~/layouts/components/CourseSidebar';
+import { useParams } from 'react-router-dom';
+import {getCourse, getLesson} from '~/services/courseService';
+import {addNote, getNotes, updateNote, deleteNote} from '~/services/noteService';
+import { useRef } from 'react';
+import ChatRoom from '~/components/ChatRoom';
+import ReactQuill from 'react-quill';
 
 const CoursePage = () => {
-    const [tabIndex, setTabIndex] = useState(0);
-      
-    const handleChange = (event, newValue) => {
-      setTabIndex(newValue);
-      //onTabChange(newValue);
+  const { slugCourse, slugLesson } = useParams();
+  const [tabIndex, setTabIndex] = useState(0);
+  const [courseData, setCourseData] = useState(null);
+  const [lessonData, setLessonData] = useState(null);
+  const [notesData, setNotesData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [lessonId, setLessonId] = useState(null);
+
+  // Tạo videoRef
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const fetchCourseAndLessonData = async () => {
+      try {
+        const courseResponse = await getCourse(slugCourse);
+        setCourseData(courseResponse);
+        // gọi get Course
+        if (slugLesson) {
+          const lessonResponse = await getLesson(slugCourse, slugLesson);
+          setLessonData(lessonResponse);
+          setLessonId(lessonResponse._id);
+
+          const notesResponse = await getNotes(slugCourse, lessonResponse._id);
+          setNotesData(notesResponse);
+        }
+
+        setLoading(false);
+      } catch (err) {
+        setError(err);
+        setLoading(false);
+      }
     };
-    const breadcrumbsLinks = [
-        { href: '/', label: 'Home' },
-        { href: '/courses', label: 'Courses' },
-        { href: '/courses/1', label: 'Course 1' },
-      ];
+
+    fetchCourseAndLessonData();
+  }, [slugCourse, slugLesson]);
+
+  const handleChange = (event, newValue) => {
+    setTabIndex(newValue);
+  };
+
+  const breadcrumbsLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/courses', label: 'Courses' },
+    { href: `/courses/${slugCourse}`, label: courseData?.name || 'Loading...' }
+  ];
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
   return (
-    <Container maxWidth='false' sx={{mt:1, p:'5px 10px  !important', background: '#f4f4f4'}}>
-      <Box sx={{ backgroundColor: 'white', p:1,  mb: 1, borderRadius: 1, boxShadow: 0.5 }}> 
+    <Container maxWidth="false" sx={{ mt: 1, p: '5px 10px !important', background: 'white' }}>
+      <Box sx={{ backgroundColor: 'white', p: 1, mb: 1, border: '1px solid rgba(0, 0, 0, 0.05)', borderRadius: 1, boxShadow: '0px 1px 2px rgba(0, 0, 0, 0.2)' }}>
         <CourseBreadcrumbs links={breadcrumbsLinks} current="Current Page" />
       </Box>
       <Grid container spacing={2}>
         {/* Phần Video và Tabs */}
-        <Grid item xs={12} md={8} sx={{  overflowY: 'auto',  minHeight:'100vh'}}>
-          <VideoPlayer url='https://www.youtube.com/watch?v=7nFsambeTqY' title='Vong linh đau khổ muốn giải nghệ - Tập 10 [Việt sub]' />
-            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={tabIndex} onChange={handleChange} aria-label="tabs">
-                    <Tab label="Các thông báo" />
-                    <Tab label="Đánh giá và phản hồi" />
-                    <Tab label="Ghi chú" />
-                </Tabs>
+        <Grid item xs={12} md={8} sx={{ overflowY: 'auto', minHeight: '100vh' }}>
+          <VideoPlayer url={lessonData?.videoUrl} title={lessonData?.name} videoRef={videoRef} />
+          <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+            <Tabs value={tabIndex} onChange={handleChange} aria-label="tabs">
+              <Tab label="Thông tin bài giảng" />
+              <Tab label="Đánh giá và phản hồi" />
+              <Tab label="Ghi chú" />
+            </Tabs>
+          </Box>
+          {tabIndex === 0 && (
+            <Box sx={{ mt: 3 }}>
+              <ReactQuill
+                value={lessonData?.description || ''}
+                readOnly={true}
+                theme="bubble"
+              />
             </Box>
-          <NotesSection />
+          )}
+          {tabIndex === 1 && (
+            <div>
+              <h1>Đánh giá và phản hồi</h1>
+            </div>
+          )}
+          {tabIndex === 2 && (
+          <NotesSection
+            videoRef={videoRef}
+            notesData={notesData}
+            onAddNote={async (newNote) => {
+              try {
+                const response = await addNote(lessonData?._id, newNote.content, newNote.time);
+                setNotesData([...notesData, response]); // Cập nhật ghi chú mới từ server
+              } catch (error) {
+                console.error('Error adding note:', error);
+              }
+            }}
+            onEditNote={async (noteId, content) => {
+              try {
+                const response = await updateNote(noteId, content);
+                const updatedNotes = notesData.map((note) => (note._id === response._id ? response : note));
+                setNotesData(updatedNotes); // Cập nhật ghi chú mới từ server
+              } catch (error) {
+                console.error('Error adding note:', error);
+              }
+            }}
+            onDeleteNote={async (noteId) => {
+              try{
+                const response = await deleteNote(noteId);
+                const updatedNotes = notesData.filter((note) => note._id !== noteId);
+                setNotesData(updatedNotes); // Cập nhật ghi chú mới từ server
+              }
+              catch(error){
+                console.error('Error deleting note:', error);
+              }
+              
+            }}
+          />)}
         </Grid>
 
         {/* Phần Sidebar */}
-        <Grid item xs={12} md={4} sx={{ overflowY: 'auto', minHeight:'100vh'}}>
-          <CourseSidebar />
+        <Grid item xs={12} md={4} sx={{ overflowY: 'auto', minHeight: '100vh' }}>
+          <CourseSidebar sections={courseData?.sections} slugCourse={slugCourse} />
         </Grid>
       </Grid>
+      <ChatRoom userType="student" courseId={courseData._id} />
     </Container>
+
   );
 };
 

@@ -3,44 +3,68 @@ require('dotenv').config();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const redisClient = require('../../configs/redisClient')
-const User = require('../models/User'); // Adjust the path as necessary
+const Teacher = require('../models/Teacher');
+const Student = require('../models/Student');
 
 class AuthService {
   
-  async register(username, password, role, name, email) {
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
+  async register(username, password, role, name, email, phone) {
+    // Kiểm tra tên đăng nhập hoặc email đã tồn tại
+    const existingStudent = await Student.findOne({ $or: [{ username }, { email }] });
+    const existingTeacher = await Teacher.findOne({ $or: [{ username }, { email }] });
+    if (existingStudent || existingTeacher) {
       throw new Error('Tên đăng nhập đã tồn tại');
     }
 
-    const user = new User({ username, password , role, name, email });
-    await user.save();
+    // Kiểm tra role hợp lệ
+    const validRoles = ['student', 'teacher'];
+    if (!validRoles.includes(role)) {
+      throw new Error('Vai trò không hợp lệ');
+    }
+    var user;
+    if (role === 'student') {
+      const student = new Student({ username, password, role, name, email, phone });
+      await student.save();
+      user = student;
+    } else {
+      const teacher = new Teacher({ username, password, role, name, email, phone });
+      await teacher.save();
+      user = teacher;
+    }
+    
 
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5s' });
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
 
     return { accessToken, refreshToken, role: user.role };
   }
+
   async login(username, password) {
-    const user = await User.findOne({ username });
-    if (!user) {
+    const student = await Student.findOne({ username });
+    const teacher = await Teacher.findOne({ username });
+    if (!student && !teacher) {
       throw new Error('Sai tên đăng nhập');
     }
-
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      throw new Error('Sai mật khẩu');
+    var user = student || teacher;
+    try {
+      const isMatch = await user.comparePassword(password);
+      if (!isMatch) {
+        throw new Error('Sai mật khẩu');
+      }
     }
-
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '5s' });
+    catch (err) {
+      throw new Error('Lỗi máy chủ');
+    }
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
 
-    return { accessToken, refreshToken, role: user.role };
+    return { accessToken, refreshToken, role: user.role, name: user.name };
   }
+  
   async requestRefreshToken(refreshToken) {
     if (!refreshToken) throw new Error("You're not authenticated");
   
@@ -56,7 +80,7 @@ class AuthService {
       }
   
       // Tạo mới access token và refresh token
-      const newAccessToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_SECRET, { expiresIn: '5s' });
+      const newAccessToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_SECRET, { expiresIn: '15m' });
       const newRefreshToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
   
       // Cập nhật refresh token mới vào Redis

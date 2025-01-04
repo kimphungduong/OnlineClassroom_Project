@@ -4,24 +4,25 @@ import App from '~/App';
 import reportWebVitals from './reportWebVitals';
 import GlobalStyles from '~/components/GlobalStyles';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-
-import { ThemeProvider } from '@mui/material/styles';
-import theme from './theme';
+import { Provider, useDispatch } from 'react-redux';
+import { store, persistor } from './store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 const clientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    
-    <GoogleOAuthProvider clientId={clientId}>
-        <React.StrictMode>
-            <ThemeProvider theme={theme}>
-                <GlobalStyles>
-                    <App />
-                </GlobalStyles>
-            </ThemeProvider>
-        </React.StrictMode>
-    </GoogleOAuthProvider>,
+    <Provider store={store}> 
+        <PersistGate loading={null} persistor={persistor}>
+            <GoogleOAuthProvider clientId={clientId}>
+                <React.StrictMode>
+                    <GlobalStyles>
+                        <App />
+                    </GlobalStyles>
+                </React.StrictMode>
+            </GoogleOAuthProvider>
+        </PersistGate>
+    </Provider>,
 );
 
 // If you want to start measuring performance in your app, pass a function

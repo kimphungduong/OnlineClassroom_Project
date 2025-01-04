@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 
 const CustomBreadcrumbs = ({ links, current }) => {
   return (
-    <Breadcrumbs aria-label="breadcrumb" sx={{ marginBottom: 2 }}>
+    <Breadcrumbs aria-label="breadcrumb">
       {links.map((link, index) => (
         <Link key={index} underline="hover" color="inherit" href={link.href}>
           {link.label}

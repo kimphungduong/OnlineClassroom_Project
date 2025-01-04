@@ -9,6 +9,15 @@ export const getListCourse = async () => {
         throw error;
     }
 };
+export const getMyCourse = async (slug) => {
+    try {
+        const response = await courseApi.getMyCourse(slug);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching course with lessons:', error);
+        throw error;
+    }
+};
 
 export const getCourse = async (slug) => {
     try {

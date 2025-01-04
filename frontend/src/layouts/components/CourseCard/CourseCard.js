@@ -34,7 +34,7 @@ const CourseCard = ({ course }) => {
                 <Box display="flex" gap={2}>
                     <Button
                         component={Link}
-                        to={`/courses/${course.id}/learn`}
+                        to={`/course/${course.slug}/${course.sections[0].lessons[0].lessonId}`}
                         variant="contained"
                         color="success"
                         className={cx('course-card-button')}

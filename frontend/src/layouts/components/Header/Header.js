@@ -26,6 +26,7 @@ import styles from './Header.module.scss';
 import images from '~/assets/images';
 import classNames from 'classnames/bind';
 import { useMediaQuery } from '@mui/material'; // Import useMediaQuery
+import {store} from '~/store'; // Import Redux store
 
 const cx = classNames.bind(styles);
 
@@ -53,7 +54,7 @@ const MENU_ITEMS = [
 ];
 
 function Header() {
-    const currentUser = true;
+    const currentUser = store.getState().auth.accessToken !==null; // Get current user from Redux store
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchValue, setSearchValue] = useState(''); // State quản lý từ khóa tìm kiếm
     const navigate = useNavigate(); // Sử dụng điều hướng
@@ -70,7 +71,7 @@ function Header() {
     };
 
     const userMenu = [
-        { icon: <FontAwesomeIcon icon={faUser} />, title: 'Hồ sơ của tôi', to: '/@hoaa' },
+        { icon: <FontAwesomeIcon icon={faUser} />, title: 'Hồ sơ của tôi', to: '/dashboard' },
         { icon: <FontAwesomeIcon icon={faGear} />, title: 'Cài đặt', to: '/settings' },
         ...MENU_ITEMS,
         { icon: <FontAwesomeIcon icon={faSignOut} />, title: 'Đăng xuất', to: '/logout', separate: true },
@@ -147,25 +148,25 @@ function Header() {
                                 {currentUser ? (
                                     <>
                                         <Tippy delay={[0, 50]} content="Khóa học của tôi" placement="bottom">
-                                            <Link className={cx('action-btn')} to="/my-courses">
+                                            <Link className={cx('action-btn')} to="/my-course">
                                                 Khóa học của tôi
                                             </Link>
                                         </Tippy>
                                         <Tippy delay={[0, 50]} content="Giỏ hàng" placement="bottom">
-                                            <button className={cx('action-btn')}>
+                                            <Link className={cx('action-btn')} to="/cart">
                                                 <FontAwesomeIcon icon={faShoppingCart} />
-                                            </button>
+                                            </Link>
                                         </Tippy>
                                         <Tippy delay={[0, 50]} content="Thông báo" placement="bottom">
-                                            <button className={cx('action-btn')}>
+                                            <Link className={cx('action-btn')}>
                                                 <FontAwesomeIcon icon={faBell} />
                                                 <span className={cx('badge')}>12</span>
-                                            </button>
+                                            </Link>
                                         </Tippy>
                                     </>
                                 ) : (
                                     <>
-                                        <Button text>Đăng ký</Button>
+                                        <Button text to="/register">Đăng ký</Button>
                                         <Button primary to="/login">
                                             Đăng nhập
                                         </Button>
