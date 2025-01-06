@@ -45,43 +45,44 @@ import PaymentPage from '~/pages/PaymentPage';
 import DefaultLayout from '~/layouts';
 import VerifyPage from '~/pages/VerifyPage';
 import ResetPasswordPage from '~/pages/ResetPassword';
+import LoginPage from '~/pages/LoginPage';
 
 
 //import Footer from '~/layouts/components/Footer';
 
 // Public routes
 const publicRoutes = [
-    { path: config.routes.home, component: Home, layout: HeaderOnly },
+    { path: config.routes.home, component: Home, layout: HeaderTabs, auth: StudentRoute },
     //{ path: config.routes.login, component: Login, layout: HeaderOnly },
     { path: config.routes.courseLearn, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.logout, component: Logout, layout: HeaderOnly },
     { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.search, component: Search, layout: HeaderOnly },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
-    { path: config.routes.course, component: CoursePage, layout: HeaderOnly },
-    { path: config.routes.cart, component: CartPage, layout: HeaderOnly},
-    { path: config.routes.login, component: Login, layout: HeaderOnly },
+    { path: config.routes.course, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
+    { path: config.routes.cart, component: CartPage, layout: HeaderOnly, auth: StudentRoute},
+    { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
 
-    { path: config.routes.teacherCourse, component: TeacherCourse, layout: HeaderOnly },
-    { path: config.routes.courseNew, component: CourseNew, layout: HeaderOnly },
-    { path: config.routes.editCourseInfo, component: EditCourseInfo, layout: HeaderOnly },
-    { path: config.routes.courseEdit, component: CourseEdit, layout: HeaderOnly },
+    { path: config.routes.teacherCourse, component: TeacherCourse, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.courseNew, component: CourseNew, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.editCourseInfo, component: EditCourseInfo, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.courseEdit, component: CourseEdit, layout: HeaderOnly, auth: TeacherRoute },
 
-    { path: config.routes.lessonEdit, component: LessonEdit, layout: HeaderOnly },
-    { path: config.routes.lessonNew, component: LessonNew, layout: HeaderOnly },
-    { path: config.routes.courseStat, component: CourseStat, layout: HeaderOnly },
-    { path: config.routes.membersStat, component: MembersStat, layout: HeaderOnly },
-    { path: config.routes.testNew, component: TestNew, layout: HeaderOnly },
-    { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly },
-    { path: config.routes.testPage, component: TestPage, layout: HeaderOnly },
+    { path: config.routes.lessonEdit, component: LessonEdit, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.lessonNew, component: LessonNew, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.courseStat, component: CourseStat, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.membersStat, component: MembersStat, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.testNew, component: TestNew, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.testPage, component: TestPage, layout: HeaderOnly, auth: StudentRoute },
 
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
-    { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly },
+    { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.verify, component: VerifyPage, layout: HeaderOnly },
     { path: config.routes.resetPassword, component: ResetPasswordPage, layout: HeaderOnly },
     { path: config.routes.detail, component: Detail, layout: HeaderOnly },
-    { path: config.routes.subject, component: CoursesOfOneSubject, layout: HeaderTabs }, 
+    { path: config.routes.subject, component: CoursesOfOneSubject, layout: HeaderTabs, auth: StudentRoute }, 
 ];
 
 const privateRoutes = [];

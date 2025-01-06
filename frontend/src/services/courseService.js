@@ -21,7 +21,7 @@ export const getMyCourse = async (slug) => {
 
 export const getCourse = async (slug) => {
     try {
-        const response = await courseApi.getCourse(slug);
+        const response = await courseApi.getCourseLearn(slug);
         return response.data;
     } catch (error) {
         console.error('Error fetching course:', error);

@@ -21,9 +21,13 @@ const courseApi = {
       return response;
     });
   },
-
+  getCourseLearn: (courseSlug) => {
+    return axiosInstance.get(`/course/learn/${courseSlug}`).then(response => {
+      return response;
+    });
+  },
   getCoursesBySubject: (subjectSlug) => {
-    return axiosInstance.get(`/subject/${subjectSlug}`).then(response => {
+    return axiosInstance.get(`/course/subject/${subjectSlug}`).then(response => {
       console.log('Course data:', response.data); // Thêm log dữ liệu
       return response;
     });

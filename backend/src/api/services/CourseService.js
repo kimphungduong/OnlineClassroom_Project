@@ -377,7 +377,7 @@ class CourseService {
         }
 
         console.log('Tìm khóa học thuộc môn học:', subject._id);
-        const courses = await Course.find({ subjects: subject._id }).populate('teacher');
+        const courses = await Course.find({ subject: subject._id }).populate('teacher');
         return courses;
     } catch (error) {
         console.error('Lỗi khi lấy danh sách khóa học theo môn học:', error);

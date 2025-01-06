@@ -11,8 +11,12 @@ router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
 router.get('/my-courses',CourseController.getMyCourse);
+router.get('/subject/:subjectSlug', CourseController.getCoursesBySubject);
 
+
+router.get('/learn/:slug', CourseController.getCourseWithLessons);
 router.get('/:slug', CourseController.getCourse);
+
 router.get('/:slug/lessons', CourseController.getLessonsByCourseSlug); // Corrected endpoint
 
 // Cập nhật tiêu đề section
@@ -33,7 +37,6 @@ router.get('/:slug/:id/learn',CourseController.getLessionById);
 router.post('/:lessonId/notes',CourseController.addNote);
 
 
-router.get('/subject/:subjectSlug', CourseController.getCoursesBySubject);
 router.get('/', CourseController.getListCourse);
 router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
 router.get('/:slug', CourseController.getCourse);

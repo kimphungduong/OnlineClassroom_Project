@@ -56,7 +56,7 @@ const CoursePage = () => {
   const breadcrumbsLinks = [
     { href: '/', label: 'Home' },
     { href: '/courses', label: 'Courses' },
-    { href: `/courses/${slugCourse}`, label: courseData?.name || 'Loading...' }
+    { href: `/detail/${slugCourse}`, label: courseData?.name || 'Loading...' }
   ];
 
   if (loading) return <div>Loading...</div>;
