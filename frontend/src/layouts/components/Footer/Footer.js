@@ -6,7 +6,7 @@ import { Facebook, Pinterest, Twitter } from "@mui/icons-material";
 export default function Footer() {
   return (
     <Box className={styles.footer}>
-      <Grid container spacing={2} justifyContent="center">
+      <Grid container spacing={2} justifyContent="center" sx={{ minWidth: '100%' }}>
         {/* Cột 1 */}
         <Grid item xs={12} sm={4} textAlign="center">
           <img

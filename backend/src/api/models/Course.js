@@ -25,8 +25,8 @@ const courseSchema = new mongoose.Schema({
   studentProgress: [{
     student: { type: mongoose.Schema.Types.ObjectId, ref: 'Student' },
     lessonsCompleted: [{
-      lessons: {type: mongoose.Schema.Types.ObjectId, refPath: 'lessonsType'},
-      lessonsType: {
+      lessons: {type: mongoose.Schema.Types.ObjectId, refPath: 'lessonType'},
+      lessonType: {
         type: String,
         enum: ['Lesson', 'Test'],
         required: true

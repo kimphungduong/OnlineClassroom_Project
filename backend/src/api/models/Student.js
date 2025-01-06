@@ -11,7 +11,7 @@ const studentSchema = new mongoose.Schema({
   role: { type: String, default: 'student' },
   registeredCourses: [
     {
-      course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course', required: true }, // Tham chiếu đến khóa học
+      course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course'}, // Tham chiếu đến khóa học
       startDate: { type: Date }, // Thời gian bắt đầu (liên quan đến học viên)
       endDate: { type: Date }   // Thời gian kết thúc (liên quan đến học viên)
     }

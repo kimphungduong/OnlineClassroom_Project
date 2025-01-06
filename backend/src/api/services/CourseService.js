@@ -38,20 +38,20 @@ class CourseService {
   }
 
   // lấy danh sách Course là model ánh xạ vo database. Coures.find() trả về tất cả khoá học. sevice sẽ định nghĩa các hàm làm gì
-  async getCourse(slug) {
-    try {
-      const course = await Course.findOne({ slug })
-          .populate('teacher')
-          .populate('sections.lessons');
-        if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
-      if (!course) {
-        throw new Error('Khóa học không tồn tại');
-      }
-      return course;
-    } catch (error) {
-      throw new Error('Lỗi khi lấy thông tin khóa học');
-    }
-  }
+  // async getCourse(slug) {
+  //   try {
+  //     const course = await Course.findOne({ slug })
+  //         .populate('teacher')
+  //         .populate('sections.lessons');
+  //       if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
+  //     if (!course) {
+  //       throw new Error('Khóa học không tồn tại');
+  //     }
+  //     return course;
+  //   } catch (error) {
+  //     throw new Error('Lỗi khi lấy thông tin khóa học');
+  //   }
+  // }
   async getCourseInfo(slug) {
     try {
       const course = await Course.findOne({ slug }).select('name subject image description price ');
@@ -107,6 +107,11 @@ class CourseService {
             select: 'title'
           }
         })
+        .populate({
+          path: 'sections.lessons.lessonId',
+          model: 'Lesson',
+          select: 'slug',
+        })
         .lean();
   
       // Tính toán tiến độ học tập
@@ -125,25 +130,6 @@ class CourseService {
       return coursesWithProgress;
     } catch (error) {
       throw new Error('Lỗi khi lấy danh sách khóa học');
-    }
-  }
-  async getLession(slug, slugLesson) {
-    try {
-      const course = await Course.findOne({ slug }).lean();
-  
-      if (!course) {
-        throw new Error('Khóa học không tồn tại');
-      }
-      const lesson = await Lesson.findOne({ slug: slugLesson, course: course._id });
-      // lấy danh sách bài giảng
-
-      if (!lesson) {
-        throw new Error('Bài học không tồn tại');
-      }
-  
-      return course.sections; // Trả về danh sách sections với lessons đã populate
-    } catch (error) {
-      throw new Error('Lỗi khi lấy thông tin bài học: ' + error.message);
     }
   }
 
@@ -345,6 +331,7 @@ class CourseService {
         throw new Error('Lỗi khi lấy thông tin khóa học');
     }
   }
+
   async getLession(slug, slugLesson) {
     try {
         const course = await Course.findOne({ slug }); // Lấy đầy đủ thông tin giáo viên nếu cần

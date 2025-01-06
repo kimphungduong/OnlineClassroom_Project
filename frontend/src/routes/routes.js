@@ -52,7 +52,7 @@ import ResetPasswordPage from '~/pages/ResetPassword';
 const publicRoutes = [
     { path: config.routes.home, component: Home, layout: HeaderOnly },
     //{ path: config.routes.login, component: Login, layout: HeaderOnly },
-    { path: config.routes.watch, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
+    { path: config.routes.courseLearn, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.logout, component: Logout, layout: HeaderOnly },
     { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.search, component: Search, layout: HeaderOnly },

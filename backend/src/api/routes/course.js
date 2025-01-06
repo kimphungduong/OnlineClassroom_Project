@@ -10,6 +10,7 @@ router.get('/', CourseController.getListCourse);
 router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
+router.get('/my-courses',CourseController.getMyCourse);
 
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/lessons', CourseController.getLessonsByCourseSlug); // Corrected endpoint
@@ -25,7 +26,6 @@ router.get('/:courseSlug/progress', CourseController.getStudentProgress);
 router.use('/:courseSlug', LessonRoutes);
 router.use('/:courseSlug', TestRoutes);
 
-router.get('/my-courses',CourseController.getMyCourse);
 router.get('/:slug',CourseController.getCourseWithLessons);
 router.get('/:slug/:lessonId/notes',CourseController.getNotes);
 router.get('/:slug/:slugLesson',CourseController.getLession);

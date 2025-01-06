@@ -37,6 +37,11 @@ const CartPage = () => {
 
   const handleRemove = (id) => {
     setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
+    // Gọi API xóa khóa học khỏi giỏ hàng
+    cartApi.removeFromCart(id).catch((error) => {
+      console.error("Error removing course from cart:", error.response?.data || error.message);
+    });
+    
   };
 
   const handlePayment = async () => {

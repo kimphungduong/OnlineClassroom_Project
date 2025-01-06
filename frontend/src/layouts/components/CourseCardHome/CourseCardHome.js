@@ -4,10 +4,27 @@ import { Card, CardContent, Typography, Button, Box, Rating } from '@mui/materia
 import { Link } from 'react-router-dom';
 import styles from './CourseCardHome.module.scss';
 import classNames from 'classnames/bind';
+import { useState } from 'react';
+import { cartApi } from '~/api'; // Import cartApi để gọi API
 
 const cx = classNames.bind(styles);
 
 const CourseCardHome = ({ course }) => {
+    const [isAdding, setIsAdding] = useState(false); // State to handle button loading state
+
+    const handleAddToCart = async (courseId) => {
+        setIsAdding(true); // Set the button to loading state
+        try {
+            await cartApi.addToCart(courseId); // Call API to add course to cart
+            // You can show a success message here, e.g., using a Snackbar or alert
+        } catch (error) {
+            // Handle error, show message, etc.
+            console.error('Error adding course to cart:', error);
+        } finally {
+            setIsAdding(false); // Reset loading state
+        }
+    };
+    
     return (
         <Card className={cx('course-card')}>
             <img 
@@ -70,13 +87,13 @@ const CourseCardHome = ({ course }) => {
                         Xem chi tiết
                     </Button>
                     <Button
-                        component={Link}
-                        to={`/buy/${course.slug || 'default-slug'}`}
+                        onClick={() => handleAddToCart(course.id)} // Call handleAddToCart on click
                         variant="contained"
                         className={cx('course-card-button')}
                         sx={{ fontSize: '1.2rem' }}
+                        disabled={isAdding} // Disable button while adding to cart
                     >
-                        Thêm giỏ hàng
+                        {isAdding ? 'Đang thêm...' : 'Thêm giỏ hàng'} {/* Change button text based on loading state */}
                     </Button>
                 </Box>
             </CardContent>

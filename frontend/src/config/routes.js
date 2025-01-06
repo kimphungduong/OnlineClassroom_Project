@@ -21,7 +21,7 @@ const routes = {
     testEdit: '/test-edit/:slug/sections/:sectionId/test/:testId',
     testPage: '/test-take',
 
-    course: '/course/:slugCourse/:slugLesson',
+    courseLearn: '/course/:slugCourse/:slugLesson',
     cart: '/cart',
     login: '/login',
     register: '/register',
