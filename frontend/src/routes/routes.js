@@ -23,6 +23,7 @@ import CoursePage from '~/pages/CoursePage';
 import Detail from '~/pages/Detail';
 import CoursesOfOneSubject from '~/pages/CoursesOfOneSubject';
 
+import TeacherCourse from '~/pages/TeacherCourse';
 import CourseNew from '~/pages/CourseNew';
 import EditCourseInfo from '~/pages/EditCourseInfo';
 
@@ -61,6 +62,7 @@ const publicRoutes = [
     { path: config.routes.cart, component: CartPage, layout: HeaderOnly},
     { path: config.routes.login, component: Login, layout: HeaderOnly },
 
+    { path: config.routes.teacherCourse, component: TeacherCourse, layout: HeaderOnly },
     { path: config.routes.courseNew, component: CourseNew, layout: HeaderOnly },
     { path: config.routes.editCourseInfo, component: EditCourseInfo, layout: HeaderOnly },
     { path: config.routes.courseEdit, component: CourseEdit, layout: HeaderOnly },

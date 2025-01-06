@@ -9,8 +9,9 @@ const routes = {
     myCourse: '/my-course',
     dashboard: '/dashboard',
 
+    teacherCourse: '/teacher-course',
     courseNew: '/course-new/',
-    editCourseInfo: '/course-info/:slug',
+    editCourseInfo: '/course-info/:slug/edit',
 
     courseEdit: '/course-edit/:slug',
     lessonEdit: '/lesson-edit/:slug/sections/:sectionId/lesson/:lessonId',

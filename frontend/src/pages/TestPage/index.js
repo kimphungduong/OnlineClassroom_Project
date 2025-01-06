@@ -18,7 +18,7 @@ const QuizPage = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // Timer for elapsed time
   const [loading, setLoading] = useState(true); // State để hiển thị trạng thái tải dữ liệu
   const slug = 'lap-trinh-python';
-  const testId = '6776e98cb151d64c41648512';
+  const testId = '6776ed0d56b14502f299c6d1';
 //   const { testId, slug } = useParams();  
   // Timer functionality
   useEffect(() => {

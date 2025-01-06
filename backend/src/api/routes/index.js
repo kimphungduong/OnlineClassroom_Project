@@ -10,6 +10,7 @@ const settingRouter=require('./setting');
 const paymentRouter=require('./payment');
 const cartRouter=require('./cart');
 const subjectRouter=require('./subject');
+const teacherRouter=require('./teacher');
 const {authenticateJWT, authorizeTeacher, authorizeStudent}=require('../middlewares/AuthMiddleware');
 
 function router(app)
@@ -24,6 +25,7 @@ function router(app)
     app.use('/api/upload',authenticateJWT, uploadRouter);
     app.use('/api/question',authenticateJWT, questionRouter);  
     app.use('/api/subject',authenticateJWT, subjectRouter);  
+    app.use('/api/teacher',authenticateJWT, teacherRouter);  
 
 }
 

@@ -9,12 +9,32 @@ const Subject = require('../models/Subject');
 
 class CourseService {
 
-  async createCourse(courseData) {
+  async createCourse(courseData, teacherId) {
+    const { name, subject, description, price, image } = courseData;
     try {
-      const course = new Course(courseData);
+      const course = new Course({
+        name,
+        subject,
+        description,
+        price,
+        rating: 0, // Giá trị rating mặc định
+        teacher: teacherId, // Lưu thông tin teacherId từ middleware xác thực
+        image,
+      });
 
       await course.save();
-
+      const teacher = await Teacher.findById(teacherId);
+      if (teacher) {
+        // Thêm courseId vào mảng courses của teacher
+        teacher.courses.push(course._id); // Thêm khóa học mới vào mảng courses của teacher
+  
+        // Lưu lại thông tin teacher với khóa học mới
+        await teacher.save();
+      } else {
+        throw new Error("Teacher không tồn tại");
+      }
+  
+      // Trả về khóa học mới đã được tạo
       return course;
     } catch (error) {
       // Nếu có lỗi trong quá trình lưu, ném lỗi
