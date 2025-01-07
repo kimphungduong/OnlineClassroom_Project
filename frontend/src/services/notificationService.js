@@ -20,6 +20,13 @@ export const getAllNotification = async () => {
                             link : `/course/${item.related_data.course_slug}/forum/${item.related_data.post_id}`,
                             createdAt : createdAt
                         }
+                    } else if(item.type === "postForum") {
+                        const createdAt = formatDistanceToNow(parseISO(item.createdAt), { addSuffix: true, locale: vi });
+                        return {
+                            ...item,
+                            link : `/course/${item.related_data.course_slug}/forum`,
+                            createdAt : createdAt
+                        }
                     }
 
                     return item;

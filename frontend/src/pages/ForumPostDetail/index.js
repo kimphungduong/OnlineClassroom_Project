@@ -14,10 +14,9 @@ const ForumPostDetail = () => {
 
   const { slugCourse, postId } = useParams();
 
-  const [post, setPost] = useState();
+  const [post, setPost] = useState(null);
   const [content, setContent] = useState("");
 
-  const [postContent, setPostContent] = useState({});
   const [comments, setComments] = useState([]);
 
   // Pagination state
@@ -25,9 +24,9 @@ const ForumPostDetail = () => {
   const commentsPerPage = 5; // Số bình luận hiển thị trên mỗi trang
 
   React.useEffect(() => {
+    console.log("check")
     const fetchData = async () => {
       const data = await getForumPostDetail(slugCourse, postId);
-      setPostContent(data);
 
       setPost({
         avatar: data.avatar,
@@ -106,7 +105,7 @@ const ForumPostDetail = () => {
     newComment.voteCount = 0;
     newComment.voted = false;
 
-    setComments([...comments, newComment]);
+    setComments([newComment, ...comments]);
     setContent("");
   };
 
@@ -122,7 +121,7 @@ const ForumPostDetail = () => {
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
-      <PostCard
+      {post && (<PostCard
         avatar={post?.avatar || "https://via.placeholder.com/50"}
         name={post?.name || "Người dùng"}
         date={post?.date || ""}
@@ -131,17 +130,19 @@ const ForumPostDetail = () => {
         postVotes={post?.postVotes || 0}
         votedPost={post?.votedPost ?? true}
         handlePostVote={handlePostVote}
-      />
+      />)}
 
       <div style={{ marginTop: "20px" }}>
         <Typography variant="h6" style={{ marginBottom: "10px" }}>
           Bình luận
         </Typography>
         <Divider />
-        <CommentList
-          comments={currentComments}
-          handleCommentVote={handleCommentVote}
-        />
+        {currentComments.length > 0 && (
+          <CommentList
+            comments={currentComments}
+            handleCommentVote={handleCommentVote}
+          />
+        )}
         <div style={{ marginTop: "20px", display: "flex", justifyContent: "center" }}>
           <Pagination
             count={Math.ceil(comments.length / commentsPerPage)}
