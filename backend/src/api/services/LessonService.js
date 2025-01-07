@@ -1,6 +1,7 @@
 const Lesson = require('../models/Lesson');
 const Course = require('../models/Course');
 const UploadService = require('./UploadService');
+const { addLessonForCourse } = require("./NotificationService")
 class LessonService {
   async createLesson(courseSlug, sectionId, lessonData) {
     // Tìm course dựa trên slug
@@ -17,6 +18,8 @@ class LessonService {
       course: course._id, // Liên kết tới khóa học
     });
     await lesson.save();
+
+    addLessonForCourse(course, lesson.slug, lessonData)
 
     // Thêm bài giảng vào danh sách bài giảng của section
     section.lessons.push({ lessonId: lesson._id, lessonType: 'Lesson' });

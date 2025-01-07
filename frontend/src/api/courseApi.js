@@ -66,7 +66,7 @@ const courseApi = {
 
   votePost: (courseSlug, postId, value) => {
     return axiosInstance.post(`/course/${courseSlug}/forum/${postId}/vote-post`, { value });
-
+  },
   
   // Get lessons of a course
   getLessonsByCourseSlug: (courseSlug) => {

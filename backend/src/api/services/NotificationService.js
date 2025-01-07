@@ -46,6 +46,10 @@ module.exports.addCommentForumNotification = async (courseId, userId, postId) =>
             _id: postId
         })
 
+        if(post.createdBy.toString() === userId.toString()) {
+            return;
+        }
+
         const result = await Student.findOne({ _id: userId  })
             ?? await Teacher.findOne({ _id: userId });
         const { name } = result || {};
@@ -62,6 +66,85 @@ module.exports.addCommentForumNotification = async (courseId, userId, postId) =>
         });
         const len = await  getLengthNotificationsUnRead(userId)
         sendCustomEvent(userId, "lenNotification", len)
+    }
+    catch (e) {
+        console.error(e)
+    }
+}
+
+module.exports.addPostForumNotification = async (courseId, userId) => {
+    try {
+        const course = await Course.findOne({_id : courseId})
+        if (!course) {
+            throw new Error("Course does not exist");
+        }
+        
+        if(course.teacher.toString() === userId.toString()) {
+            return;
+        }
+
+        const result = await Student.findOne({ _id: userId  })
+            ?? await Teacher.findOne({ _id: userId });
+        
+        const { name } = result || {};
+
+        await Notification.create({
+            userId : course.teacher,
+            type: "postForum",
+            title : `**${name}** đã thêm bài viết mới trong khóa học **${course.name}** của bạn`,
+            content : `${name} đã thêm bài viết mới trong khóa học ${course.name} của bạn`,
+            related_data : {
+                course_slug : course.slug,
+            }
+        });
+
+        const len = await  getLengthNotificationsUnRead(userId)
+        sendCustomEvent(userId, "lenNotification", len)
+
+    }
+    catch (e) {
+        console.error(e)
+    }
+}
+
+module.exports.addLessonForCourse = async (course, lessonSlug, lessonData) => {
+    try {
+        course.students.forEach(async (student) => {
+            await Notification.create({
+                userId: student,
+                type: "new_lesson",
+                title: `Giảng viên đã thêm bài học mới " **${lessonData.name}** " trong khóa học **${course.name}**`,
+                content: `Giảng viên đã thêm bài học **${lessonData.name}** trong khóa học **${course.name}**`,
+                related_data: {
+                    course_slug: course.slug,
+                    lesson_slug: lessonSlug
+                }
+            });
+            const len = await getLengthNotificationsUnRead(student)
+            sendCustomEvent(student, "lenNotification", len)
+        })
+    }
+    catch (e) {
+        console.error(e)
+    }
+}
+
+module.exports.addTestForCourse = async (course, testName, testId) => {
+    try {
+        course.students.forEach(async (student) => {
+            await Notification.create({
+                userId: student,
+                type: "new_test",
+                title: `Giảng viên đã thêm bài kiểm tra mới " **${testName}** " trong khóa học **${course.name}**, click vào đây để làm bài kiểm tra`,
+                content: `Giảng viên đã thêm bài kiểm tra **${testName}** trong khóa học **${course.name}**`,
+                related_data: {
+                    course_slug: course.slug,
+                    test_id: testId.toString()
+                }
+            });
+            const len = await getLengthNotificationsUnRead(student)
+            sendCustomEvent(student, "lenNotification", len)
+        })
     }
     catch (e) {
         console.error(e)
