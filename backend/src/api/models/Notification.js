@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const notificationSchema = new mongoose.Schema({
   userId : {type : String, required : true},
-  type: { type: String, required: true, enum: ["commentForum","comment", "new_test", "message", "other"]},
+  type: { type: String, required: true, enum: ["commentForum","comment", "new_test", "new_lesson", "message", "other", "postForum"]},
   title: {
     type: String,
     required: true,
@@ -20,6 +20,14 @@ const notificationSchema = new mongoose.Schema({
     comment_id: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Comment", // Tham chiếu tới bảng Comments (nếu có)
+    },
+    lesson_slug: {
+      type: String,
+      ref: "Lesson", // Tham chiếu tới bảng Lessons (nếu có)
+    },
+    test_id: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Test", // Tham chiếu tới bảng Tests (nếu có)
     },
   },
   is_read: {

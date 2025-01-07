@@ -3,7 +3,10 @@ const ForumPost = require("../models/ForumPost");
 const Student = require("../models/Student");
 const Teacher = require("../models/Teacher");
 const Comment = require("../models/Comment");
-const {addCommentForumNotification} = require("./NotificationService")
+const {
+    addCommentForumNotification,
+    addPostForumNotification
+} = require("./NotificationService")
 
 module.exports.addPost = async(title, content, userId, slug) => {
     try {
@@ -16,6 +19,8 @@ module.exports.addPost = async(title, content, userId, slug) => {
             comments : [],
             votes: []
         })
+
+        addPostForumNotification(courseId, userId)
 
         return await newPost.save();
 
@@ -77,9 +82,11 @@ module.exports.getPost = async (slug, postId, userId) =>{
             return comment.toObject();
         });
 
-        const commentRaw = await Promise.all(commentsPromises);
+        const commentsV = await Promise.all(commentsPromises);
 
-        const comments = commentRaw.map(async comment =>{
+        const sortedComments = commentsV.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const comments = sortedComments.map(async comment =>{
             const result = await Student.findOne({ _id: comment.user  })
                 ?? await Teacher.findOne({ _id: comment.user });
             const { name, avatar } = result || {};

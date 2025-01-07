@@ -1,5 +1,6 @@
 const Test = require('../models/Test');
 const Course = require('../models/Course');
+const { addTestForCourse } = require('./NotificationService');
 
 class TestService {
   async createTest(courseSlug, sectionId, testData) {
@@ -18,6 +19,8 @@ class TestService {
     });
     await test.save();
     console.log(test);
+
+    addTestForCourse(course, test.name, test._id)
     // Thêm bài kiểm tra vào section
     section.lessons.push({ lessonId: test._id, lessonType: 'Test' });
     await course.save();

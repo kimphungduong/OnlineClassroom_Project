@@ -27,6 +27,20 @@ export const getAllNotification = async () => {
                             link : `/course/${item.related_data.course_slug}/forum`,
                             createdAt : createdAt
                         }
+                    } else if (item.type === "new_lesson") {
+                        const createdAt = formatDistanceToNow(parseISO(item.createdAt), { addSuffix: true, locale: vi });
+                        return {
+                            ...item,
+                            link : `/course/${item.related_data.course_slug}/${item.related_data.lesson_slug}`,
+                            createdAt : createdAt
+                        }
+                    } else if(item.type === "new_test") {
+                        const createdAt = formatDistanceToNow(parseISO(item.createdAt), { addSuffix: true, locale: vi });
+                        return {
+                            ...item,
+                            link : `/course/${item.related_data.course_slug}/test/${item.related_data.test_id}`,
+                            createdAt : createdAt
+                        }
                     }
 
                     return item;

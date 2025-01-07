@@ -1,6 +1,5 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Grid2 as Grid, IconButton, Drawer, List, ListItem, ListItemText, Box, Container, Popover,Typography, } from '@mui/material';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -59,7 +58,6 @@ const MENU_ITEMS = [
 
 function Header() {
     console.log("Header render");
-    const navigate = useNavigate();
     const currentUser = store.getState().auth.accessToken !==null; // Get current user from Redux store
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [searchVisible, setSearchVisible] = useState(false); // State to control search visibility
