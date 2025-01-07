@@ -7,7 +7,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');  
 const cookieParser = require('cookie-parser'); // Thêm cookie-parser để xử lý cookie
-const socketHandler = require('./socket');
+const {initSocket} = require('./socket');
 
 const db = require('./configs/db');
 db.connect();
@@ -20,7 +20,7 @@ const io = new Server(httpServer,{
     methods: ["GET", "POST"],
   },
 });
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3005;
 
 const route = require('./api/routes'); 
 
@@ -57,7 +57,7 @@ app.get('/logout', (req, res) => {
     });
 });
 
-socketHandler(io);
+initSocket(io);
 
 httpServer.listen(port, () => {
   console.log(`App listening at http://localhost:${port}`);

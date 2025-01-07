@@ -163,8 +163,9 @@ class CourseService {
 
   async getLessonsByCourseSlug(slug) {
     try {
+
       const course = await Course.findOne({ slug }).lean();
-  
+
       if (!course) {
         throw new Error('Khóa học không tồn tại');
       }
@@ -204,6 +205,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin bài học: ' + error.message);
     }
   }
+
 
 
 
@@ -320,6 +322,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin bài học');
     }
   }
+
   async getNoteByLessonId(lessonId, userId) {
     try {
       const notes = await Note.find({ lesson: lessonId, student: userId }).lean();

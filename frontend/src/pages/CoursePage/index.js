@@ -32,6 +32,7 @@ const CoursePage = () => {
         // gọi get Course
         if (slugLesson) {
           const lessonResponse = await getLesson(slugCourse, slugLesson);
+
           setLessonData(lessonResponse);
           setLessonId(lessonResponse._id);
 

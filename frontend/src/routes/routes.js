@@ -37,10 +37,15 @@ import TestEdit from '~/pages/TestEdit';
 import TestPage from '~/pages/TestPage';
 
 import Logout from '~/pages/Logout';
+import DiscussionForum from '~/pages/Forum';
+import AddPost from '~/pages/AddForumPost';
+import ForumPostDetail from '~/pages/ForumPostDetail';
 import CartPage from '~/pages/CartPage';
 import Login from '~/pages/Login';
 import RegisterPage from '~/pages/RegisterPage';
 import ForgotPasswordPage from '~/pages/ForgotPasswordPage';
+import TeacherMessagePage from '~/pages/TeacherMessagePage';
+import NotificationPage from '~/pages/NotificationPage';
 import PaymentPage from '~/pages/PaymentPage';
 import DefaultLayout from '~/layouts';
 import VerifyPage from '~/pages/VerifyPage';
@@ -51,6 +56,7 @@ import LoginPage from '~/pages/Login';
 
 //import Footer from '~/layouts/components/Footer';
 
+
 // Public routes
 const publicRoutes = [
     { path: config.routes.home, component: Home, layout: HeaderTabs, auth: StudentRoute },
@@ -60,6 +66,10 @@ const publicRoutes = [
     { path: config.routes.myCourse, component: MyCourse, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.search, component: Search, layout: HeaderOnly },
     { path: config.routes.dashboard, component: Dashboard, layout: HeaderOnly },
+    { path : config.routes.forum, component: DiscussionForum, layout: HeaderOnly },
+    { path : config.routes.addPost, component: AddPost, layout: HeaderOnly },
+    { path : config.routes.forumPostDetail, component : ForumPostDetail, layout: HeaderOnly },
+
     { path: config.routes.course, component: CoursePage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.cart, component: CartPage, layout: HeaderOnly, auth: StudentRoute},
     { path: config.routes.login, component: LoginPage, layout: HeaderOnly },
@@ -79,6 +89,8 @@ const publicRoutes = [
 
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
+    { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly, auth: TeacherRoute },
+    { path : config.routes.notification, component : NotificationPage, layout : HeaderOnly },
     { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.verify, component: VerifyPage, layout: HeaderOnly },
     { path: config.routes.resetPassword, component: ResetPasswordPage, layout: HeaderOnly },

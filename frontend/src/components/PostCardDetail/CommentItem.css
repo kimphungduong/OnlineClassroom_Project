@@ -1,0 +1,35 @@
+.comment-item {
+    transition: transform 0.2s ease-in-out;
+  }
+  
+  .comment-item:hover {
+    transform: translateY(-2px);
+  }
+  
+  .comment-title {
+    font-weight: bold;
+    color: #333;
+  }
+  
+  .comment-avatar {
+    width: 40px;
+    height: 40px;
+  }
+  
+  .comment-author {
+    font-weight: 500;
+    color: #555;
+  }
+  
+  .comment-meta {
+    display: flex;
+    justify-content: space-between;
+    padding: 0 16px 8px 16px;
+  }
+  
+  .comment-like span,
+  .comment-reply span {
+    margin-left: 4px;
+    font-size: 0.9rem;
+  }
+  

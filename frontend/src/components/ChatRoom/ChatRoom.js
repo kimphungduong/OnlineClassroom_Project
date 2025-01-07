@@ -41,7 +41,7 @@ const ChatRoom = ({ userName, courseId }) => {
       });
 
       // Lắng nghe tin nhắn mới
-      socketInstance.on("chat message", (message) => {
+      socketInstance.on("teacher chat message", (message) => {
         setMessages((prevMessages) => [...prevMessages, message]);
       });
 

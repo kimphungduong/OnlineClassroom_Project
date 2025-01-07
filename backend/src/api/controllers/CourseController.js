@@ -61,6 +61,7 @@ class CourseController{
     } catch (error) {
     res.status(500).json({ message: 'Lỗi máy chủ' });
     }
+
   }
   async getCourseInfo(req, res, next) {
     try {
@@ -94,6 +95,7 @@ class CourseController{
       res.json(lession);
     } catch (error) {
       res.status(500).json({ message: 'Lỗi máy chủ' });
+
     }
   }
 

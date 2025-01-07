@@ -4,6 +4,7 @@ const router = express.Router();
 const CourseController = require('../controllers/CourseController');
 const LessonRoutes = require('../routes/lesson');
 const TestRoutes = require('../routes/test');
+const { addPost, getAllPosts, getPost, addComment, voteComment, votePost}= require('../controllers/ForumPostController');
 
 
 router.get('/', CourseController.getListCourse);
@@ -30,6 +31,13 @@ router.get('/:courseSlug/progress', CourseController.getStudentProgress);
 router.use('/:courseSlug', LessonRoutes);
 router.use('/:courseSlug', TestRoutes);
 
+router.get('/:slug/forum', getAllPosts);
+router.post('/:slug/forum/add-post', addPost);
+router.get('/:slug/forum/:postId', getPost)
+router.post('/:slug/forum/:postId/add-comment', addComment)
+router.post('/:slug/forum/:postId/vote-comment', voteComment)
+router.post('/:slug/forum/:postId/vote-post', votePost)
+
 router.get('/:slug',CourseController.getCourseWithLessons);
 router.get('/:slug/:lessonId/notes',CourseController.getNotes);
 router.get('/:slug/:slugLesson',CourseController.getLession);
@@ -41,6 +49,7 @@ router.get('/', CourseController.getListCourse);
 router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/:slugLesson', CourseController.getLession);
+
 // route là đường dẫn. có 4 loại gọi api cơ bản là 
 // POST nạp dataset mới (json)
 // GET trả về dataset cần (json)

@@ -1,0 +1,91 @@
+.add-post-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 40px;
+  background-color: #ffffff;
+
+}
+
+.add-post-title {
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #333;
+}
+
+.add-post-section {
+  margin-bottom: 30px;
+}
+
+.add-post-label {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.add-post-input {
+  width: 100%;
+  min-width: none;
+  padding: 12px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.add-post-input:focus {
+  border-color: #1890ff;
+  box-shadow: 0 0 5px rgba(24, 144, 255, 0.5);
+  outline: none;
+}
+
+.add-post-actions {
+  text-align: center;
+}
+
+.add-post-submit {
+  background-color: #1890ff;
+  border-color: #1890ff;
+  color: #fff;
+  font-size: 18px;
+  padding: 12px 24px;
+  border-radius: 6px;
+  transition: background-color 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+.add-post-submit:hover {
+  background-color: #40a9ff;
+  border-color: #40a9ff;
+  transform: translateY(-2px);
+}
+
+.add-post-submit:active {
+  background-color: #096dd9;
+  border-color: #096dd9;
+  transform: translateY(0);
+}
+
+
+.add-post-label .required {
+  color: red;
+  margin-left: 4px;
+}
+
+.error-text {
+  color: red;
+  font-size: 0.9em;
+  margin-top: 4px;
+}
+
+.add-post-input.error {
+  border-color: red;
+}
+
+.md-editor.error {
+  border: 1px solid red;
+}
+
+
