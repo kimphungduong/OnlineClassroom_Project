@@ -11,6 +11,8 @@ import { Visibility, VisibilityOff, Google } from "@mui/icons-material";
 import { useDispatch } from 'react-redux';
 import { login } from '~/store/slices/authSlice'; // Import hành động login
 import { useNavigate } from 'react-router-dom';
+import showToast from '~/components/Toast/Toast'; // Import hàm hiển thị toast
+import {store} from '~/store'; // Import Redux store
 
 const LoginPage = () => {
   const dispatch = useDispatch();
@@ -38,11 +40,19 @@ const LoginPage = () => {
 
     try {
       // Gửi yêu cầu login qua Redux Thunk
-      await dispatch(login({username: form.username, password: form.password})).unwrap(); // unwrap để nhận giá trị trả về và catch lỗi
+      const response = await dispatch(login({username: form.username, password: form.password})).unwrap(); // unwrap để nhận giá trị trả về và catch lỗi
+      if (response.error) {
+        throw new Error(response.payload.message); // Nếu có lỗi, ném lỗi để bắt ở khối catch
+      }
       console.log('Login successful');
-      navigate('/'); // Chuyển hướng về trang chủ
+      if ( store.getState().auth.role === 'teacher') {
+        navigate('/teacher-course'); // Chuyển hướng về trang giáo viên
+      } else {
+        navigate('/'); // Chuyển hướng về trang học viên
+      }
     } catch (err) {
       setError(err.message); // Hiển thị lỗi nếu đăng nhập thất bại
+      showToast('This is a success message!', 'success');
     }
     setLoading(false); // Ẩn trạng thái loading
   };

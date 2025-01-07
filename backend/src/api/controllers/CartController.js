@@ -19,10 +19,10 @@ class CartController {
     // API đồng bộ giỏ hàng khi login
     async addToCart(req, res) {
         try {
-            const { courseIds } = req.body;
+            const { courseId } = req.body;
             const userId = req.user.userId;
 
-            const cart = await CartService.addItem(userId, courseIds);
+            const cart = await CartService.addItem(userId, [courseId]);
             res.json(cart);
         } catch (error) {
             console.error("Lỗi cập nhật giỏ hàng:", error);
@@ -32,7 +32,7 @@ class CartController {
 
     async removeFromCart(req, res) {
         try {
-            const { courseId } = req.body;
+            const { courseId } = req.params;
             const userId = req.user.userId;
 
             const cart = await CartService.removeFromCart(userId, courseId);

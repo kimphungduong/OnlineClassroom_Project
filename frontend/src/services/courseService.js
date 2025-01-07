@@ -1,5 +1,4 @@
-import {courseApi} from '~/api';
-
+import { courseApi } from '~/api';
 
 export const getListCourse = async () => {
     try {
@@ -22,7 +21,7 @@ export const getMyCourse = async (slug) => {
 
 export const getCourse = async (slug) => {
     try {
-        const response = await courseApi.getCourse(slug);
+        const response = await courseApi.getCourseLearn(slug);
         return response.data;
     } catch (error) {
         console.error('Error fetching course:', error);
@@ -60,6 +59,17 @@ export const getForumPosts = async (courseSlug) => {
         throw new Error("Có lỗi khi lấy bài viết từ forum");
     } catch (error) {
         console.error('Error fetching forum posts:', error);
+        throw error;
+    }
+};
+
+export const getCoursesBySubject = async (subjectSlug) => {
+    try {
+        const response = await courseApi.getCoursesBySubject(subjectSlug);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching courses by subject:', error);
+
         throw error;
     }
 };
@@ -121,3 +131,14 @@ export async function votePost(courseSlug, postId, value) {
         throw error;
     }
 }
+
+export const searchCourses = async (query) => {
+    try {
+        const response = await courseApi.searchCourses(query); // gọi API tìm kiếm
+        return response.data;
+    } catch (error) {
+        console.error('Error searching courses:', error);
+        throw error;
+    }
+};
+

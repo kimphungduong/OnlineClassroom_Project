@@ -28,6 +28,15 @@ const authApi = {
   logout: () => {
     return axiosInstance.post('/logout');
   },
+  sendVerifyCode: (email) => {
+    return axiosInstance.post('/send-verify-code', { email });
+  },
+  verifyCode: (email, verifyCode) => {
+    return axiosInstance.post('/verify-code', { email, verifyCode });
+  },
+  resetPassword: (token, password) => {
+    return axiosInstance.post('/reset-password', { token, password });
+  },
 };
 
 export default authApi;

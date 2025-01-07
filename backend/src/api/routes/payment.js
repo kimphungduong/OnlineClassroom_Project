@@ -3,8 +3,10 @@ const router =express.Router();
 
 const paymentController= require('../controllers/PaymentController');
 
-router.post('/creat',paymentController.createPayment);
-router.get('/process',paymentController.processPayment);
+router.post('/create',paymentController.createPayment);
+router.get('/process/:paymentId',paymentController.processPayment);
+router.post('/cancel',paymentController.cancelPayment);
+router.get('/:paymentId',paymentController.getPayment);
 
 
 module.exports = router;

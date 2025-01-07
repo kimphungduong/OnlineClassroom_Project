@@ -6,20 +6,24 @@ class CartService {
         return await Cart.findOne({ userId }).populate({
         path: 'courseIds',
         model: 'Course', // Liên kết với bảng Course
-        select: 'name price description image rating' // Chỉ lấy các trường cần thiết
+        select: 'name price description image rating teacher', // Chỉ lấy các trường cần thiết
+        populate: { path: 'teacher', model: 'Teacher', select: 'name' }
       })
       .lean();
     }
 
     async addItem(userId, courseIds) {
-        let cart = await Cart.findOne({ userId });
-        if (!cart) {
-            cart = new Cart({ userId, courseIds });
-        } else {
-            cart.courseIds = [...cart.courseIds, ...courseIds]; // Thêm vào cuối mảng items
-        }
-        return await cart.save();
-    }
+      let cart = await Cart.findOne({ userId });
+      
+      if (!cart) {
+          cart = new Cart({ userId, courseIds });
+      } else {
+          // Lọc các courseIds chưa tồn tại trong giỏ hàng
+          const newCourseIds = courseIds.filter(courseId => !cart.courseIds.includes(courseId));
+          cart.courseIds = [...cart.courseIds, ...newCourseIds]; // Thêm vào cuối mảng items
+      }
+      return await cart.save();
+  }
 
     async removeFromCart(userId, courseId) {
         try {

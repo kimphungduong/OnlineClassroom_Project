@@ -1,121 +1,70 @@
-import { useEffect, useState, useRef } from 'react';
-import { faCircleXmark, faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import HeadlessTippy from '@tippyjs/react/headless';
-import classNames from 'classnames/bind';
-
-import * as searchServices from '~/services/searchService';
-import { Wrapper as PopperWrapper } from '~/components/Popper';
-import AccountItem from '~/components/AccountItem';
-import { SearchIcon } from '~/components/Icons';
-import { useDebounce } from '~/hooks';
+import React, { useState, useEffect } from 'react';
+import { Typography, Box, Container, Grid } from '@mui/material';
+import { useLocation } from 'react-router-dom';
+import CourseCardHorizontal from '~/layouts/components/CourseCardHorizontal';
 import styles from './Search.module.scss';
+import classNames from 'classnames/bind';
+import { courseApi } from '~/api'; // Import courseApi để gọi API
 
 const cx = classNames.bind(styles);
 
-function Search() {
-    const [searchValue, setSearchValue] = useState('');
-    const [searchResult, setSearchResult] = useState([]);
-    const [showResult, setShowResult] = useState(false);
+const Search = () => {
+    const [courses, setCourses] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null); // State to handle error
+    const [error, setError] = useState(null);
+    const location = useLocation();
 
-    const debouncedValue = useDebounce(searchValue, 500);
-
-    const inputRef = useRef();
-    const abortControllerRef = useRef(new AbortController()); // For aborting requests
+    // Lấy từ khóa từ query string
+    const searchKeyword = new URLSearchParams(location.search).get('query') || '';
 
     useEffect(() => {
-        if (!debouncedValue.trim()) {
-            setSearchResult([]);
+        if (!searchKeyword) {
             return;
         }
 
-        const fetchApi = async () => {
+        const fetchCourses = async () => {
             setLoading(true);
-            setError(null); // Reset error state before each request
+            setError(null); // Reset error trước khi gọi API
 
             try {
-                // Abort previous request
-                abortControllerRef.current.abort();
-                abortControllerRef.current = new AbortController();
-
-                const result = await searchServices.search(debouncedValue, {
-                    signal: abortControllerRef.current.signal, // Pass abort signal to the request
-                });
-
-                setSearchResult(result);
+                // Gọi API tìm kiếm khóa học theo từ khóa
+                const response = await courseApi.searchCourses(searchKeyword);
+                setCourses(response.data); // Chỉ cần cập nhật trực tiếp courses với dữ liệu từ API
             } catch (err) {
-                if (err.name !== 'AbortError') {
-                    setError('Có lỗi xảy ra khi tìm kiếm!');
-                }
+                setError('Có lỗi xảy ra khi tìm kiếm!');
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchApi();
-    }, [debouncedValue]);
-
-    const handleClear = () => {
-        setSearchValue('');
-        setSearchResult([]);
-        inputRef.current.focus();
-    };
-
-    const handleHideResult = () => {
-        setShowResult(false);
-    };
-
-    const handleChange = (e) => {
-        const searchValue = e.target.value;
-        if (!searchValue.startsWith(' ')) {
-            setSearchValue(searchValue);
-        }
-    };
+        fetchCourses();
+    }, [searchKeyword]);
 
     return (
-        <div>
-            <HeadlessTippy
-                interactive
-                visible={showResult && searchResult.length > 0}
-                render={(attrs) => (
-                    <div className={cx('search-result')} tabIndex="-1" {...attrs}>
-                        <PopperWrapper>
-                            <h4 className={cx('search-title')}>Accounts</h4>
-                            {searchResult.length > 0 ? (
-                                searchResult.map((result) => <AccountItem key={result.id} data={result} />)
-                            ) : (
-                                <p>Không tìm thấy kết quả phù hợp.</p> // Message for no results
-                            )}
-                        </PopperWrapper>
-                    </div>
+        <Container maxWidth="lg">
+            {/* Hiển thị số lượng kết quả */}
+            <Box sx={{ mt: 4 }}>
+                <Typography variant="h4" fontWeight="bold">
+                    {courses.length || 0} kết quả tìm kiếm cho "{searchKeyword || '...'}"
+                </Typography>
+            </Box>
+
+            {/* Khu vực hiển thị khóa học */}
+            <Grid container spacing={2} sx={{ mt: 4 }}>
+                {loading ? (
+                    <Typography variant="h6">Đang tải...</Typography>
+                ) : error ? (
+                    <Typography variant="h6" color="error">{error}</Typography>
+                ) : (
+                    courses.map((course) => (
+                        <Grid item xs={12} key={course.id}>
+                            <CourseCardHorizontal course={course} />
+                        </Grid>
+                    ))
                 )}
-                onClickOutside={handleHideResult}
-            >
-                <div className={cx('search')}>
-                    <input
-                        ref={inputRef}
-                        value={searchValue}
-                        placeholder="Tìm kiếm khóa học"
-                        spellCheck={false}
-                        onChange={handleChange}
-                        onFocus={() => setShowResult(true)}
-                    />
-                    {!!searchValue && !loading && (
-                        <button className={cx('clear')} onClick={handleClear}>
-                            <FontAwesomeIcon icon={faCircleXmark} />
-                        </button>
-                    )}
-                    {loading && <FontAwesomeIcon className={cx('loading')} icon={faSpinner} />}
-                    {error && <div className={cx('error-message')}>{error}</div>} {/* Error message */}
-                    <button className={cx('search-btn')} onMouseDown={(e) => e.preventDefault()}>
-                        <SearchIcon />
-                    </button>
-                </div>
-            </HeadlessTippy>
-        </div>
+            </Grid>
+        </Container>
     );
-}
+};
 
 export default Search;

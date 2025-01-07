@@ -24,7 +24,6 @@ const port = process.env.PORT || 3005;
 
 const route = require('./api/routes'); 
 
-
 app.use(express.json());
 app.use(express.urlencoded({
   extended: true
@@ -42,6 +41,8 @@ app.use(methodOverride('_method'));
 app.use(morgan('combined'));
 
 route(app);
+
+
 
 const authenticateJWT = require('./configs/jwtConfig');
 app.get('/protected', authenticateJWT, (req, res) => {

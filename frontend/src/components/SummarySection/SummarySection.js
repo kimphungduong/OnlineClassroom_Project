@@ -7,7 +7,7 @@ import {
   Divider,
 } from "@mui/material";
 
-const SummarySection = ({ total, onApplyDiscount }) => {
+const SummarySection = ({ total, onApplyDiscount, onPayment }) => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       onApplyDiscount(e.target.value);
@@ -32,12 +32,13 @@ const SummarySection = ({ total, onApplyDiscount }) => {
         variant="contained"
         color="primary"
         sx={{ width: "100%", marginBottom: 2 }}
+        onClick={onPayment}
       >
         Thanh toán
       </Button>
       <Divider sx={{ marginBottom: 2 }} />
       <Typography variant="body1" gutterBottom>
-        Khuyến mại
+        Khuyến mãi
       </Typography>
       <TextField
         placeholder="Nhập code"

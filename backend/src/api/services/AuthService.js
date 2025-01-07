@@ -1,10 +1,16 @@
 // AuthService.js
 require('dotenv').config();
-const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const redisClient = require('../../configs/redisClient')
 const Teacher = require('../models/Teacher');
 const Student = require('../models/Student');
+const mjml = require('mjml');
+const fs = require('fs');
+const path = require('path');
+const sgMail = require('@sendgrid/mail');
+
+
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 class AuthService {
   
@@ -108,7 +114,95 @@ class AuthService {
       throw new Error("Invalid or expired refresh token");
     }
   }
-  
+  async sendVerificationCodeWithSendGrid(email) {
+    const user = await this.findUserByEmail(email);
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    // Generate a 6-digit verification code
+    const cryptoRandomString = (await import('crypto-random-string')).default;
+    const verificationCode = cryptoRandomString({ length: 6, type: 'numeric' });
+
+    //Lưu vào redis
+    await redisClient.set(user._id.toString()+'verifyCode', verificationCode, 'EX', 5 * 60);
+
+
+    // Read and compile MJML template
+    const mjmlTemplate = fs.readFileSync(path.resolve(__dirname, './emails/verification-code.mjml'), 'utf8');
+    const { html } = mjml(mjmlTemplate, {
+        filePath: path.resolve(__dirname,'./emails')
+    });
+
+    const msg = {
+        to: user.email,
+        from: `Vincent <${process.env.SENDGRID_EMAIL}>`, // Use the email address or domain you verified with SendGrid
+        subject: 'Verification Code',
+        html: html.replace('{{username}}', user.username).replace('{{verificationCode}}', verificationCode)
+    };
+
+    try {
+        await sgMail.send(msg);
+        console.log(`Verification code sent to ${user.email}`);
+    } catch (error) {
+        console.error(`Failed to send verification code to ${user.email}:`, error);
+    }
+  }
+  async findUserByEmail(email) {
+    const student = await Student
+      .findOne({ email });
+    if (student) {
+      return student;
+    }
+    const teacher = await Teacher
+      .findOne({ email })
+      .select('_id username email');
+    if (teacher) {
+      return teacher;
+    }
+  }
+  async findUserById(userId) {
+    const student = await Student
+      .findById(userId);
+    if (student) {
+      return student;
+    }
+    const teacher = await Teacher
+      .findById(userId);
+    if (teacher) {
+      return teacher;
+    }
+  }
+
+  async verifyCode( email, verificationCode) {
+      const user = await this.findUserByEmail(email);
+      if (!user) {
+          throw new Error('User not found');
+      }
+      const storedCode = await redisClient.get(user._id.toString()+'verifyCode');
+      if (verificationCode !== storedCode) {
+          throw new Error('Invalid verification code');
+      }
+      
+      const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+      return token;
+  }
+
+  async resetPassword(token, newPassword) {
+      try {
+          const decoded = jwt.verify(token, process.env.JWT_SECRET);
+          const user = await this.findUserById(decoded.userId);
+          if (!user) {
+              throw new Error('User not found');
+          }
+          user.password = newPassword;
+          await user.save();
+          return user;
+      } catch (error) {
+          throw new Error('Invalid or expired token');
+      }
+  }
+
 }
 
 module.exports = new AuthService();
