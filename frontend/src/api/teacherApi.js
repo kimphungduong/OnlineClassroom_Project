@@ -2,13 +2,13 @@ import axiosInstance from './axiosInstance';
 
 const teacherApi = {
   // Get teacher details
-  getTeacher: (teacherId) => {
-    return axiosInstance.get(`/teacher/${teacherId}`);
+  getTeacher: () => {
+    return axiosInstance.get(`/teacher`);
   },
 
   // Update a teacher's information
-  updateCourseTeacher: (teacherId, updatedTeacherData) => {
-    return axiosInstance.put(`/teacher/${teacherId}`, updatedTeacherData);
+  updateCourseTeacher: (updatedTeacherData) => {
+    return axiosInstance.put(`/teacher`, updatedTeacherData);
   },
 };
 

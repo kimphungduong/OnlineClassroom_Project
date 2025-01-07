@@ -18,7 +18,6 @@ const AddCourseForm = () => {
   const [categories, setCategories] = useState([]); // Mảng các thể loại
   const [loading, setLoading] = useState(false); 
 
-  const teacher = "676a694ec9b055477245a75f";
 
   useEffect(() => {
     // Hàm fetch categories từ API
@@ -68,8 +67,7 @@ const AddCourseForm = () => {
         subject: formData.category, // Dùng _id của thể loại
         description: formData.description,
         price: formData.price,
-        rating: 0,
-        teacher: teacher, 
+        rating: 0, 
         image: imageResponse ? imageResponse.link : null, // Link ảnh từ API upload
       };
     //   alert(JSON.stringify(payload));

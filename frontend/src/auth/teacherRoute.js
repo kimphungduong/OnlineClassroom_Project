@@ -12,7 +12,7 @@ const TeacherRoute = ({children}) => {
   
     // Kiểm tra vai trò người dùng và đảm bảo đúng với vai trò yêu cầu
     if (role !== "teacher") {
-      return <Navigate to="/teacher-course" />; // Nếu không có quyền, chuyển hướng về trang chính hoặc trang khác
+      return <Navigate to="/" />; // Nếu không có quyền, chuyển hướng về trang chính hoặc trang khác
     }
     return children;
 };

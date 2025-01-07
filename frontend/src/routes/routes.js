@@ -45,7 +45,8 @@ import PaymentPage from '~/pages/PaymentPage';
 import DefaultLayout from '~/layouts';
 import VerifyPage from '~/pages/VerifyPage';
 import ResetPasswordPage from '~/pages/ResetPassword';
-import LoginPage from '~/pages/LoginPage';
+import LoginPage from '~/pages/Login';
+
 
 
 //import Footer from '~/layouts/components/Footer';

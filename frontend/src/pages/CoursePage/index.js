@@ -74,7 +74,7 @@ const CoursePage = () => {
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabIndex} onChange={handleChange} aria-label="tabs">
               <Tab label="Thông tin bài giảng" />
-              <Tab label="Đánh giá và phản hồi" />
+              <Tab label="Tài liệu tham khảo" />
               <Tab label="Ghi chú" />
             </Tabs>
           </Box>
@@ -88,9 +88,60 @@ const CoursePage = () => {
             </Box>
           )}
           {tabIndex === 1 && (
-            <div>
-              <h1>Đánh giá và phản hồi</h1>
-            </div>
+            <Box sx={{ mt: 3 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold' }}>
+                Tài liệu tham khảo
+              </Typography>
+              {lessonData?.document && lessonData.document.length > 0 ? (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 2,
+                  }}
+                >
+                  {lessonData.document.map((doc) => (
+                    <Box
+                      key={doc._id}
+                      sx={{
+                        p: 2,
+                        border: '1px solid #ddd',
+                        borderRadius: 1,
+                        boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.1)',
+                        '&:hover': {
+                          boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.15)',
+                        },
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        component="a"
+                        href={doc.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        sx={{
+                          color: 'primary.main',
+                          textDecoration: 'none',
+                          fontWeight: 'bold',
+                          '&:hover': {
+                            textDecoration: 'underline',
+                          },
+                        }}
+                      >
+                        {doc.name}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                        Được tạo vào: {new Date(doc.createdAt).toLocaleDateString()}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              ) : (
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                  Không có tài liệu tham khảo nào.
+                </Typography>
+              )}
+            </Box>
           )}
           {tabIndex === 2 && (
           <NotesSection

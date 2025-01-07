@@ -84,7 +84,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin khóa học');
     }
   }
-  async getCourseWithLessons (slug) {
+  async getCourseWithLessons(slug) {
     const course = await Course.findOne({ slug })
       .populate('teacher', 'name email -_id')
       .populate('students', 'name')
@@ -98,21 +98,28 @@ class CourseService {
       course.sections.map(async (section) => {
         return await Promise.all(
           section.lessons.map(async (lesson) => {
+            let detailedLesson;
             if (lesson.lessonType === 'Lesson') {
-              return await Lesson.findById(lesson.lessonId);
+              detailedLesson = await Lesson.findById(lesson.lessonId).lean();
             } else if (lesson.lessonType === 'Test') {
-              return await Test.findById(lesson.lessonId);
+              detailedLesson = await Test.findById(lesson.lessonId).lean();
             }
+            
+            // Giữ lại lessonType
+            return {
+              ...detailedLesson,
+              lessonType: lesson.lessonType,
+            };
           })
         );
       })
     );
-
+  
     course.sections = course.sections.map((section, index) => ({
       ...section,
       lessons: lessons[index]
     }));
-
+  
     return course;
   }
   async getMyCourse(userId) {

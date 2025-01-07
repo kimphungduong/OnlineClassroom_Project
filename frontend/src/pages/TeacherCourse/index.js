@@ -19,14 +19,13 @@ const TeacherCoursePage = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
   
-  const teacherId = "676a694ec9b055477245a75f";
 
   useEffect(() => {
 
     const fetchCourses = async () => {
       try {
         setLoading(true);
-        const response = await teacherApi.getTeacher(teacherId);
+        const response = await teacherApi.getTeacher();
         setCourses(response.data.data.courses);
       } catch (err) {
         setError(err.message || "Đã xảy ra lỗi khi tải khóa học");
@@ -36,7 +35,7 @@ const TeacherCoursePage = () => {
     };
 
     fetchCourses();
-  }, [teacherId]);
+  }, []);
 
   const handleAddCourse = () => {
     navigate(`/course-new`);

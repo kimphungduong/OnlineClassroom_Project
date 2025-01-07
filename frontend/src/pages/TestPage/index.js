@@ -11,14 +11,14 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import testApi from "~/api/testApi";
+import { useParams } from "react-router-dom";
 
 const QuizPage = () => {
   const [quizData, setQuizData] = useState(null); // State để lưu bài test
   const [answers, setAnswers] = useState({});
   const [elapsedTime, setElapsedTime] = useState(0); // Timer for elapsed time
   const [loading, setLoading] = useState(true); // State để hiển thị trạng thái tải dữ liệu
-  const slug = 'lap-trinh-python';
-  const testId = '6776ed0d56b14502f299c6d1';
+  const { slug, testId} = useParams();
 //   const { testId, slug } = useParams();  
   // Timer functionality
   useEffect(() => {
@@ -33,6 +33,7 @@ const QuizPage = () => {
   useEffect(() => {
     const fetchQuiz = async () => {
       try {
+
         const response = await testApi.getTest(slug, testId);
         //  axios.get(
         //   `http://localhost:5000/api/course/${slug}/test/${testId}`

@@ -7,8 +7,12 @@ const CourseSidebar = ({ slugCourse ,sections }) => {
   const [expanded, setExpanded] = React.useState(false);
   const navigate = useNavigate();
 
-  const handleLessonClick = (slug) => {
-    navigate(`/course/${slugCourse}/${slug}`);
+  const handleLessonClick = (lesson) => {
+    if(lesson.lessonType === 'Lesson') {
+      navigate(`/course/${slugCourse}/${lesson.slug}`);
+    } else {
+      navigate(`/course/${slugCourse}/test/${lesson._id}`);
+    }
   };
 
 
@@ -27,7 +31,7 @@ const CourseSidebar = ({ slugCourse ,sections }) => {
           <List>
               {section.lessons.map((lesson,index) => (
                 <ListItem key={lesson._id} disablePadding>
-                  <ListItemButton onClick={() => handleLessonClick(lesson.slug)}>
+                  <ListItemButton onClick={() => handleLessonClick(lesson)}>
                     <ListItemText primary={`${index + 1}. ${lesson.name}`} secondary={lesson.description} />
                   </ListItemButton>
                 </ListItem>

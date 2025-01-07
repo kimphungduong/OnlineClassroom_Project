@@ -20,7 +20,7 @@ const routes = {
     membersStat: '/members-stat/:slug',
     testNew: '/test-edit/:slug/sections/:sectionId/test/new',
     testEdit: '/test-edit/:slug/sections/:sectionId/test/:testId',
-    testPage: '/test-take',
+    testPage: '/course/:slug/test/:testId',
 
     courseLearn: '/course/:slugCourse/:slugLesson',
     cart: '/cart',
