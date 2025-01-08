@@ -12,6 +12,7 @@ import {
 import axios from "axios";
 import testApi from "~/api/testApi";
 import { useParams } from "react-router-dom";
+import courseApi from "~/api/courseApi";
 
 const QuizPage = () => {
   const [quizData, setQuizData] = useState(null); // State để lưu bài test
@@ -68,11 +69,9 @@ const QuizPage = () => {
 
   const handleSubmit = async () => {
     const score = calculateScore();
-    const student = "67653dd51e8832a17398d959"; // Example student ID
 
     const submissionData = {
       test: testId,
-      student,
       score,
       timeSpent: elapsedTime,
     };
@@ -83,6 +82,7 @@ const QuizPage = () => {
       //   `http://localhost:5000/api/course/${slug}/test/${testId}/submission`,
       //   submissionData
       // );
+      courseApi.markLessonAsCompleted(testId);
       console.log("API Response:", response.data);
       alert(`Quiz submitted successfully! Your score is ${score}%`);
     } catch (error) {

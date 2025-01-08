@@ -5,9 +5,9 @@ const multer = require('multer');
 require('dotenv').config();
 
 cloudinary.config({
-  cloud_name: process.env.cloud_name,
-  api_key: process.env.api_key,
-  api_secret: process.env.api_secret,
+  cloud_name: 'dginq7yqw',
+  api_key: '139616111469673',
+  api_secret: 'P5GZmEtXR1Ig2tzyoF6HeAH8eMk',
 });
 
 // Cấu hình Multer để sử dụng Cloudinary làm storage

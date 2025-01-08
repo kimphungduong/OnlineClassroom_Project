@@ -113,7 +113,7 @@ class PaymentService {
 
             while (elapsed < timeout) {
                 //const isPaid = await checkPaid(payment.amount, payment.description);
-                const isPaid = await checkPaid(12050, "OrderID6764512e7b1005eda9688255");
+                const isPaid = await checkPaid(12050, "OrderID6764512e7b1005eda9688255p");
 
                 if (isPaid.success) {
                     payment.status = "completed";

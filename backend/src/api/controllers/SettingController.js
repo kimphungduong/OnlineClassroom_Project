@@ -80,6 +80,37 @@ class SettingController {
             res.status(500).json({ profile, errorMessage: error.message });
         }
     };
+    async uploadAvatar(req, res, next) {
+        upload.single('avatar')(req, res,async function (err) {
+            try {
+                const avatarUrl = req.file ? req.file.path : null;
+                
+                const currentProfile = await editProfileService.getProfile(req.user.userId);
+
+                if (avatarUrl) {
+                    // Xóa ảnh cũ nếu có
+                    if (currentProfile.avatar && currentProfile.avatar !== '/img/default-avatar') {
+                        const publicId = currentProfile.avatar.split('/').slice(-2).join('/').split('.')[0];
+                        cloudinary.uploader.destroy(publicId, (error, result) => {
+                            if (error) {
+                                console.error('Failed to delete old avatar:', error);
+                            } else {
+                                console.log('Old avatar deleted:', result);
+                            }
+                        });
+                    }
+                }
+            
+                const profile = await editProfileService.uploadAvatar(req.user.userId, avatarUrl);
+    
+                res.json(profile.avatar);
+                
+            } catch (error) {
+                const profile = await editProfileService.getProfile(req.user.userId);
+                res.status(500).json({ profile, errorMessage: error.message });
+            }
+        });
+    }
 }
 
 module.exports = new SettingController();

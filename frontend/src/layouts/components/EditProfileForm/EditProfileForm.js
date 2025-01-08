@@ -117,7 +117,7 @@ const EditProfileForm = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <TextField
+              {/* <TextField
                 label="Headline"
                 variant="outlined"
                 fullWidth
@@ -128,7 +128,7 @@ const EditProfileForm = () => {
                 sx={{ fontSize: '1.2rem' }}
                 InputLabelProps={{ style: { fontSize: '1.2rem' } }}
                 InputProps={{ style: { fontSize: '1.2rem' } }}
-              />
+              /> */}
             </Grid>
           </Grid>
 

@@ -227,6 +227,23 @@ class CourseController{
             res.status(500).json({ message: 'Lỗi máy chủ' });
         }
     }
+    async markLessonAsCompleted(req, res) {
+      try {
+          const { lessonId } = req.params; // Lấy lessonId từ params
+          if (!lessonId) {
+              return res.status(400).json({ message: 'Thiếu ID bài giảng' });
+          }
+
+          const result = await CourseService.markLessonAsCompleted(lessonId, req.user.userId); // Gọi hàm đánh dấu đã học trong CourseService
+          if (result) {
+              res.json({ message: 'Đánh dấu bài giảng đã học thành công' });
+          } else {
+              res.status(404).json({ message: 'Không tìm thấy bài giảng' });
+          }
+      } catch (error) {
+          res.status(500).json({ message: 'Lỗi máy chủ' });
+      }
+  }
 
 }
 

@@ -12,8 +12,8 @@ router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
 router.get('/my-courses',CourseController.getMyCourse);
+router.put('/:lessonId/completed', CourseController.markLessonAsCompleted);
 router.get('/subject/:subjectSlug', CourseController.getCoursesBySubject);
-
 
 router.get('/learn/:slug', CourseController.getCourseWithLessons);
 router.get('/:slug', CourseController.getCourse);
