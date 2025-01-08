@@ -89,7 +89,7 @@ const publicRoutes = [
 
     { path: config.routes.register, component: RegisterPage, layout: HeaderOnly },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: HeaderOnly },
-    { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly, auth: TeacherRoute },
+    { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly },
     { path : config.routes.notification, component : NotificationPage, layout : HeaderOnly },
     { path: config.routes.payment, component: PaymentPage, layout: HeaderOnly, auth: StudentRoute },
     { path: config.routes.verify, component: VerifyPage, layout: HeaderOnly },

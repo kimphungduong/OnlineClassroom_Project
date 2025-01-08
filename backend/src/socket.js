@@ -3,6 +3,7 @@ const Message = require("./api/models/Message");
 const User = require("./api/models/User");
 const Course = require("./api/models/Course");
 const Student = require("./api/models/Student");
+const Teacher = require("./api/models/Teacher");
 const {getLengthNotificationsUnRead} = require("./api/services/NotificationService");
 
 let ioInstance;
@@ -92,7 +93,7 @@ module.exports.initSocket = (io) => {
           ],
         }).sort({ createdAt: -1 })
 
-        const student = await Student.findOne({ _id : receiverID })
+        //const student = await Student.findOne({ _id : receiverID })
 
         const data = chatRoom
             .sort((a, b) => a.sentAt - b.sentAt)
@@ -266,8 +267,10 @@ module.exports.initSocket = (io) => {
           const course = await Course.findOne({
             _id : e.course
           })
-          const studentId = e.sender.toString() === userId ? e.receiver : e.sender
-          const student = await Student.findOne({ _id : studentId })
+          const receiverId = e.sender.toString() === userId ? e.receiver : e.sender
+
+          const result = await Student.findOne({ _id: receiverId })
+                          ?? await Teacher.findOne({ _id: receiverId });
 
           if(course === null){
             return null
@@ -276,12 +279,13 @@ module.exports.initSocket = (io) => {
           return {
             id : i,
             teacherId : userId,
-            studentId,
+            studentId : receiverId,
             courseName : course.name,
-            studentName : student.name,
+            studentName : result.name,
             studentAvatar : "https://via.placeholder.com/50",
             courseId : course._id,
-            readed : e.readed
+            readed : e.readed,
+            role : result.role,
           }
         })
 
