@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SupportAgentIcon from '@mui/icons-material/SupportAgent';
+import VerifiedIcon from '@mui/icons-material/Verified';
 import { useParams } from 'react-router-dom'; // Import useParams
 import { getCourse } from '~/services/courseService';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import { notification } from 'antd'; // Import notification
+import { cartApi } from '~/api'; // Import cartApi
 import {
   Container,
   Box,
@@ -15,6 +20,7 @@ import {
 const CourseDetailPage = () => {
   const { slug } = useParams(); // Lấy slug từ URL
   const [course, setCourse] = useState(null);
+  const [isAdding, setIsAdding] = useState(false); // State cho trạng thái thêm giỏ hàng
 
   // Fetch thông tin khóa học khi component được mount
   useEffect(() => {
@@ -29,6 +35,26 @@ const CourseDetailPage = () => {
     fetchCourseDetail();
   }, [slug]);
 
+  // Xử lý thêm vào giỏ hàng
+  const handleAddToCart = async (courseId) => {
+    setIsAdding(true); // Bắt đầu trạng thái loading
+    try {
+      await cartApi.addToCart(courseId); // Gọi API thêm giỏ hàng
+      notification.success({
+        message: 'Thêm khóa học vào giỏ hàng thành công',
+        description: `Đã thêm khóa học "${course.name}" vào giỏ hàng.`,
+      });
+    } catch (error) {
+      console.error('Error adding course to cart:', error);
+      notification.error({
+        message: 'Thêm giỏ hàng thất bại',
+        description: 'Đã có lỗi xảy ra, vui lòng thử lại.',
+      });
+    } finally {
+      setIsAdding(false); // Kết thúc trạng thái loading
+    }
+  };
+
   // Nếu chưa có dữ liệu, hiển thị loading
   if (!course) {
     return <Typography variant="h6" align="center">Đang tải thông tin khóa học...</Typography>;
@@ -38,7 +64,7 @@ const CourseDetailPage = () => {
   const benefits = course.description || []; // Nếu benefits không có, gán là mảng rỗng
 
   return (
-    <Container maxWidth={false} disableGutters sx={{ padding: '0', position: 'relative' }}>
+    <Container maxWidth={false} disableGutters sx={{ padding: '0', margin: '0', position: 'relative' }}>
       {/* Phần 1: Toàn màn hình */}
       <Box
         sx={{
@@ -77,16 +103,21 @@ const CourseDetailPage = () => {
       {/* Phần 2: Bạn sẽ học được gì - Toàn màn hình */}
       <Box
         sx={{
-          padding: '40px 20px',
+          padding: '25px 30px 40px 30px',
           position: 'relative',
-          ml: 30
+          width: '60%', // Chiếm toàn bộ chiều rộng màn hình
+          maxWidth: '600px', // Đặt giới hạn tối đa để tránh nội dung quá rộng
+          margin: '30px 250px', // Canh giữa
+          border: '0.7px solid rgba(29, 23, 23, 0.6)', // Viền đậm màu tối
+          boxShadow: '0px 4px 10px rgba(57, 49, 49, 0.1)', // Hiệu ứng bóng
         }}
       >
-        <Typography variant="h5" gutterBottom>
+        <Typography variant="h5" gutterBottom fontSize="36" fontWeight="bold"  >
           Bạn sẽ học được gì?
         </Typography>
-        {/* {benefits.length > 0 ? (
-          <ul style={{ paddingLeft: '20px' }}>
+        {/* Lợi ích khóa học */}
+        {Array.isArray(benefits) && benefits.length > 0 ? (
+          <ul style={{ paddingLeft: '20px', marginBottom: '15px' }}>
             {benefits.map((benefit, index) => (
               <li key={index}>
                 <Typography variant="body1">{benefit}</Typography>
@@ -94,20 +125,36 @@ const CourseDetailPage = () => {
             ))}
           </ul>
         ) : (
-          <Typography variant="body1">Chưa có thông tin về lợi ích khóa học.</Typography>
-        )} */}
+          <ul style={{ paddingLeft: '20px' }}>
+            <li style={{ marginBottom: '15px' }}>
+              <Typography variant="body1">Nâng cao kiến thức chuyên môn và kỹ năng thực tế.</Typography>
+            </li>
+            <li style={{ marginBottom: '15px' }}>
+              <Typography variant="body1">Hiểu rõ cách áp dụng lý thuyết vào thực tiễn.</Typography>
+            </li>
+            <li style={{ marginBottom: '15px' }}>
+              <Typography variant="body1">Cải thiện khả năng làm việc nhóm và giao tiếp hiệu quả.</Typography>
+            </li>
+            <li style={{ marginBottom: '15px' }}>
+              <Typography variant="body1">Tăng cường tư duy sáng tạo và giải quyết vấn đề.</Typography>
+            </li>
+            <li>
+              <Typography variant="body1">Được định hướng phát triển sự nghiệp lâu dài.</Typography>
+            </li>
+          </ul>
+        )}
       </Box>
 
       {/* Phần 3: Box nổi - Đè lên */}
       <Box
         sx={{
-          width: '300px',
+          width: '320px',
           position: 'absolute',
           top: '20px',
           right: '20px',
           backgroundColor: '#fff',
           boxShadow: 3,
-          padding: '20px',
+          padding: '5px',
           mt: 4,
           mr: 30,
           minHeight: '400px',
@@ -117,21 +164,35 @@ const CourseDetailPage = () => {
           component="img"
           image={course.image}
           alt={course.name}
-          sx={{ marginBottom: '20px', padding: '0px' }}
+          sx={{ marginBottom: '20px', padding: '0px', height: '200px', width:'310px' }}
         />
-        <Typography variant="h5" color="primary" mb={2}>
+        <Typography variant="h5" color="black" fontWeight="bold" fontSize="28px" mb={2} padding="0px 10px">
           {course.price.toLocaleString()} VND
         </Typography>
         <Box display="flex" gap={1} sx={{ mb: 2 }}>
-          <Button
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ flex: 5 }}
-          >
-            Thêm vào giỏ
-          </Button>
-          <Button
+        <Button
+          variant="contained"
+          color="primary"
+          fullWidth
+          sx={{
+            flex: 5,
+            margin: '5px',
+            fontSize: '1.8rem', // Tăng kích thước chữ
+            fontWeight: 'bold',
+            background: 'rgb(13, 58, 95))', // Màu xanh sáng hơn
+            color: 'white',
+            textTransform: 'none',
+            '&:hover': {
+              background: 'linear-gradient(45deg, rgb(17, 76, 127), rgb(31, 88, 135))', // Hiệu ứng màu khi hover
+            },
+          }}
+          onClick={() => handleAddToCart(course.id)}
+          disabled={isAdding}
+        >
+          {isAdding ? 'Đang thêm...' : 'Thêm vào giỏ hàng'}
+        </Button>
+
+          {/* <Button
             variant="outlined"
             sx={{
               flex: 1,
@@ -141,11 +202,31 @@ const CourseDetailPage = () => {
             }}
           >
             <FavoriteBorderIcon />
-          </Button>
+          </Button> */}
         </Box>
-        <Button variant="contained" color="secondary" fullWidth>
+        {/* <Button variant="contained" color="secondary" fullWidth>
           Mua khóa học
-        </Button>
+        </Button> */}
+        <Box sx={{ marginTop: '20px', paddingLeft: '10px' }}>
+          <Typography variant="h7" fontWeight="bold" gutterBottom >
+            Khóa học bao gồm:
+          </Typography>
+          <ul style={{ listStyle: 'none', paddingLeft: '5px' }}>
+            <li style={{ display: 'flex', alignItems: 'center', marginTop: '15px' , marginBottom: '15px' }}>
+              <AccessTimeIcon sx={{ marginRight: '10px', color: '#555' }} />
+              <Typography variant="body1">Truy cập khóa học trọn đời</Typography>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'center', marginBottom: '15px' }}>
+              <SupportAgentIcon sx={{ marginRight: '10px', color: '#555' }} />
+              <Typography variant="body1">Tương tác trực tiếp với giáo viên</Typography>
+            </li>
+            <li style={{ display: 'flex', alignItems: 'center', marginBottom: '63px' }}>
+              <VerifiedIcon sx={{ marginRight: '10px', color: '#555' }} />
+              <Typography variant="body1">Các chứng nhận tham gia</Typography>
+            </li>
+          </ul>
+        </Box>
+
       </Box>
     </Container>
   );

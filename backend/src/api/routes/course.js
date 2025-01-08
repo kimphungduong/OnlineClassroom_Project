@@ -8,6 +8,7 @@ const { addPost, getAllPosts, getPost, addComment, voteComment, votePost}= requi
 
 
 router.get('/', CourseController.getListCourse);
+router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
 router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
@@ -46,7 +47,6 @@ router.post('/:lessonId/notes',CourseController.addNote);
 
 
 router.get('/', CourseController.getListCourse);
-router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/:slugLesson', CourseController.getLession);
 

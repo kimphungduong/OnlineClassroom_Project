@@ -55,7 +55,7 @@ const FilterBar = ({ onFilterChange }) => {
           onChange={handlePriceChange}
           valueLabelDisplay="auto"
           min={0}
-          max={5000000}
+          max={15000000}
           step={200000}
         />
       </Box>
