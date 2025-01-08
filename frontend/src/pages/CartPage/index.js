@@ -2,13 +2,20 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import CartItem from "../../components/CartItem";
 import SummarySection from "../../components/SummarySection";
+import CourseCardHome from "~/layouts/components/CourseCardHome"; // Component để hiển thị khóa học đề xuất
+import Slider from "react-slick"; // Thư viện slider
 import cartApi from "../../api/cartApi";
-import paymentApi from "../../api/paymentApi"; // Import API payment
+import courseApi from "~/api/courseApi"; // Import API recommendation
+import paymentApi from "../../api/paymentApi";
 import { useNavigate } from "react-router-dom";
 import { notification } from "antd";
+import { Row } from "antd";
+import { Container } from "@mui/material";
+
 
 const CartPage = () => {
   const [courses, setCourses] = useState([]);
+  const [recommendedCourses, setRecommendedCourses] = useState([]); // State cho đề xuất
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -24,7 +31,18 @@ const CartPage = () => {
       }
     };
 
+    const fetchRecommendations = async () => {
+      try {
+        // Gọi API lấy danh sách đề xuất
+        const response = await courseApi.getRecommendedCourses();
+        setRecommendedCourses(response.data || []);
+      } catch (error) {
+        console.error("Error fetching recommendations:", error.response?.data || error.message);
+      }
+    };
+
     fetchCart();
+    fetchRecommendations();
   }, []);
 
   const handleCheck = (id) => {
@@ -37,10 +55,7 @@ const CartPage = () => {
 
   const handleRemove = async (id) => {
     try {
-      // Gọi API để xóa khóa học khỏi giỏ hàng
       await cartApi.removeFromCart(id);
-  
-      // Nếu xóa thành công, cập nhật lại state
       setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
       notification.success({ message: "Đã xóa khóa học khỏi giỏ hàng" });
     } catch (error) {
@@ -58,11 +73,10 @@ const CartPage = () => {
       }
 
       const itemIds = selectedCourses.map((course) => course._id);
-      const response = await paymentApi.create(itemIds); // Gọi API tạo thanh toán
-      const paymentId = response.data._id; // Lấy mã thanh toán từ API
+      const response = await paymentApi.create(itemIds);
+      const paymentId = response.data._id;
       const qrCode = response.data.qrCode;
 
-      // Điều hướng đến trang thanh toán và gửi danh sách khóa học
       navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses } });
     } catch (error) {
       console.error("Error during payment creation:", error);
@@ -78,16 +92,42 @@ const CartPage = () => {
     return <Typography>Đang tải dữ liệu...</Typography>;
   }
 
+  // Cấu hình Slider
+  const sliderSettings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    responsive: [
+      {
+        breakpoint: 1024,
+        settings: {
+          slidesToShow: 2,
+        },
+      },
+      {
+        breakpoint: 600,
+        settings: {
+          slidesToShow: 1,
+        },
+      },
+    ],
+  };
+
   return (
+    <>
+    <Container min-width="100%" sx={{ mt: 4, position: "relative", flex: 1 }}>
+      
     <Box
       sx={{
         display: "flex",
         justifyContent: "space-between",
-        padding: "16px", // Padding xung quanh nhỏ gọn
-        margin: "0 auto", // Căn giữa container
-        maxWidth: "90%", // Chiếm 90% màn hình trình duyệt
-        width: "100%", // Đảm bảo khung co giãn đầy đủ
-        boxSizing: "border-box", // Đảm bảo padding không ảnh hưởng đến kích thước
+        padding: "16px",
+        margin: "0 auto",
+        maxWidth: "90%",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       <Box sx={{ flex: 2, marginRight: 2 }}>
@@ -112,7 +152,23 @@ const CartPage = () => {
         )}
       </Box>
       <SummarySection total={total} onPayment={handlePayment} />
-    </Box>
+      </Box>
+      
+    </Container>
+    
+      {/* <Box sx={{ mt: 4, position: "relative", flex: 1 }}>
+        <Typography variant="h5" gutterBottom>
+          Đề xuất cho bạn
+        </Typography>
+        <Slider {...sliderSettings}>
+          {recommendedCourses.map((course) => (
+            <Box key={course._id} px={2}>
+              <CourseCardHome course={course} />
+            </Box>
+          ))}
+        </Slider>
+      </Box> */}
+  </>
   );
 };
 

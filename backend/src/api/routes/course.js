@@ -7,6 +7,7 @@ const TestRoutes = require('../routes/test');
 const { addPost, getAllPosts, getPost, addComment, voteComment, votePost}= require('../controllers/ForumPostController');
 
 
+router.get('/recommended', CourseController.getRecommendations);
 router.get('/', CourseController.getListCourse);
 router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
@@ -47,7 +48,6 @@ router.post('/:lessonId/notes',CourseController.addNote);
 
 router.get('/', CourseController.getListCourse);
 router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
-router.post('/recommended', CourseController.getRecommendations);
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/:slugLesson', CourseController.getLession);
 
