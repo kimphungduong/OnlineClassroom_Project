@@ -35,6 +35,10 @@ const courseApi = {
   getCourseInfo: (courseSlug) => {
     return axiosInstance.get(`/course/course-info/${courseSlug}`);
   },
+
+  getSubmission: (slug, studentId) => {
+    return axiosInstance.get(`/course/submission/${slug}/${studentId}`);
+  },
 // gọi cái trên localhost:5000/course/sinh-hoc-co-ban là nó trả về thôgn tin 1 khoá học 
   // API làm mới token
   getLesson: (courseSlug,lessonSlug) => {

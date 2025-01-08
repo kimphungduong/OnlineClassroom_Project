@@ -136,6 +136,16 @@ class CourseController{
         return res.status(500).json({ message: 'Server error' });
       }
     };
+    async getSubmission(req, res) {
+      const { slug, studentId } = req.params; // Lấy slug và studentId từ URL params
+  
+      try {
+        const submissions = await CourseService.getSubmission(slug, studentId);
+        res.json(submissions);  // Trả về kết quả cho client
+      } catch (error) {
+        res.status(500).json({ error: error.message });
+      }
+    }  
 
     async getNotes(req, res) {
         try {

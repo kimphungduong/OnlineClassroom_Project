@@ -21,6 +21,7 @@ const routes = {
     lessonNew: '/lesson-edit/:slug/sections/:sectionId/lesson/new',
     courseStat: '/course-stat/:slug',
     membersStat: '/members-stat/:slug',
+    studentStat: '/student-stat/:slug/:studentId',
     testNew: '/test-edit/:slug/sections/:sectionId/test/new',
     testEdit: '/test-edit/:slug/sections/:sectionId/test/:testId',
     testPage: '/course/:slug/test/:testId',

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -18,57 +18,6 @@ import {
 } from "@mui/material";
 import courseApi from "../../api/courseApi";
 
-// Dữ liệu tĩnh
-// const members = [
-//   {
-//     name: "Phan Hồng Phúc",
-//     email: "phuc@gmail.com",
-//     submissions: 2, // Số lần làm bài kiểm tra
-//     totalTests: 3,  // Tổng số bài kiểm tra
-//   },
-//   {
-//     name: "Dương Kim Phụng",
-//     email: "Phung@gmail.com",
-//     submissions: 1,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-// ];
 
 const MembersStat = () => {
   const [members, setMembers] = useState([]);
@@ -144,10 +93,19 @@ const MembersStat = () => {
               return (
                 <TableRow key={index}>
                   <TableCell>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Avatar src="" alt="Avatar" />
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Avatar src="" alt="Avatar" />
+                    <Link
+                      to={`/student-stat/${slug}/${member.id}`} // Đường dẫn chi tiết cho từng học sinh
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        fontWeight: "bold",
+                      }}
+                    >
                       {member.name}
-                    </Box>
+                    </Link>
+                  </Box>
                   </TableCell>
                   <TableCell>{member.email}</TableCell>
                   <TableCell>

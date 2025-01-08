@@ -10,6 +10,7 @@ const { addPost, getAllPosts, getPost, addComment, voteComment, votePost}= requi
 router.get('/', CourseController.getListCourse);
 router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
+router.get('/submission/:slug/:studentId', CourseController.getSubmission);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
 router.get('/my-courses',CourseController.getMyCourse);
 router.get('/subject/:subjectSlug', CourseController.getCoursesBySubject);
