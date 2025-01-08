@@ -15,6 +15,9 @@ import {
 import ChatIcon from "@mui/icons-material/Chat";
 import SendIcon from "@mui/icons-material/Send";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import PersonIcon from '@mui/icons-material/Person';
+
+
 
 const cx = classNames.bind(styles);
 
@@ -123,8 +126,10 @@ const ChatRoom = ({ userName, courseId }) => {
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center" }}>
-              {/* <Avatar sx={{ bgcolor: "#007bff", marginRight: 2 }}>"Phan Phúc"</Avatar>
-              <Typography variant="h6">{userName}</Typography> */}
+              <Avatar sx={{ bgcolor: "#007bff", marginRight: 2 }}>
+                <PersonIcon />
+              </Avatar>
+                  <Typography variant="h6">{userName}</Typography>
             </Box>
           </Box>
 

@@ -17,12 +17,13 @@ const CartItemReadOnly = ({ course }) => {
         src={course.image}
         alt={course.title}
         sx={{
-          width: 100,
-          height: 100,
+          width: 150,
+          height: 150,
           borderRadius: 2,
           marginRight: 2,
+          objectFit: 'contain', // Đảm bảo hình ảnh hiển thị đúng kích thước
         }}
-      />
+    />
       {/* Thông tin khóa học */}
       <Box sx={{ flex: 1 }}>
         <Typography variant="h6">{course.title}</Typography>

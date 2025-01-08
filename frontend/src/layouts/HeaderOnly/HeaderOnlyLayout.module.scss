@@ -16,4 +16,6 @@
     display: flex;
     justify-content: center; /* Căn giữa theo chiều ngang */
     flex: 1;
+    min-height: calc(100vh - 237px - 60px);
+    align-items: center;
 }

@@ -19,7 +19,6 @@ const initializeSocket = () => {
       // Làm mới token
       const result = await store.dispatch(refreshToken());
       if (result.payload) {
-        store.dispatch(setTokens(result));
         socket.auth.token = result.payload.accessToken; // Cập nhật token mới
         socket.connect(); // Kết nối lại
       } else {

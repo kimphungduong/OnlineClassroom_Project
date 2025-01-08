@@ -19,7 +19,7 @@ const QuizPage = () => {
   const [elapsedTime, setElapsedTime] = useState(0); // Timer for elapsed time
   const [loading, setLoading] = useState(true); // State để hiển thị trạng thái tải dữ liệu
   const { slug, testId} = useParams();
-//   const { testId, slug } = useParams();  
+ 
   // Timer functionality
   useEffect(() => {
     const timer = setInterval(() => {

@@ -1,4 +1,3 @@
-// CartPage.js
 import React, { useEffect, useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import CartItem from "../../components/CartItem";
@@ -37,11 +36,6 @@ const CartPage = () => {
 
   const handleRemove = (id) => {
     setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
-    // Gọi API xóa khóa học khỏi giỏ hàng
-    cartApi.removeFromCart(id).catch((error) => {
-      console.error("Error removing course from cart:", error.response?.data || error.message);
-    });
-    
   };
 
   const handlePayment = async () => {
@@ -55,7 +49,7 @@ const CartPage = () => {
       const itemIds = selectedCourses.map((course) => course._id);
       const response = await paymentApi.create(itemIds); // Gọi API tạo thanh toán
       const paymentId = response.data._id; // Lấy mã thanh toán từ API
-      const qrCode = response.data.qrCode; 
+      const qrCode = response.data.qrCode;
 
       // Điều hướng đến trang thanh toán và gửi danh sách khóa học
       navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses } });
@@ -74,7 +68,17 @@ const CartPage = () => {
   }
 
   return (
-    <Box sx={{ display: "flex", justifyContent: "space-between", padding: 2 }}>
+    <Box
+      sx={{
+        display: "flex",
+        justifyContent: "space-between",
+        padding: "16px", // Padding xung quanh nhỏ gọn
+        margin: "0 auto", // Căn giữa container
+        maxWidth: "90%", // Chiếm 90% màn hình trình duyệt
+        width: "100%", // Đảm bảo khung co giãn đầy đủ
+        boxSizing: "border-box", // Đảm bảo padding không ảnh hưởng đến kích thước
+      }}
+    >
       <Box sx={{ flex: 2, marginRight: 2 }}>
         <Typography variant="h4" gutterBottom>
           Giỏ hàng

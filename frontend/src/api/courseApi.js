@@ -97,7 +97,10 @@ const courseApi = {
   searchCourses: (query) => {
     return axiosInstance.get('/search', { params: { query } }); // Gửi từ khóa vào query string
 
-  }
+  },
+  markLessonAsCompleted: (lessonId) => {
+    return axiosInstance.put(`/course/${lessonId}/completed`);
+  },
 
 };
 

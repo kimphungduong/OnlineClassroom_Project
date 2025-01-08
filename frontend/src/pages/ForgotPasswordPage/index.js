@@ -49,7 +49,7 @@ const ForgotPasswordPage = () => {
         gutterBottom
         sx={{ marginBottom: 3 }}
       >
-        Chúng tôi sẽ gửi cho bạn một đường liên kết qua email để bạn có thể đặt lại mật khẩu của mình
+        Chúng tôi sẽ gửi cho bạn một mã xác thực để đặt lại mật khẩu
       </Typography>
       <form onSubmit={handleSubmit}>
         <TextField

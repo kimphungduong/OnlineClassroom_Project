@@ -6,7 +6,7 @@ import styles from './CourseCardHome.module.scss';
 import classNames from 'classnames/bind';
 import { useState } from 'react';
 import { cartApi } from '~/api'; // Import cartApi để gọi API
-
+import { notification } from 'antd';
 const cx = classNames.bind(styles);
 
 const CourseCardHome = ({ course }) => {
@@ -17,6 +17,10 @@ const CourseCardHome = ({ course }) => {
         try {
             await cartApi.addToCart(courseId); // Call API to add course to cart
             // You can show a success message here, e.g., using a Snackbar or alert
+            notification.success({
+                message: 'Thêm khóa học vào giỏ hàng thành công',
+                description: `Đã thêm khóa học "${course.title}" vào giỏ hàng.`,
+            }); 
         } catch (error) {
             // Handle error, show message, etc.
             console.error('Error adding course to cart:', error);

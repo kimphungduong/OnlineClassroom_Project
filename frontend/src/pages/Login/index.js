@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from 'react-router-dom';
+
 import {
   Box,
   Button,
@@ -142,7 +144,7 @@ const LoginPage = () => {
       {/* Quên mật khẩu và Đăng ký */}
       <Box sx={{ marginTop: 3, textAlign: "center" }}>
         <Typography variant="body2" gutterBottom>
-          <Button variant="text" sx={{ textTransform: "none" }}>
+          <Button component={Link} variant="text" sx={{ textTransform: "none" }} to="/forgotPassword">
             Quên mật khẩu
           </Button>
         </Typography>

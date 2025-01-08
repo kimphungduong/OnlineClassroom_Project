@@ -9,6 +9,7 @@ import {getCourse, getLesson} from '~/services/courseService';
 import {addNote, getNotes, updateNote, deleteNote} from '~/services/noteService';
 import { useRef } from 'react';
 import ChatRoom from '~/components/ChatRoom';
+import {store} from '~/store';
 import ReactQuill from 'react-quill';
 
 const CoursePage = () => {
@@ -56,7 +57,7 @@ const CoursePage = () => {
 
   const breadcrumbsLinks = [
     { href: '/', label: 'Home' },
-    { href: '/courses', label: 'Courses' },
+    { href: '/my-course', label: 'Khóa học của tôi' },
     { href: `/detail/${slugCourse}`, label: courseData?.name || 'Loading...' }
   ];
 
@@ -71,7 +72,7 @@ const CoursePage = () => {
       <Grid container spacing={2}>
         {/* Phần Video và Tabs */}
         <Grid item xs={12} md={8} sx={{ overflowY: 'auto', minHeight: '100vh' }}>
-          <VideoPlayer url={lessonData?.videoUrl} title={lessonData?.name} videoRef={videoRef} />
+          <VideoPlayer url={lessonData?.videoUrl} lessonId={lessonData?._id} videoRef={videoRef} />
           <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
             <Tabs value={tabIndex} onChange={handleChange} aria-label="tabs">
               <Tab label="Thông tin bài giảng" />
@@ -184,7 +185,7 @@ const CoursePage = () => {
           <CourseSidebar sections={courseData?.sections} slugCourse={slugCourse} />
         </Grid>
       </Grid>
-      <ChatRoom userType="student" courseId={courseData._id} />
+      <ChatRoom userType="student" userName={courseData.teacher.name} courseId={courseData._id} />
     </Container>
 
   );
