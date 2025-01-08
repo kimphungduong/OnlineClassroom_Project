@@ -86,7 +86,7 @@ const MembersStat = () => {
         setMembers(response.data);
         setFilteredMembers(response.data); // Set dữ liệu ban đầu
       } catch (error) {
-        console.error("Error fetching members:", error);
+        console.error("Lỗi khi nạp data:", error);
       }
     };
     fetchMembers();
@@ -132,7 +132,7 @@ const MembersStat = () => {
       <TableContainer component={Paper}>
         <Table>
           <TableHead sx={{ backgroundColor: "#e0e0e0" }}>
-            <TableRow>
+            <TableRow>   
               <TableCell sx={{ fontWeight: "bold" }}>Họ và tên</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Tiến độ học tập</TableCell>
