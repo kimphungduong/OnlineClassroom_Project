@@ -245,6 +245,25 @@ class CourseController{
       }
   }
 
+  async getRecommendations (req, res){
+    try {
+      // Gọi service để lấy danh sách khóa học gợi ý
+      const recommendedCourses = await courseRecommendationService.getRecommendedCourses(req.user.userId);
+  
+      // Trả về kết quả cho client
+      res.status(200).json({
+        success: true,
+        data: recommendedCourses,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: error.message || 'Error fetching course recommendations',
+      });
+    }
+  };
+  
+
 }
 
 module.exports = new CourseController();

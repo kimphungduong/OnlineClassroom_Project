@@ -47,8 +47,10 @@ router.post('/:lessonId/notes',CourseController.addNote);
 
 router.get('/', CourseController.getListCourse);
 router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
+router.post('/recommended', CourseController.getRecommendations);
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/:slugLesson', CourseController.getLession);
+
 
 // route là đường dẫn. có 4 loại gọi api cơ bản là 
 // POST nạp dataset mới (json)

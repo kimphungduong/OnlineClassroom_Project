@@ -10,8 +10,12 @@ import { getCourse, getLesson } from "~/services/courseService";
 import { addNote, getNotes, updateNote, deleteNote } from "~/services/noteService";
 import noteApi from "~/api/noteApi";
 import ReactQuill from "react-quill";
+import {useSearchParams} from "react-router-dom";
 
 const CoursePage = () => {
+  const [searchParams] = useSearchParams(); // Đọc query params
+  const startTime = parseFloat(searchParams.get("time")) || 0; // Lấy giá trị time (mặc định là 0)
+
   const { slugCourse, slugLesson } = useParams();
   const [tabIndex, setTabIndex] = useState(0);
   const [courseData, setCourseData] = useState(null);
@@ -100,6 +104,7 @@ const CoursePage = () => {
             url={lessonData?.videoUrl}
             lessonId={lessonData?._id}
             videoRef={videoRef}
+            startTime={startTime}
           />
           <Button
             variant="outlined"
@@ -244,8 +249,9 @@ const CoursePage = () => {
       <NotesSidebar
         visible={isNotesSidebarOpen}
         onClose={() => setNotesSidebarOpen(false)}
-        videoRef={videoRef}
         courseId={courseData?._id}
+        videoRef={videoRef}
+        currentLessonId={lessonData?._id} // Bài giảng hiện tại
       />
     </Container>
   );

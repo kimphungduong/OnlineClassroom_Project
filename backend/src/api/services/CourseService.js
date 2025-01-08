@@ -479,7 +479,32 @@ class CourseService {
       throw new Error("Lỗi khi đánh dấu bài giảng đã học: " + error.message);
     }
   }
+  async getRecommendedCourses (studentId){
+    try {
+      // Lấy thông tin sinh viên từ database
+      const student = await Student.findById(studentId).populate('registeredCourses');
+      if (!student) {
+        throw new Error('Student not found');
+      }
   
+      // Lấy danh sách ID khóa học đã đăng ký
+      const registeredCourseIds = student.registeredCourses.map(course => course._id.toString());
+  
+      // Lấy danh mục hoặc thông tin từ khóa học đã đăng ký (nếu có)
+      const registeredCategories = student.registeredCourses.map(course => course.subject);
+  
+      // Lấy các khóa học không nằm trong danh sách đã đăng ký
+      const recommendedCourses = await Course.find({
+        _id: { $nin: registeredCourseIds }, // Loại bỏ các khóa học đã đăng ký
+        subject: { $in: registeredCategories } // Lọc các khóa học có cùng danh mục
+      }).populate('teacher', 'name email -_id')
+  
+      return recommendedCourses;
+    } catch (error) {
+      console.error('Error fetching recommended courses:', error.message);
+      throw error;
+    }
+  };
 }  
 
 module.exports = new CourseService();

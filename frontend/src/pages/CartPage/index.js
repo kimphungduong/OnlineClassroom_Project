@@ -5,6 +5,7 @@ import SummarySection from "../../components/SummarySection";
 import cartApi from "../../api/cartApi";
 import paymentApi from "../../api/paymentApi"; // Import API payment
 import { useNavigate } from "react-router-dom";
+import { notification } from "antd";
 
 const CartPage = () => {
   const [courses, setCourses] = useState([]);
@@ -34,8 +35,18 @@ const CartPage = () => {
     );
   };
 
-  const handleRemove = (id) => {
-    setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
+  const handleRemove = async (id) => {
+    try {
+      // Gọi API để xóa khóa học khỏi giỏ hàng
+      await cartApi.removeFromCart(id);
+  
+      // Nếu xóa thành công, cập nhật lại state
+      setCourses((prevCourses) => prevCourses.filter((course) => course._id !== id));
+      notification.success({ message: "Đã xóa khóa học khỏi giỏ hàng" });
+    } catch (error) {
+      console.error("Error removing course from cart:", error.response?.data || error.message);
+      notification.error({ message: "Có lỗi xảy ra khi xóa khóa học khỏi giỏ hàng" });
+    }
   };
 
   const handlePayment = async () => {

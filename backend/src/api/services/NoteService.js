@@ -22,7 +22,7 @@ class NoteService {
             throw new Error('Error deleting note: ' + error.message);
         }
     }
-    async getNotesGroupedBySections (courseId, userId){
+    async getNotesGroupedBySections(courseId, userId) {
         try {
             // Lấy tất cả các ghi chú của user
             const notes = await Note.find({ student: userId });
@@ -59,6 +59,7 @@ class NoteService {
                         sectionData.lessons.push({
                             lessonId: lessonData._id.toString(),
                             lessonTitle: lessonData.name,
+                            lessonSlug: lessonData.slug, // Thêm slug của lesson
                             notes: lessonNotes.map(note => ({
                                 content: note.content,
                                 createdAt: note.createdAt,
@@ -80,6 +81,7 @@ class NoteService {
             throw new Error("Không thể lấy danh sách ghi chú theo section và bài giảng.");
         }
     };
+    
     
     
     

@@ -24,6 +24,11 @@ const CourseCardHome = ({ course }) => {
         } catch (error) {
             // Handle error, show message, etc.
             console.error('Error adding course to cart:', error);
+            notification.error({
+                message: 'Lỗi khi thêm khóa học vào giỏ hàng',
+                description: error.message || 'Có lỗi xảy ra khi thêm khóa học vào giỏ hàng.',
+            });
+            
         } finally {
             setIsAdding(false); // Reset loading state
         }

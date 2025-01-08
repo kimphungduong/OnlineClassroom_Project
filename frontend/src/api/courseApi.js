@@ -101,6 +101,9 @@ const courseApi = {
   markLessonAsCompleted: (lessonId) => {
     return axiosInstance.put(`/course/${lessonId}/completed`);
   },
+  getRecommendedCourses: () => {
+    return axiosInstance.get('/course/recommended');
+  }
 
 };
 

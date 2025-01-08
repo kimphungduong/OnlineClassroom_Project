@@ -22,7 +22,7 @@ class CartController {
             const { courseId } = req.body;
             const userId = req.user.userId;
 
-            const cart = await CartService.addItem(userId, [courseId]);
+            const cart = await CartService.addItem(userId, courseId);
             res.json(cart);
         } catch (error) {
             console.error("Lỗi cập nhật giỏ hàng:", error);

@@ -150,7 +150,7 @@ const LoginPage = () => {
         </Typography>
         <Typography variant="body2">
           Không có tài khoản?{" "}
-          <Button variant="text" color="primary" sx={{ textTransform: "none" }}>
+          <Button variant="text" color="primary" sx={{ textTransform: "none" }} component={Link} to="/register">
             Đăng ký
           </Button>
         </Typography>
