@@ -41,8 +41,8 @@ const QuizPage = () => {
         setQuizData(response.data); // Lưu dữ liệu test vào state
         setLoading(false);
       } catch (error) {
-        console.error("Error fetching quiz data:", error);
-        alert("Failed to fetch quiz data.");
+        console.error("Lỗi khi lấy data:", error);
+        alert("Lỗi khi lấy data.");
       }
     };
 
@@ -84,10 +84,10 @@ const QuizPage = () => {
       //   submissionData
       // );
       console.log("API Response:", response.data);
-      alert(`Quiz submitted successfully! Your score is ${score}%`);
+      alert(`Nộp bài thành công! Số điểm đạt được: ${score}%`);
     } catch (error) {
-      console.error("Error submitting quiz:", error);
-      alert("An error occurred while submitting the quiz.");
+      console.error("Lỗi nộp bài:", error);
+      alert("Có lỗi xảy ra.");
     }
   };
 
@@ -114,7 +114,7 @@ const QuizPage = () => {
 
       {/* Timer */}
       <Typography variant="h6" color="secondary" gutterBottom>
-        Time: {formatTime(elapsedTime)}
+        Thời gian: {formatTime(elapsedTime)}
       </Typography>
 
       {/* Questions */}
@@ -122,7 +122,7 @@ const QuizPage = () => {
         <Card key={question._id} sx={{ mb: 2 }}>
           <CardContent>
             <Typography variant="h6">
-              Question {index + 1}: {question.content}
+              Câu hỏi {index + 1}: {question.content}
             </Typography>
 
             <RadioGroup
@@ -149,7 +149,7 @@ const QuizPage = () => {
         onClick={handleSubmit}
         sx={{ mt: 4 }}
       >
-        Submit Quiz
+        Nội bài
       </Button>
     </Container>
   );

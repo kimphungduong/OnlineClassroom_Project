@@ -85,7 +85,7 @@ const CourseEdit = () => {
       <CourseBreadcrumbs courseName={courseName} />
 
       <Typography variant="h4" sx={{ mb: 3, fontWeight: 'bold' }}>
-        {courseName ? `Chỉnh sửa bài giảng: ${courseName}` : 'Chỉnh sửa bài giảng'}
+        {courseName ? `Chỉnh sửa nội dung khoá học: ${courseName}` : 'Chỉnh sửa bài giảng'}
       </Typography>
 
 
