@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import {
   Container,
   Typography,
@@ -19,57 +19,6 @@ import {
 import courseApi from "../../api/courseApi";
 import CourseBreadcrumbs from "~/layouts/components/CustomBreadcrumbs";
 
-// Dữ liệu tĩnh
-// const members = [
-//   {
-//     name: "Phan Hồng Phúc",
-//     email: "phuc@gmail.com",
-//     submissions: 2, // Số lần làm bài kiểm tra
-//     totalTests: 3,  // Tổng số bài kiểm tra
-//   },
-//   {
-//     name: "Dương Kim Phụng",
-//     email: "Phung@gmail.com",
-//     submissions: 1,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-//   {
-//     name: "Lê Minh Quân",
-//     email: "Quan@gmail.com",
-//     submissions: 3,
-//     totalTests: 3,
-//   },
-// ];
 
 const MembersStat = () => {
   const [members, setMembers] = useState([]);
@@ -87,7 +36,7 @@ const MembersStat = () => {
         setMembers(response.data);
         setFilteredMembers(response.data); // Set dữ liệu ban đầu
       } catch (error) {
-        console.error("Error fetching members:", error);
+        console.error("Lỗi khi nạp data:", error);
       }
     };
     fetchMembers();
@@ -137,7 +86,7 @@ const MembersStat = () => {
       <TableContainer component={Paper}>
         <Table>
           <TableHead sx={{ backgroundColor: "#e0e0e0" }}>
-            <TableRow>
+            <TableRow>   
               <TableCell sx={{ fontWeight: "bold" }}>Họ và tên</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Email</TableCell>
               <TableCell sx={{ fontWeight: "bold" }}>Tiến độ học tập</TableCell>
@@ -149,10 +98,19 @@ const MembersStat = () => {
               return (
                 <TableRow key={index}>
                   <TableCell>
-                    <Box display="flex" alignItems="center" gap={1}>
-                      <Avatar src="" alt="Avatar" />
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Avatar src="" alt="Avatar" />
+                    <Link
+                      to={`/student-stat/${slug}/${member.id}`} // Đường dẫn chi tiết cho từng học sinh
+                      style={{
+                        textDecoration: "none",
+                        color: "inherit",
+                        fontWeight: "bold",
+                      }}
+                    >
                       {member.name}
-                    </Box>
+                    </Link>
+                  </Box>
                   </TableCell>
                   <TableCell>{member.email}</TableCell>
                   <TableCell>

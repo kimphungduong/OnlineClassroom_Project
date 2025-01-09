@@ -236,7 +236,7 @@ class CourseService {
     const course = await Course.findOne({ slug })
       .populate({
         path: 'studentProgress.student',
-        select: 'name email', // Chỉ lấy name và email từ Student
+        select: 'name email _id', // Chỉ lấy name và email từ Student
       })
       .populate('students')
       .lean(); // Sử dụng lean() để tối ưu hóa query
@@ -247,11 +247,10 @@ class CourseService {
 
     // Lấy danh sách tất cả học sinh liên kết với khóa học
     const allStudents = course.students.map(student => ({
-      studentId: student._id.toString(),
+      studentId: student._id,
       name: student.name,
       email: student.email,
       lessonsCompleted: 0,
-
     }));
   
     // Map thông tin studentProgress
@@ -270,10 +269,54 @@ class CourseService {
       email: student.email,
       lessonsCompleted: progressMap[student.studentId]?.lessonsCompleted || 0,
       totalLessons: totalLessons,
+      id: student.studentId
     }));
   
     return result;
   }
+
+  async getSubmission(slug, studentId) {
+    try {
+      // Tìm khóa học dựa trên slug
+      const course = await Course.findOne({ slug }).exec();
+  
+      // Kiểm tra nếu khóa học không tồn tại
+      if (!course) {
+        throw new Error('Course not found');
+      }
+  
+      // Lấy danh sách testIds
+      const testIds = course.sections
+        .flatMap(section => section.lessons) // Lấy tất cả lessons từ sections
+        .filter(lesson => lesson.lessonType === 'Test') // Chỉ lấy những lessons là Test
+        .map(test => test.lessonId); // Lấy lessonId của Test
+  
+      if (!testIds.length) {
+        throw new Error('No tests found in this course');
+      }
+      const tests = await Test.find({ _id: { $in: testIds } })
+      .select('name submission') // Lấy trường cần thiết từ Test
+      .exec();
+
+      const student = await Student.findOne({ _id: studentId }).select('name email');
+
+
+      // Tìm và populate các bài kiểm tra (tests)
+      const testsWithStudentId = tests.map(test => ({
+        ...test.toObject(), // Chuyển tài liệu Mongoose thành object thường
+        submission: test.submission.filter(sub => sub.student.toString() === studentId), // Lọc submission theo studentId
+        studentName : student.name,
+        email : student.email,
+      }));
+  
+      return testsWithStudentId; // Trả về danh sách các bài kiểm tra đã populate
+    } catch (err) {
+      console.error(err);
+      throw new Error('Error fetching tests');
+    }
+  }
+  
+
   // PUT
   async updateSectionTitle(courseSlug, sectionId, title) {
     if (!title) {

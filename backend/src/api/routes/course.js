@@ -12,6 +12,7 @@ router.get('/', CourseController.getListCourse);
 router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
 router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
+router.get('/submission/:slug/:studentId', CourseController.getSubmission);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
 router.get('/my-courses',CourseController.getMyCourse);
 router.put('/:lessonId/completed', CourseController.markLessonAsCompleted);

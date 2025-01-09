@@ -102,10 +102,10 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
         prevSections.map((s) => (s._id === section._id ? updatedSection : s))
       );
   
-      alert('Lesson and associated documents deleted successfully!');
+      alert('Xoá bài giảng thành công');
     } catch (error) {
       console.error('Error deleting lesson:', error);
-      alert('Error deleting lesson');
+      alert('Lỗi khi xoá bài giảng');
     }
   };
   const handleDeleteTest = async (testId) => {
@@ -127,10 +127,10 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
         prevSections.map((s) => (s._id === section._id ? updatedSection : s))
       );
   
-      alert('Test deleted successfully!');
+      alert('Xoá test thành công!');
     } catch (error) {
       console.error('Error deleting test:', error);
-      alert('Error deleting test');
+      alert('Lỗi khi xoá test');
     }
   };
   return (

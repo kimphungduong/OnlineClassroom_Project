@@ -60,7 +60,7 @@ const LessonActions = ({
           link: doc.link,
         })),
       };
-      alert(JSON.stringify(lessonPayload, null, 2));
+      // alert(JSON.stringify(lessonPayload, null, 2));
       // alert(lessonId);
       const response = await lessonApi.updateLesson(courseSlug, lessonId, lessonPayload);
       //  fetch(
@@ -73,11 +73,11 @@ const LessonActions = ({
       // );
 
       if (!response) throw new Error('Failed to update lesson');
-      alert('Lesson updated successfully!');
+      alert('Tạo bài thành công!');
       navigate(-1);
     } catch (error) {
       console.error(error);
-      alert('Error updating lesson');
+      alert('Lỗi khi tạo bài');
     } finally {
       setIsSubmitting(false);
     }

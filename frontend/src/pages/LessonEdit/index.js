@@ -57,7 +57,7 @@ const LessonEdit = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
-        Edit Lesson
+        Chỉnh sửa bài giảng
       </Typography>
       <Paper elevation={3} sx={{ p: 3, mt: 3, borderRadius: 2 }}>
         {/* Form nhập thông tin bài học */}

@@ -62,16 +62,16 @@ const LessonActions = ({
       };
   
 
-      alert(JSON.stringify(lessonPayload, null, 2));
+      // alert(JSON.stringify(lessonPayload, null, 2));
       const response = await lessonApi.createLesson(courseSlug, sectionId, lessonPayload);
 
       
       if (!response) throw new Error('Failed to save lesson');
-      alert('Lesson created successfully!');
+      alert('Tạo bài thành công!');
       navigate(-1);
     } catch (error) {
       console.error(error);
-      alert('Error creating lesson');
+      alert('Lỗi khi tạo bài');
     } finally {
       setIsSubmitting(false);
     }

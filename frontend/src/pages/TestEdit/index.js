@@ -32,7 +32,7 @@ const TestEdit = () => {
         console.log('Fetched Test Data:', testData);
       } catch (error) {
         console.error('Error fetching test data:', error);
-        alert('Failed to fetch test data. Please try again later.');
+        alert('Lỗi khi lấy data.');
       }
     };
 
@@ -88,11 +88,11 @@ const TestEdit = () => {
 
       await testApi.updateTest(courseSlug, testId, payload); 
       
-      alert('Test updated successfully!');
+      alert('Cập nhật test thành công!');
       navigate(-1); // Navigate back to the previous page
     } catch (error) {
-      console.error('Error updating test:', error);
-      alert('Failed to update the test. Please try again.');
+      console.error('Lỗi khi cập nhật:', error);
+      alert('Lỗi khi cập nhật.');
     }
   };
   const deleteQuestion = (index) => {
@@ -116,7 +116,7 @@ const TestEdit = () => {
       </Box>
       <Box mb={3} display="flex" justifyContent="center">
         <Button variant="outlined" startIcon={<AddCircle />} onClick={addQuestion}>
-          Add Question
+          Thêm câu hỏi
         </Button>
       </Box>
       {questions.map((question, index) => (
@@ -131,7 +131,7 @@ const TestEdit = () => {
 
       <Box mt={3} display="flex" justifyContent="flex-end">
         <Button variant="contained" color="primary" onClick={handleUpdateTest}>
-          Update Test
+          Cập nhật
         </Button>
       </Box>
     </Container>

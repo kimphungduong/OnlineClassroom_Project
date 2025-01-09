@@ -42,7 +42,7 @@ const TeacherCoursePage = () => {
   };
 
   return (
-    <Box sx={{ backgroundColor: "#f0f8ff", minHeight: "100vh", pb: 5 }}>
+    <Box sx={{ backgroundColor: "#f0f8ff", width: "100%",maxWidth: "1100px",  minHeight: "100vh", pb: 5 }}>
       <Container>
         <Stack
           direction="row"

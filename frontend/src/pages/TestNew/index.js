@@ -35,7 +35,7 @@ const TestNew = () => {
     const handleCreateTest = async () => {
       try {
         // 1. Gửi các câu hỏi lên database
-        alert(JSON.stringify(questions, null, 2));
+        // alert(JSON.stringify(questions, null, 2));
         const questionResponses = await Promise.all(
           questions.map(async (question) => {
             const response = await questionApi.createQuestion(question);
@@ -44,20 +44,20 @@ const TestNew = () => {
         );
         // 2. Lấy danh sách ID của các câu hỏi đã lưu
         const questionIds = questionResponses.map((q) => q.question._id);
-        alert(JSON.stringify(questionResponses, null, 2));
+        // alert(JSON.stringify(questionResponses, null, 2));
         // 3. Gửi API để tạo Test
         const payload = {
           name: testName,
           questions: questionIds,
         };
-        alert(JSON.stringify(payload, null, 2));
+        // alert(JSON.stringify(payload, null, 2));
         const testResponse = await testApi.createTest(courseSlug, sectionId, payload);
         
-        alert('Test created successfully!');
+        alert('Test được tạo thành công!');
         navigate(-1);
       } catch (error) {
-        console.error('Error creating test:', error);
-        alert('Failed to create test.');
+        console.error('Lỗi khi tạo test:', error);
+        alert('Lỗi khi tạo test.');
       }
     };
     
@@ -68,7 +68,7 @@ const TestNew = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 4 }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>
-        Create a Test
+        Tạo bài kiểm tra
       </Typography>
       <Box mb={3}>
         <TextField
@@ -86,7 +86,7 @@ const TestNew = () => {
           startIcon={<AddCircle />}
           onClick={addQuestion}
         >
-          Add Question
+          Thêm câu hỏi
         </Button>
       </Box>
       {questions.map((question, index) => (
@@ -100,7 +100,7 @@ const TestNew = () => {
       ))}
       <Box mt={3} display="flex" justifyContent="flex-end">
         <Button variant="contained" color="primary" onClick={handleCreateTest}>
-          Create Test
+          Tạo
         </Button>
       </Box>
     </Container>

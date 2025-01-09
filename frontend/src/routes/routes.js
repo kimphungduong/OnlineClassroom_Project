@@ -32,6 +32,7 @@ import LessonEdit from '~/pages/LessonEdit';
 import LessonNew from '~/pages/LessonNew';
 import CourseStat from '~/pages/CourseStat';
 import MembersStat from '~/pages/MembersStat';
+import StudentStat from '~/pages/StudentStat';
 import TestNew from '~/pages/TestNew';
 import TestEdit from '~/pages/TestEdit';
 import TestPage from '~/pages/TestPage';
@@ -79,13 +80,14 @@ const publicRoutes = [
     { path: config.routes.editCourseInfo, component: EditCourseInfo, layout: DefaultLayout, auth: TeacherRoute },
     { path: config.routes.courseEdit, component: CourseEdit, layout: DefaultLayout, auth: TeacherRoute },
 
-    { path: config.routes.lessonEdit, component: LessonEdit, layout: DefaultLayout, auth: TeacherRoute },
-    { path: config.routes.lessonNew, component: LessonNew, layout: DefaultLayout, auth: TeacherRoute },
-    { path: config.routes.courseStat, component: CourseStat, layout: DefaultLayout, auth: TeacherRoute },
-    { path: config.routes.membersStat, component: MembersStat, layout: DefaultLayout, auth: TeacherRoute },
-    { path: config.routes.testNew, component: TestNew, layout: DefaultLayout, auth: TeacherRoute },
-    { path: config.routes.testEdit, component: TestEdit, layout: DefaultLayout, auth: TeacherRoute },
-    { path: config.routes.testPage, component: TestPage, layout: DefaultLayout, auth: StudentRoute },
+    { path: config.routes.lessonEdit, component: LessonEdit, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.lessonNew, component: LessonNew, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.courseStat, component: CourseStat, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.membersStat, component: MembersStat, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.studentStat, component: StudentStat, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.testNew, component: TestNew, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly, auth: TeacherRoute },
+    { path: config.routes.testPage, component: TestPage, layout: HeaderOnly, auth: StudentRoute },
 
     { path: config.routes.register, component: RegisterPage, layout: DefaultLayout },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: DefaultLayout },
