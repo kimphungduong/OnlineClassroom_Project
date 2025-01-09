@@ -4,6 +4,8 @@ const Payment = require('../models/Payment');
 const Cart = require('../models/Cart');
 const Course = require('../models/Course');
 const Student = require('../models/Student');
+const { paymentSuccessNotification } = require('../services/NotificationService');
+
 
 
 class PaymentService {
@@ -136,6 +138,7 @@ class PaymentService {
                             throw new Error("Student already registered");
                         }
                         course.students.push(payment.student);
+                        paymentSuccessNotification(student._id, course)
                         await course.save();
                     }
 
@@ -151,7 +154,7 @@ class PaymentService {
                     student.registeredCourses.push(...payment.course);
                     await student.save();
 
-
+                    
                     return payment;
                 }
 

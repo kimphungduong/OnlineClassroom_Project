@@ -3,6 +3,7 @@ const Notification = require("../models/Notification");
 const ForumPost = require("../models/ForumPost");
 const Student = require("../models/Student");
 const Teacher = require("../models/Teacher");
+const Lesson = require("../models/Lesson");
 const { sendCustomEvent } = require("../utils/sendCustomEvent");
 
 const getLengthNotificationsUnRead = async (userId) => {
@@ -151,6 +152,46 @@ module.exports.addTestForCourse = async (course, testName, testId) => {
     }
 }
 
+module.exports.paymentSuccessNotification = async (studentId, course) => {
+    try {
+        const firstSection = course.sections[0];
+        const lessonSlug = "";
+        if(firstSection) {
+            let lessonId = ""
+            for(const lesson of firstSection.lessons) {
+                if (lesson.lessonType === "Lesson") {
+                    lessonId = lesson.lessonId;
+                    break;
+                }
+            }
+            if (lessonId) {
+                const lesson = await Lesson.findOne({ _id: lessonId });
+                lessonSlug = lesson.slug;
+            }
+        }
+
+        console.log("lessonSlug", lessonSlug)
+
+
+        await Notification.create({
+            userId: studentId,
+            type: "payment_success",
+            title: `Thanh toán thành công khóa học " **${course.name}** " vào học thôi nào.`,
+            content: `Thanh toán thành công khóa học " **${course.name}** " vào học thôi nào.`,
+            related_data: {
+                course_slug: course.slug,
+                lesson_slug: lessonSlug
+            }
+        });
+        const len = await getLengthNotificationsUnRead(studentId)
+        sendCustomEvent(studentId, "lenNotification", len)
+        
+    }
+    catch (e) {
+        console.error(e)
+    }
+}
+
 
 
 module.exports.setRead = async (userId, notificationId) => {
@@ -164,7 +205,4 @@ module.exports.setRead = async (userId, notificationId) => {
     catch (e) {
         console.error(e)
     }
-
-
-
 }

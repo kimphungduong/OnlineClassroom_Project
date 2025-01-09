@@ -14,7 +14,6 @@ const CommentItem = ({ title, authorName, authorAvatar, votes, replies, onClick 
             boxShadow: 3,
             padding: 2,
             width: "100%", // Để thẻ tự điều chỉnh theo màn hình
-            maxWidth: 600, // Giới hạn chiều rộng tối đa
             minHeight: 120, // Chiều cao tối thiểu
             display: "flex",
             flexDirection: "column",
@@ -41,7 +40,7 @@ const CommentItem = ({ title, authorName, authorAvatar, votes, replies, onClick 
         <Box display="flex" alignItems="center">
           <ThumbUpOutlinedIcon fontSize="small" />
           <Typography variant="body2" sx={{ marginLeft: 0.5 }}>
-            {votes} votes
+            {votes} point votes
           </Typography>
         </Box>
         <Box display="flex" alignItems="center">

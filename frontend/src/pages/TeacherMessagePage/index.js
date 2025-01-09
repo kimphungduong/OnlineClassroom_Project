@@ -4,6 +4,8 @@ import SendIcon from '@mui/icons-material/Send';
 import initializeSocket from '~/services/socketService';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import eventBus from '~/utils/eventBus';
+
 
 const TeacherMessages = () => {
   const [conversations, setConversations] = useState([]);
@@ -33,6 +35,8 @@ const TeacherMessages = () => {
     // Lắng nghe sự kiện trả về các cuộc hội thoại
     socketInstance.on('getAllMsg', (allMsg) => {
       setConversations(allMsg);
+      const len = allMsg.filter(e => e.readed === false).length
+      eventBus.emit('lenMessage', len);
     });
 
     // Lắng nghe sự kiện tin nhắn mới
@@ -65,6 +69,8 @@ const TeacherMessages = () => {
         receiverID: currentStudentRef.current.studentId,
         courseID: currentStudentRef.current.courseId,
       })
+
+      
 
     });
 
@@ -118,6 +124,9 @@ const TeacherMessages = () => {
       }
       return item;
     })
+
+    const len = newConversations.filter(e => e.readed === false).length
+    eventBus.emit('lenMessage', len);
 
     setConversations(newConversations);
 

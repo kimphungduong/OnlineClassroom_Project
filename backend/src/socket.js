@@ -5,6 +5,7 @@ const Course = require("./api/models/Course");
 const Student = require("./api/models/Student");
 const Teacher = require("./api/models/Teacher");
 const {getLengthNotificationsUnRead} = require("./api/services/NotificationService");
+const {GetAllMsgs} = require("./api/services/MessageService");
 
 let ioInstance;
 // Map ánh xạ userId với socket.id
@@ -183,6 +184,10 @@ module.exports.initSocket = (io) => {
             avatar : "https://via.placeholder.com/50",
             studentId : userId
           });
+
+          const msgs = await GetAllMsgs(userId);
+          const len = msgs.filter(e => e.readed === false).length
+          io.to(receiverSocketId).emit("lenMessage", len);
         }
       } catch (error) {
         console.error("Error sending message:", error);
@@ -211,6 +216,10 @@ module.exports.initSocket = (io) => {
             sentAt: new Date(),
 
           });
+          console.log("quang oi quang")
+          const msgs = await GetAllMsgs(userId);
+          const len = msgs.filter(e => e.readed === false).length
+          io.to(receiverSocketId).emit("lenMessage", len);
         }
       } catch (error) {
         console.error("Error sending message:", error);
@@ -219,7 +228,6 @@ module.exports.initSocket = (io) => {
     });
 
     socket.on("selectStudent", async ({receiverID, courseID}) => {
-      console.log("quang check")
       await Message.updateMany(
           {
             $and: [
@@ -239,57 +247,8 @@ module.exports.initSocket = (io) => {
     // Xử lý sự kiện lấy tất cả đoạn chat
     socket.on("getAllMsg", async () => {
       try {
-        console.log("check msg")
-        const chatRoom = await Message.find({
-          $or: [
-            { sender: userId },
-            { receiver: userId },
-          ],
-        })
-        const uniqueMessages = []
-        const seen = new Set()
 
-        chatRoom
-            .sort((a, b) => b.sentAt - a.sentAt)
-            .forEach((e) => {
-              const key = [
-                e.course.toString(),
-                [e.sender, e.receiver].sort().join('_'),
-              ].join('|');
-
-              if (!seen.has(key)) {
-                uniqueMessages.push(e);
-                seen.add(key);
-              }
-            })
-
-        const chatRoomData = uniqueMessages.map(async (e, i) => {
-          const course = await Course.findOne({
-            _id : e.course
-          })
-          const receiverId = e.sender.toString() === userId ? e.receiver : e.sender
-
-          const result = await Student.findOne({ _id: receiverId })
-                          ?? await Teacher.findOne({ _id: receiverId });
-
-          if(course === null){
-            return null
-          }
-
-          return {
-            id : i,
-            teacherId : userId,
-            studentId : receiverId,
-            courseName : course.name,
-            studentName : result.name,
-            studentAvatar : "https://via.placeholder.com/50",
-            courseId : course._id,
-            readed : e.readed,
-            role : result.role,
-          }
-        })
-
-        const chatRoomHeader = await Promise.all(chatRoomData)
+        const chatRoomHeader = await GetAllMsgs(userId);
 
         const receiverSocketId = userSocketMap[userId];
 
@@ -308,6 +267,13 @@ module.exports.initSocket = (io) => {
 
       const len = await getLengthNotificationsUnRead(userId)
       socket.emit("getLenNotification", len);
+
+    })
+
+    socket.on("getLenMessage", async () => {
+      const msgs = await GetAllMsgs(userId);
+      const len = msgs.filter(e => e.readed === false).length
+      socket.emit("lenMessage", len);
 
     })
     // Xử lý sự kiện ngắt kết nối

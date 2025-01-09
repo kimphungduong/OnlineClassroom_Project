@@ -7,6 +7,7 @@ import {
     faBars,
     faShoppingCart,
     faBell,
+    faMessage,
     faUser,
     faCircleQuestion,
     faEarthAsia,
@@ -30,6 +31,8 @@ import classNames from 'classnames/bind';
 import { useMediaQuery } from '@mui/material'; // Import useMediaQuery
 import {store} from '~/store'; // Import Redux store
 import initializeSocket from '~/services/socketService';
+import eventBus from '~/utils/eventBus';
+
 
 const cx = classNames.bind(styles);
 
@@ -63,6 +66,7 @@ function Header() {
     const [searchVisible, setSearchVisible] = useState(false); // State to control search visibility
     const [socket, setSocket] = useState(null); // State to store socket instance
     const [totalNotification, setTotalNotification] = useState(0); // State to store total notification
+    const [totalMessage, setTotalMessage] = useState(0); // State to store total message
 
     // Check screen size using useMediaQuery
 
@@ -79,14 +83,27 @@ function Header() {
             setTotalNotification(len);
         });
 
+        socketInstance.on('lenMessage', (len) => {
+            setTotalMessage(len);
+        });
+
+        socketInstance.emit('getLenMessage');
+
         socketInstance.emit('getLenNotification');
 
         socketInstance.on('getLenNotification', (len) => {
             setTotalNotification(len);
         })
 
+        const handleSetLen = (len) => {
+            setTotalMessage(len);
+        }
+
+        eventBus.on('lenMessage', handleSetLen)
+
         return () => {
             socketInstance.disconnect(); // Ngắt kết nối khi rời phòng
+            eventBus.off('lenMessage', handleSetLen);
         };
     },[]);
 
@@ -189,6 +206,16 @@ function Header() {
                                             <Link className={cx('action-btn')} to="/cart">
                                                 <FontAwesomeIcon icon={faShoppingCart} />
                                             </Link>
+                                        </Tippy>
+                                        <Tippy delay={[0, 50]} content="Nhắn tin" placement="bottom">
+                                        <IconButton
+                                            className={cx('action-btn')}
+                                            onClick={()=> navigate('/message') }     
+                                        >
+                                            <FontAwesomeIcon icon={faMessage} />
+                                            {totalMessage > 0 && (<span className={cx('badge')}>{totalMessage}</span>)}
+                                        </IconButton>
+
                                         </Tippy>
                                         <Tippy delay={[0, 50]} content="Thông báo" placement="bottom">
                                         <IconButton

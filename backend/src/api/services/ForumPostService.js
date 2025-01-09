@@ -32,12 +32,14 @@ module.exports.addPost = async(title, content, userId, slug) => {
 module.exports.getAllPosts = async (slug) => {
     try {
         // Tìm courseId dựa trên slug
-        const course = await Course.findOne({ slug }).select('_id');
+        const course = await Course.findOne({ slug })
+
+        const courseId = course._id;
 
         if (!course) {
             throw new Error('Course không tồn tại.');
         }
-        const posts = await ForumPost.find({course: course._id});
+        const posts = await ForumPost.find({course: courseId});
 
         const postsFull = posts.map(async post => {
             const result = await Student.findOne({ _id: post.createdBy })
@@ -52,8 +54,11 @@ module.exports.getAllPosts = async (slug) => {
                 commentCount : post.comments.length
             }
         })
-
-        return await Promise.all(postsFull)
+        const result = await Promise.all(postsFull)
+        return {
+            posts : result,
+            courseName : course.name
+        }
     } catch (error) {
         console.error("Lỗi lấy bài viết: " + error.message);
         throw error;
