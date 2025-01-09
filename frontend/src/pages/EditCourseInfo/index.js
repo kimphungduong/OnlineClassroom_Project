@@ -84,7 +84,7 @@ const EditCourseForm = () => {
     }
   
     if (formData.name.trim().length < 5 || formData.name.trim().length > 30) {
-      alert("Tên khóa học phải từ 5 đến 100 ký tự.");
+      alert("Tên khóa học phải từ 5 đến 30 ký tự.");
       return;
     }
 
