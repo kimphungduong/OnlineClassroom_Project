@@ -41,6 +41,16 @@ class ReviewController {
       res.status(500).json({ message: error.message });
     }
   }
+  async addReview(req, res)
+  {
+    try {
+      const { courseId, rating, comment } = req.body;
+      const review = await ReviewService.addReview(courseId, req.user.userId , rating, comment);
+      res.status(201).json(review);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
 }
 
 module.exports = new ReviewController();

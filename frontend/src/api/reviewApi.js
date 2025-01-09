@@ -20,6 +20,10 @@ const reviewApi = {
       },
     });
   },
+  addReview: (review) =>{
+    return axiosInstance.post('/review', review);
+  }
+
 };
 
 export default reviewApi;

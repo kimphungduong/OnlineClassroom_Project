@@ -4,9 +4,13 @@ import MyCourse from '~/pages/MyCourses';
 import ChangePassword from '~/layouts/components/ChangePassword';
 import EditProfileForm from '~/layouts/components/EditProfileForm';
 import {store} from '~/store';
+import { PhotoCamera } from '@mui/icons-material';
+import { IconButton } from '@mui/material';
+import settingApi from '~/api/settingApi';
 
 const Dashboard = () => {
     const [selectedContent, setSelectedContent] = useState('courses');
+    const [avatarUrl, setAvatarUrl] = useState(store.getState().auth.avatar); // Lấy avatar từ store
 
     const handleToggle = (event, newContent) => {
         if (newContent !== null) {
@@ -14,6 +18,26 @@ const Dashboard = () => {
         }
     };
 
+    const handleAvatarChange = async (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            const formData = new FormData();
+            formData.append('avatar', file);
+
+            try {
+                // Gọi API để upload ảnh
+                const response = await settingApi.updateAvatar(formData);
+
+                // Cập nhật avatar URL từ response
+                if (response.data.avatarUrl) {
+                    setAvatarUrl(response.data.avatarUrl);
+                    console.log('Avatar updated successfully:', response.data.avatarUrl);
+                }
+            } catch (error) {
+                console.error('Error uploading avatar:', error);
+            }
+        }
+    };
     return (
         <Container maxWidth="false" sx={{ display: 'flex', padding: '0px !important',height:'670px' }}>
             {/* Sidebar */}
@@ -27,10 +51,28 @@ const Dashboard = () => {
                     height: '100%', // Bóng đổ bên phải 
                 }}
             >
-                <Avatar sx={{ width: 80, height: 80, margin: '0 auto' }} />
+                {/* <Avatar sx={{ width: 80, height: 80, margin: '0 auto' }} /> */}
+                <Box sx={{ position: 'relative', display: 'inline-block', marginBottom: 2 }}>
+                    <Avatar
+                        src={avatarUrl}
+                        sx={{ width: 80, height: 80, margin: '0 auto', cursor: 'pointer' }}
+                    />
+                    <IconButton
+                        component="label"
+                        sx={{ position: 'absolute', bottom: 0, right: 'calc(50% - 20px)' }}
+                    >
+                        <PhotoCamera />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            hidden
+                            onChange={handleAvatarChange}
+                        />
+                    </IconButton>
+                </Box>
                 <Typography variant="h5" sx={{ marginTop: 2 }}>{store.getState().auth.name}</Typography>
                 <Typography variant="h6" color="textSecondary">
-                    Headline
+                    {store.getState().auth.role === 'student' ? 'Học viên' : 'Giáo viên'}
                 </Typography>
                 <Divider sx={{ marginY: 2 }} />
                 <ToggleButtonGroup

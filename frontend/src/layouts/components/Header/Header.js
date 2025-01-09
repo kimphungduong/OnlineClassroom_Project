@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Grid2 as Grid, IconButton, Drawer, List, ListItem, ListItemText, Box, Container, Popover,Typography, } from '@mui/material';
-
+import Avatar from '@mui/material/Avatar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faBars,
@@ -140,7 +140,7 @@ function Header() {
         }
     };
 
-
+    const avatar = store.getState().auth.avatar; // Get avatar from Redux store
 
 
     return (
@@ -238,10 +238,17 @@ function Header() {
                                 )}
                                 <Menu items={currentUser ? userMenu : MENU_ITEMS} onChange={handleMenuChange}>
                                     {currentUser ? (
-                                        <Image
-                                            className={cx('user-avatar')}
-                                            src={images.avatar}
-                                            alt="Nguyen Van A"
+                                        <Avatar
+                                        sx={{
+                                            width: 32,
+                                            height: 32,
+                                            objectFit: 'cover',
+                                            borderRadius: '50%',
+                                            marginLeft: 2,
+                                            cursor: 'pointer'
+                                        }}
+                                            src={avatar}
+                                            // sx={{ width: 80, height: 80, margin: '0 auto', cursor: 'pointer' }}
                                         />
                                     ) : (
                                         <button className={cx('more-btn')}>

@@ -57,6 +57,7 @@ class TestController {
   async addSubmission(req, res) {
     try {
       const submissionData = req.body; // Lấy dữ liệu submission từ request body
+      submissionData.student = req.user.userId;
 
       const test = await TestService.addSubmissionToTest(submissionData);
       if (!test) {

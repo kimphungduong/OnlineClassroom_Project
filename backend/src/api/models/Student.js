@@ -9,6 +9,7 @@ const studentSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true, unique: true },
   role: { type: String, default: 'student' },
+  avatar: { type: String, default: '/img/default-avatar.png' },
   registeredCourses: [
     {
       course: { type: mongoose.Schema.Types.ObjectId, ref: 'Course'}, // Tham chiếu đến khóa học

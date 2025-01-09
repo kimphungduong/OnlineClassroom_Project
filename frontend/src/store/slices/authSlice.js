@@ -51,6 +51,7 @@ const authSlice = createSlice({
   initialState: {
     accessToken: localStorage.getItem('accessToken') || null,
     role: localStorage.getItem('role') || null,
+    avatar: localStorage.getItem('avatar') || null,
     name: null,
     status: 'idle',
     error: null,
@@ -79,6 +80,7 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.role = action.payload.role;
         state.name = action.payload.name;
+        state.avatar = action.payload.avatar;
       })
       .addCase(login.rejected, (state, action) => {
         state.status = 'failed';

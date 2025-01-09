@@ -6,6 +6,8 @@ const Test = require('../models/Test');
 const Student = require('../models/Student');
 const Note = require('../models/Note');
 const Subject = require('../models/Subject'); 
+const mongoose = require('mongoose');
+const CartService = require('./CartService')
 
 class CourseService {
 
@@ -407,6 +409,107 @@ class CourseService {
         throw new Error('Lỗi khi tìm kiếm khóa học');
     }
   }
-}
+  async markLessonAsCompleted(lessonId, userId) {
+    try {
+      // Tìm bài học hoặc bài kiểm tra theo ID
+      let lesson;
+      let lessonType;
+  
+      // Kiểm tra bài học thuộc loại nào
+      lesson = await Lesson.findById(lessonId);
+      if (lesson) {
+        lessonType = "Lesson";
+      } else {
+        lesson = await Test.findById(lessonId);
+        if (lesson) {
+          lessonType = "Test";
+        } else {
+          throw new Error("Bài học hoặc bài kiểm tra không tồn tại");
+        }
+      }
+  
+      // Tìm khóa học chứa bài học hoặc bài kiểm tra này
+      const course = await Course.findOne({
+        "sections.lessons.lessonId": new mongoose.Types.ObjectId(lessonId),
+      });
+  
+      if (!course) {
+        throw new Error("Khóa học không tồn tại");
+      }
+  
+      // Kiểm tra học viên đã đăng ký khóa học này chưa
+      if (!course.students.includes(userId)) {
+        throw new Error("Học viên chưa tham gia khóa học này");
+      }
+  
+      // Tìm hoặc tạo tiến độ học tập của học viên
+      let studentProgress = course.studentProgress.find(
+        (progress) => progress.student.toString() === userId
+      );
+  
+      if (!studentProgress) {
+        // Nếu chưa có, thêm tiến độ mới
+        studentProgress = {
+          student: userId,
+          lessonsCompleted: [],
+        };
+        course.studentProgress.push(studentProgress);
+      }
+  
+      // Kiểm tra xem bài học đã được đánh dấu hoàn thành chưa
+      const isLessonCompleted = studentProgress.lessonsCompleted.some(
+        (completedLesson) => completedLesson.lessonId === lessonId
+      );
+  
+      if (isLessonCompleted) {
+        throw new Error("Bài học đã được đánh dấu hoàn thành");
+      }
+  
+      // Thêm bài học vào danh sách đã hoàn thành
+      studentProgress.lessonsCompleted.push({
+        lessonId: lessonId,
+        lessonType: lessonType,
+      });
+  
+      // Lưu cập nhật vào cơ sở dữ liệu
+      await course.save();
+  
+      return { message: "Bài học đã được đánh dấu hoàn thành thành công" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Lỗi khi đánh dấu bài giảng đã học: " + error.message);
+    }
+  }
+  async getRecommendedCourses (studentId){
+    try {
+      // Lấy thông tin sinh viên từ database
+      const student = await Student.findById(studentId).populate('registeredCourses.course');
+      if (!student) {
+        throw new Error('Student not found');
+      }
+  
+      // Lấy danh sách ID khóa học đã đăng ký
+      const registeredCourseIds = student.registeredCourses.map(item => item.course);
+  
+      // Lấy danh mục hoặc thông tin từ khóa học đã đăng ký (nếu có)
+      const registeredCourse= student.registeredCourses.map(item => item.course);
+      const registeredCategories = registeredCourse.map(item => item.subject);
+      
+      //Không lấy các khóa đã có trong dỏ hàng
+      const cartCourseIds = await CartService.findCartByUserId(studentId);
+
+      // Lấy các khóa học không nằm trong danh sách đã đăng ký
+      const recommendedCourses = await Course.find({
+        _id: { $nin: [...registeredCourseIds, ...cartCourseIds] }, // Loại bỏ các khóa học đã đăng ký
+        subject: { $in: registeredCategories } // Lọc các khóa học có cùng danh mục
+      }).populate('teacher', 'name email -_id')
+  
+      return recommendedCourses;
+    } catch (error) {
+      console.error('Error fetching recommended courses:', error.message);
+      throw error;
+    }
+  };
+}  
 
 module.exports = new CourseService();

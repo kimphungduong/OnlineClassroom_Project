@@ -8,6 +8,7 @@ const teacherSchema = new mongoose.Schema({
   password: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   phone: { type: String, required: true, unique: true },
+  avatar: { type: String, default: '/img/default-avatar.png' },
   role: { type: String, default: 'teacher' },
   courses: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Course' }],
   createdAt: { type: Date, default: Date.now }

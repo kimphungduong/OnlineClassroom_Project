@@ -114,8 +114,8 @@ class PaymentService {
             let elapsed = 0;
 
             while (elapsed < timeout) {
-                //const isPaid = await checkPaid(payment.amount, payment.description);
-                const isPaid = await checkPaid(12050, "OrderID6764512e7b1005eda9688255");
+                const isPaid = await checkPaid(payment.amount, payment.description);
+                //const isPaid = await checkPaid(12050, "OrderID6764512e7b1005eda9688255");
 
                 if (isPaid.success) {
                     payment.status = "completed";
@@ -151,7 +151,11 @@ class PaymentService {
                     if (student.registeredCourses.includes(payment.course)) {
                         throw new Error("Course already registered");
                     }
-                    student.registeredCourses.push(...payment.course);
+                    student.registeredCourses.push({
+                        course: payment.course,
+                        startDate: payment.startDate,
+                        endDate: payment.endDate
+                    });
                     await student.save();
 
                     

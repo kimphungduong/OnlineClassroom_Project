@@ -68,7 +68,7 @@ class AuthService {
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
 
-    return { accessToken, refreshToken, role: user.role, name: user.name };
+    return { accessToken, refreshToken, role: user.role, name: user.name, avatar: user.avatar };
   }
   
   async requestRefreshToken(refreshToken) {

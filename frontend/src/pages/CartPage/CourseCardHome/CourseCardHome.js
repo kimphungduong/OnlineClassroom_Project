@@ -11,7 +11,6 @@ const cx = classNames.bind(styles);
 
 const CourseCardHome = ({ course }) => {
     const [isAdding, setIsAdding] = useState(false); // State to handle button loading state
-
     const handleAddToCart = async (courseId) => {
         setIsAdding(true); // Set the button to loading state
         try {
@@ -49,7 +48,7 @@ const CourseCardHome = ({ course }) => {
                     className={cx('course-card-title')}
                     sx={{ fontSize: '2rem' }}
                 >
-                    {course.title || 'No title available'}
+                    {course.name || 'No title available'}
                 </Typography>
 
                 {/* Tên giáo viên */}
@@ -59,7 +58,7 @@ const CourseCardHome = ({ course }) => {
                     className={cx('course-card-teacher')}
                     sx={{ fontSize: '1.8rem' }}
                 >
-                    {course.teacher || 'Unknown teacher'}
+                    {course.teacher.name || 'Unknown teacher'}
                 </Typography>
 
                 {/* Rating */}

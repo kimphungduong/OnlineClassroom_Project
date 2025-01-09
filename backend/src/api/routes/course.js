@@ -7,13 +7,14 @@ const TestRoutes = require('../routes/test');
 const { addPost, getAllPosts, getPost, addComment, voteComment, votePost}= require('../controllers/ForumPostController');
 
 
+router.get('/recommended', CourseController.getRecommendations);
 router.get('/', CourseController.getListCourse);
 router.post('/new', CourseController.createCourse);
 router.get('/course-info/:slug', CourseController.getCourseInfo);
 router.put("/course-info/:courseSlug/edit", CourseController.updateCourse);
 router.get('/my-courses',CourseController.getMyCourse);
+router.put('/:lessonId/completed', CourseController.markLessonAsCompleted);
 router.get('/subject/:subjectSlug', CourseController.getCoursesBySubject);
-
 
 router.get('/learn/:slug', CourseController.getCourseWithLessons);
 router.get('/:slug', CourseController.getCourse);
@@ -49,6 +50,7 @@ router.get('/', CourseController.getListCourse);
 router.get('/search', CourseController.searchCourses); // Thêm route tìm kiếm
 router.get('/:slug', CourseController.getCourse);
 router.get('/:slug/:slugLesson', CourseController.getLession);
+
 
 // route là đường dẫn. có 4 loại gọi api cơ bản là 
 // POST nạp dataset mới (json)

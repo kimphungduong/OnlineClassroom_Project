@@ -6,6 +6,7 @@ const settingController= require('../controllers/SettingController');
 router.get('/profile',settingController.editProfile);
 router.post('/profile',settingController.updateInfo);
 router.post('/password',settingController.updatePassword);
+router.post('/avatar', settingController.uploadAvatar);
 
 
 module.exports = router;

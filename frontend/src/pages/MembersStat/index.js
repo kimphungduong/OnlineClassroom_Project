@@ -17,6 +17,7 @@ import {
   LinearProgress,
 } from "@mui/material";
 import courseApi from "../../api/courseApi";
+import CourseBreadcrumbs from "~/layouts/components/CustomBreadcrumbs";
 
 // Dữ liệu tĩnh
 // const members = [
@@ -111,9 +112,13 @@ const MembersStat = () => {
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
-
+  const breadcrumbsLinks = [
+    { href: "/", label: "Quản lý khóa học" },
+    { href: `/members-stat/${slug}`,label: slug },
+  ];
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+      <CourseBreadcrumbs links={breadcrumbsLinks} current="Current Page" />
       <Typography variant="h5" sx={{ mb: 2, fontWeight: "bold" }}>
         Danh sách thành viên
       </Typography>
