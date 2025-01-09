@@ -36,6 +36,7 @@ const Search = () => {
                     image: course.image || 'https://via.placeholder.com/352x195',
                     description: course.description || '',
                 }));
+                console.log(validCourses);
                 setCourses(validCourses);
                 setFilteredCourses(validCourses);
             } catch (err) {

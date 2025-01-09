@@ -6,6 +6,7 @@ import styles from './CourseCardHorizontal.module.scss';
 const cx = classNames.bind(styles);
 
 const CourseCardHorizontal = ({ course }) => {
+    console.log(course);
     return (
         <Card className={cx('course-card-horizontal')}>
             <Grid container className={cx('course-card-container')}>
@@ -21,12 +22,12 @@ const CourseCardHorizontal = ({ course }) => {
                     <CardContent>
                         {/* Tiêu đề khóa học */}
                         <Typography variant="h5" component="div" className={cx('course-card-title')}>
-                            {course.name || 'No title available'}
+                            {course.title || 'No title available'}
                         </Typography>
 
                         {/* Giáo viên */}
                         <Typography mb={2} variant="body2" color="text.secondary" className={cx('course-card-teacher')}>
-                            Giáo viên: {course.teacher?.name || 'Unknown teacher'} {/* Chỉ render tên giáo viên */}
+                            Giáo viên: {course.teacher || 'Unknown teacher'} {/* Chỉ render tên giáo viên */}
                         </Typography>
 
                         {/* Mô tả ngắn gọn */}
