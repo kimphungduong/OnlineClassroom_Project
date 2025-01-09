@@ -154,38 +154,14 @@ module.exports.addTestForCourse = async (course, testName, testId) => {
 
 module.exports.paymentSuccessNotification = async (studentId, course) => {
     try {
-        const firstSection = course.sections[0];
-        const lessonSlug = "";
-        if(firstSection) {
-            let lessonId = ""
-            for(const lesson of firstSection.lessons) {
-                if (lesson.lessonType === "Lesson") {
-                    lessonId = lesson.lessonId;
-                    break;
-                }
-            }
-            if (lessonId) {
-                const lesson = await Lesson.findOne({ _id: lessonId });
-                lessonSlug = lesson.slug;
-            }
-        }
-
-        console.log("lessonSlug", lessonSlug)
-
-
         await Notification.create({
             userId: studentId,
             type: "payment_success",
             title: `Thanh toán thành công khóa học " **${course.name}** " vào học thôi nào.`,
-            content: `Thanh toán thành công khóa học " **${course.name}** " vào học thôi nào.`,
-            related_data: {
-                course_slug: course.slug,
-                lesson_slug: lessonSlug
-            }
+            content: `Thanh toán thành công khóa học " **${course.name}** " vào học thôi nào.`
         });
         const len = await getLengthNotificationsUnRead(studentId)
         sendCustomEvent(studentId, "lenNotification", len)
-        
     }
     catch (e) {
         console.error(e)
