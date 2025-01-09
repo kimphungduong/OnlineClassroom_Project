@@ -41,7 +41,15 @@ export const getAllNotification = async () => {
                             link : `/course/${item.related_data.course_slug}/test/${item.related_data.test_id}`,
                             createdAt : createdAt
                         }
+                    } else if (item.type === "payment_success") {
+                        const createdAt = formatDistanceToNow(parseISO(item.createdAt), { addSuffix: true, locale: vi });
+                        return {
+                            ...item,
+                            link : `/course/${item.related_data.course_slug}/${item.related_data.lesson_slug}`,
+                            createdAt : createdAt
+                        }
                     }
+                    
 
                     return item;
                 });

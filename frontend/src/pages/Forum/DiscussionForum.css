@@ -1,5 +1,5 @@
 .discussion-forum {
-    max-width: 100%;
+    width: 90%;
     margin: 0 auto;
     padding: 20px;
     background-color: #f9f9f9;
@@ -8,23 +8,57 @@
   }
   
   .forum-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    text-align: center;
-    color: #333;
+    font-size: 32px; /* Kích thước chữ lớn hơn để tạo điểm nhấn */
+    font-weight: bold; /* Chữ đậm để thu hút sự chú ý */
+    color: #2c3e50; /* Màu tối hiện đại */
+    text-align: center; /* Căn giữa tiêu đề */
+    margin-bottom: 8px; /* Tạo khoảng cách dưới tiêu đề */
+    text-transform: uppercase; /* Chuyển thành chữ in hoa */
+    letter-spacing: 1.5px; /* Giãn cách chữ để tạo sự tinh tế */
   }
   
   .forum-subtitle {
-    font-size: 18px;
-    text-align: center;
-    color: #555;
-    margin-bottom: 20px;
+    font-size: 20px; /* Kích thước nhỏ hơn tiêu đề chính */
+    font-weight: 500; /* Độ đậm vừa phải */
+    color: #34495e; /* Màu xám xanh nhẹ nhàng */
+    text-align: center; /* Căn giữa phụ đề */
+    margin-bottom: 20px; /* Tạo khoảng cách dưới phụ đề */
+    font-style:normal; /* In nghiêng để phân biệt với tiêu đề */
+    line-height: 1.6; /* Tăng khoảng cách dòng để dễ đọc */
   }
   
+  
   .create-post-button {
-    display: block;
-    margin: 0 auto 20px auto;
+    background-color: #4CAF50; /* Màu xanh lá hiện đại */
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px; /* Bo tròn */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Hiệu ứng hover */
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center;    /* Căn giữa theo chiều dọc */
+    height:48px; 
+    margin-top: 12px;
+    margin-bottom: 24px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .create-post-button:hover {
+    background-color: #45a049; /* Màu xanh đậm hơn khi hover */
+    transform: translateY(-2px); /* Hiệu ứng nổi */
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3); /* Tăng đổ bóng */
+  }
+  
+  .create-post-button:active {
+    background-color: #3e8e41; /* Màu đậm hơn khi click */
+    transform: translateY(0); /* Giảm hiệu ứng */
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2); /* Đổ bóng thấp hơn */
   }
   
   .comment-item {
@@ -66,7 +100,9 @@
   }
   
   .pagination {
-    text-align: center;
-    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    margin-top: 30px; 
+    margin-bottom: 30px;
   }
   

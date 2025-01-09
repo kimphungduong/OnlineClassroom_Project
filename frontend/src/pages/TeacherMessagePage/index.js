@@ -4,10 +4,13 @@ import SendIcon from '@mui/icons-material/Send';
 import initializeSocket from '~/services/socketService';
 import { formatDistanceToNow, parseISO } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import eventBus from '~/utils/eventBus';
+
 
 const TeacherMessages = () => {
   const [conversations, setConversations] = useState([]);
   const [socket, setSocket] = useState(null);
+  const [role, setRole] = useState();
 
   const [currentStudent, setCurrentStudent] = useState(conversations[0]);
   const [messages, setMessages] = useState([]); 
@@ -32,6 +35,8 @@ const TeacherMessages = () => {
     // Lắng nghe sự kiện trả về các cuộc hội thoại
     socketInstance.on('getAllMsg', (allMsg) => {
       setConversations(allMsg);
+      const len = allMsg.filter(e => e.readed === false).length
+      eventBus.emit('lenMessage', len);
     });
 
     // Lắng nghe sự kiện tin nhắn mới
@@ -48,6 +53,24 @@ const TeacherMessages = () => {
         receiverID: currentStudentRef.current.studentId,
         courseID: currentStudentRef.current.courseId,
       })
+
+    });
+
+    socketInstance.on('teacher chat message', (msg) => {
+      setLoadRoom((prev) => !prev);
+
+      if(!currentStudentRef.current) return;
+
+      if (currentStudentRef.current && msg.studentId === currentStudentRef.current.studentId) {
+        setMessages((prevMessages) => [...prevMessages, msg]);
+      }
+
+      socketInstance.emit("selectStudent", {
+        receiverID: currentStudentRef.current.studentId,
+        courseID: currentStudentRef.current.courseId,
+      })
+
+      
 
     });
 
@@ -102,6 +125,9 @@ const TeacherMessages = () => {
       return item;
     })
 
+    const len = newConversations.filter(e => e.readed === false).length
+    eventBus.emit('lenMessage', len);
+
     setConversations(newConversations);
 
     socket.emit("loadMessaged", {
@@ -131,7 +157,7 @@ const TeacherMessages = () => {
         }}
       >
         <Typography variant="h6" sx={{ p: 2, borderBottom: '1px solid #e0e0e0', backgroundColor: '#f5f5f5' }}>
-          Học sinh
+          Người dùng
         </Typography>
         <List>
           {conversations.map((conversation) => (
@@ -158,7 +184,7 @@ const TeacherMessages = () => {
                   fontWeight: conversation.readed === false ? 'bold' : 'normal', // In đậm nếu unread là true
                 }}
                 secondaryTypographyProps={{
-                  color: '#757575',
+                  fontWeight: conversation.readed === false ? 'bold' : 'normal',
                 }}
                 sx={{ color: '#424242' }}
               />
@@ -181,7 +207,7 @@ const TeacherMessages = () => {
             boxShadow: '0px 2px 5px rgba(0, 0, 0, 0.1)',
           }}
         >
-          <Typography variant="h6">{currentStudent?.studentName ? currentStudent?.courseName + " - Học viên : " + currentStudent?.studentName : ""}</Typography>
+          <Typography variant="h6">{currentStudent?.studentName ? currentStudent?.courseName + (currentStudent.role === "student" ? " - Học viên : " : " - Giảng viên : ") + currentStudent?.studentName : ""}</Typography>
         </Box>
 
         {/* Messages List */}

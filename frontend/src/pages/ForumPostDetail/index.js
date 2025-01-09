@@ -21,7 +21,7 @@ const ForumPostDetail = () => {
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
-  const commentsPerPage = 5; // Số bình luận hiển thị trên mỗi trang
+  const commentsPerPage = 10; // Số bình luận hiển thị trên mỗi trang
 
   React.useEffect(() => {
     console.log("check")
@@ -120,7 +120,7 @@ const ForumPostDetail = () => {
   const currentComments = comments.slice(indexOfFirstComment, indexOfLastComment);
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "20px" }}>
+    <div style={{ width: "90%", margin: "0 auto", padding: "20px" }}>
       {post && (<PostCard
         avatar={post?.avatar || "https://via.placeholder.com/50"}
         name={post?.name || "Người dùng"}

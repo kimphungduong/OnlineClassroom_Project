@@ -11,16 +11,18 @@ const DiscussionForum = () => {
   const { slugCourse } = useParams();
   const navigate = useNavigate();
 
+  const [courseName, setCourseName] = useState(''); // Tên khóa học
   const [forumPosts, setForumPosts] = useState([]); // Toàn bộ bài viết
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 5 // Số bài viết trên mỗi trang
+  const pageSize = 10 // Số bài viết trên mỗi trang
 
   // Fetch toàn bộ bài viết từ API
   useEffect(() => {
     async function fetchPosts() {
       try {
-        const posts = await getForumPosts(slugCourse); // Lấy toàn bộ bài viết
-        setForumPosts(posts); 
+        const result = await getForumPosts(slugCourse); // Lấy toàn bộ bài viết
+        setForumPosts(result.posts); 
+        setCourseName(result.courseName);
       } catch (error) {
         console.error('Lỗi khi lấy bài viết:', error);
       }
@@ -43,7 +45,7 @@ const DiscussionForum = () => {
   return (
     <div className="discussion-forum">
       <h1 className="forum-title">Diễn đàn thảo luận</h1>
-      <h2 className="forum-subtitle">Bổ trợ kiến thức toán 12 - Ôn thi THPT Quốc Gia</h2>
+      <h2 className="forum-subtitle">{courseName}</h2>
       <div className="create-post-wrapper">
         <Button 
           type="primary" 
