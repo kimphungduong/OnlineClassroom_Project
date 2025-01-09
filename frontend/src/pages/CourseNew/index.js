@@ -54,6 +54,15 @@ const AddCourseForm = () => {
   };
 
   const handleSubmit = async () => {
+    if (formData.price <= 0) {
+      alert("Giá tiền phải lớn hơn 0.");
+      return;
+    }
+  
+    if (formData.name.trim().length < 5 || formData.name.trim().length > 100) {
+      alert("Tên khóa học phải từ 5 đến 100 ký tự.");
+      return;
+    }
     setLoading(true);
     try {
       // Upload ảnh nếu có
