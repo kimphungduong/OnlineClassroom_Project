@@ -124,9 +124,29 @@ class CourseService {
   
     return course;
   }
+  
+   static async validCourses(userId){
+    const student = await Student.findById(userId).select('registeredCourses').lean();
+
+    if (!student) {
+      throw new Error('Không tìm thấy học sinh');
+    }
+
+    // Lọc các khóa học chưa hết hạn
+    const validCourses = student.registeredCourses.filter((course) => {
+      const now = new Date();
+      return new Date(course.endDate) >= now; // Chỉ lấy các khóa học chưa hết hạn
+    });
+
+    const courseIds = validCourses.map((course) => course.course);
+    return courseIds;  
+  }
+
   async getMyCourse(userId) {
     try {
-      const courses = await Course.find({ students: userId })
+      const courseIds = await CourseService.validCourses(userId); // Lấy danh sách các courseId hợp lệ
+  
+     const courses = await Course.find({ _id: { $in: courseIds }, students: userId })
       .select('-teacher -students -price -rating -updatedAt -createdAt -__v')  
       .populate({
           path: 'studentProgress',
