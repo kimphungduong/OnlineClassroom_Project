@@ -59,7 +59,7 @@ const AddCourseForm = () => {
       return;
     }
   
-    if (formData.name.trim().length < 5 || formData.name.trim().length > 100) {
+    if (formData.name.trim().length < 5 || formData.name.trim().length > 30) {
       alert("Tên khóa học phải từ 5 đến 100 ký tự.");
       return;
     }
