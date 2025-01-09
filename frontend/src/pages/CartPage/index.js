@@ -69,7 +69,7 @@ const CartPage = () => {
     try {
       const selectedCourses = courses.filter((course) => course.checked);
       if (selectedCourses.length === 0) {
-        alert("Vui lòng chọn ít nhất một khóa học để thanh toán.");
+        notification.error({ message: "Lỗi", description: "Vui lòng chọn ít nhất một khóa học để thanh toán." });
         return;
       }
 
@@ -81,7 +81,10 @@ const CartPage = () => {
       navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses } });
     } catch (error) {
       console.error("Error during payment creation:", error);
-      alert("Có lỗi xảy ra khi tạo giao dịch thanh toán.");
+      notification.error({
+        message: "Có lỗi xảy ra khi tạo giao dịch thanh toán.",
+        description: error.response?.data.message || "Vui lòng thử lại sau.",
+      });
     }
   };
 

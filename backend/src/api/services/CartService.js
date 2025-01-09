@@ -26,7 +26,7 @@ class CartService {
             (registeredCourse) => registeredCourse.course.toString() === courseId
         );
         if (alreadyRegistered) {
-            throw new Error('Course already registered');
+            throw new Error('Khóa học đã được đăng ký');
         }
 
         // Tìm giỏ hàng của học viên
@@ -41,7 +41,7 @@ class CartService {
         } else {
             // Kiểm tra xem khóa học đã có trong giỏ hàng chưa
             if (cart.courseIds.includes(courseId)) {
-                throw new Error('Course already in cart');
+                throw new Error('Khóa học đã có trong giỏ hàng');
             }
 
             // Thêm khóa học vào giỏ hàng

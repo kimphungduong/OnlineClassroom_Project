@@ -4,6 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import CloseIcon from '@mui/icons-material/Close';
 import axios from 'axios';
 import { courseApi } from '~/api';
+import { notification } from 'antd';
 
 const AddSectionForm = ({ slug, setSections }) => {
   const [newSectionName, setNewSectionName] = useState('');
@@ -11,7 +12,11 @@ const AddSectionForm = ({ slug, setSections }) => {
 
   const handleAddSection = async () => {
     if (!newSectionName.trim()) {
-      alert('Vui lòng nhập tên phần mới.');
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng nhập tên phần mới.',
+      });
+
       return;
     }
   
@@ -28,10 +33,16 @@ const AddSectionForm = ({ slug, setSections }) => {
   
       setNewSectionName('');
       setIsAddingSection(false);
-      alert('Thêm phần mới thành công!');
+      notification.success({
+        message: 'Thêm phần mới thành công',
+        description: `Đã thêm phần mới "${newSectionName}" vào khóa học.`,
+      });
     } catch (error) {
       console.error('Error adding new section:', error);
-      alert('Đã xảy ra lỗi khi thêm phần mới.');
+      notification.error({
+        message: 'Lỗi',
+        description: error.response?.data.message || 'Đã xảy ra lỗi khi thêm phần mới.',
+      });
     }
   };
 

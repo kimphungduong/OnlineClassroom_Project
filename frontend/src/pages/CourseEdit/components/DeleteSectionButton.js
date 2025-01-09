@@ -3,6 +3,7 @@ import { IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import axios from 'axios';
 import courseApi from '~/api/courseApi';
+import { notification } from 'antd';
 
 const DeleteSectionButton = ({ slug, sectionId, setSections }) => {
     const handleDeleteSection = async () => {
@@ -17,10 +18,16 @@ const DeleteSectionButton = ({ slug, sectionId, setSections }) => {
                 prevSections.find((prevSection) => prevSection._id === section._id) || section
             )
             );
-            alert('Xóa phần thành công!');
+            notification.success({
+                message: 'Xóa phần thành công',
+                description: `Đã xóa phần thành công.`,
+            });
         } catch (error) {
             console.error('Error deleting section:', error);
-            alert('Đã xảy ra lỗi khi xóa phần.');
+            notification.error({
+                message: 'Lỗi',
+                description: error.response?.data.message || 'Đã xảy ra lỗi khi xóa phần.',
+            });
         }
     };
 

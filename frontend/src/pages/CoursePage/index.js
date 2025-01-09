@@ -61,6 +61,13 @@ const CoursePage = () => {
     fetchCourseAndLessonData();
   }, [slugCourse, slugLesson]);
 
+  useEffect(() => {
+    // Cập nhật startTime mỗi khi searchParams thay đổi
+    if (videoRef.current) {
+      videoRef.current.seekTo(startTime); // Seek đến thời điểm mới
+    }
+  }, [searchParams]);
+
   // Gọi API để lấy tất cả ghi chú khi mở NotesSidebar
   const handleOpenNotesSidebar = async () => {
     try {
@@ -277,7 +284,7 @@ const CoursePage = () => {
         videoRef={videoRef}
         currentLessonId={lessonData?._id} // Bài giảng hiện tại
       />
-    <ChatRoom userType="student" userName={courseData.teacher.name} courseId={courseData._id} />
+      <ChatRoom userType="student" userName={courseData.teacher.name} courseId={courseData._id} />
     </Container>
   );
 };

@@ -10,6 +10,8 @@ import {
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useEffect } from 'react';
+import { notification } from 'antd';
+
 const UploadVideo = ({ onSubmit, onCancel }) => {
   const [video, setVideo] = useState(null);
 
@@ -24,8 +26,10 @@ const UploadVideo = ({ onSubmit, onCancel }) => {
 
   const handleSubmit = () => {
     if (!video) {
-      alert('Vui lòng chọn video!');
-      return;
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng chọn video!',
+      });
     }
     if (onSubmit) {
       onSubmit({ name: video.name, file: video });
@@ -99,7 +103,11 @@ const UploadDocuments = ({ onSubmit, onCancel }) => {
 
   const handleSubmit = () => {
     if (documents.length === 0) {
-      alert('Vui lòng chọn ít nhất một tài liệu!');
+      notification.error({
+        message: 'Lỗi',
+        description: 'Vui lòng chọn ít nhất một tài liệu!',
+      });
+
       return;
     }
     if (onSubmit) {

@@ -21,6 +21,7 @@ import axios from 'axios';
 import courseApi from '~/api/courseApi';
 import testApi from '~/api/testApi';
 import lessonApi from '~/api/lessonApi';
+import { notification } from 'antd';
 
 const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedSectionId }) => {
   const [expandedSection, setExpandedSection] = useState(false);
@@ -47,10 +48,16 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
         )
       );
       setEditingSectionId(null);
-      alert('Cập nhật tiêu đề thành công!');
+      notification.success({
+        message: 'Cập nhật tiêu đề thành công',
+        description: `Đã cập nhật tiêu đề của phần thành công.`,
+      });
     } catch (error) {
       console.error('Error updating section title:', error);
-      alert('Lỗi khi cập nhật tiêu đề.');
+      notification.error({
+        message: 'Lỗi',
+        description: error.response?.data.message || 'Đã xảy ra lỗi khi cập nhật tiêu đề.',
+      });
     }
   };
 
@@ -102,10 +109,17 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
         prevSections.map((s) => (s._id === section._id ? updatedSection : s))
       );
   
-      alert('Xoá bài giảng thành công');
+      notification.success({
+        message: 'Xoá bài giảng thành công',
+        description: 'Đã xoá bài giảng thành công.',
+      });
     } catch (error) {
       console.error('Error deleting lesson:', error);
-      alert('Lỗi khi xoá bài giảng');
+      notification.error({
+        message: 'Lỗi',
+        description: error.response?.data.message || 'Đã xảy ra lỗi khi xoá bài giảng.',
+      });
+
     }
   };
   const handleDeleteTest = async (testId) => {
@@ -127,10 +141,16 @@ const CourseSection = ({ section, slug, setSections, setMenuAnchor, setSelectedS
         prevSections.map((s) => (s._id === section._id ? updatedSection : s))
       );
   
-      alert('Xoá test thành công!');
+      notification.success({
+        message: 'Xoá test thành công',
+        description: 'Đã xoá test thành công.',
+      });
     } catch (error) {
       console.error('Error deleting test:', error);
-      alert('Lỗi khi xoá test');
+      notification.error({
+        message: 'Lỗi',
+        description: error.response?.data.message || 'Đã xảy ra lỗi khi xoá test.',
+      });
     }
   };
   return (

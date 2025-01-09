@@ -26,7 +26,7 @@ class CartController {
             res.json(cart);
         } catch (error) {
             console.error("Lỗi cập nhật giỏ hàng:", error);
-            res.status(500).json({ message: "Lỗi cập nhật giỏ hàng" });
+            res.status(500).json({ message:   error.message||"Lỗi cập nhật giỏ hàng" });
         }
     }
 
