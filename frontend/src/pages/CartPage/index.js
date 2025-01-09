@@ -155,19 +155,6 @@ const CartPage = () => {
       </Box>
       
     </Container>
-    
-      {/* <Box sx={{ mt: 4, position: "relative", flex: 1 }}>
-        <Typography variant="h5" gutterBottom>
-          Đề xuất cho bạn
-        </Typography>
-        <Slider {...sliderSettings}>
-          {recommendedCourses.map((course) => (
-            <Box key={course._id} px={2}>
-              <CourseCardHome course={course} />
-            </Box>
-          ))}
-        </Slider>
-      </Box> */}
   </>
   );
 };
