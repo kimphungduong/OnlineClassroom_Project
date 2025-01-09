@@ -482,16 +482,17 @@ class CourseService {
   async getRecommendedCourses (studentId){
     try {
       // Lấy thông tin sinh viên từ database
-      const student = await Student.findById(studentId).populate('registeredCourses');
+      const student = await Student.findById(studentId).populate('registeredCourses.course');
       if (!student) {
         throw new Error('Student not found');
       }
   
       // Lấy danh sách ID khóa học đã đăng ký
-      const registeredCourseIds = student.registeredCourses.map(course => course._id.toString());
+      const registeredCourseIds = student.registeredCourses.map(item => item.course);
   
       // Lấy danh mục hoặc thông tin từ khóa học đã đăng ký (nếu có)
-      const registeredCategories = student.registeredCourses.map(course => course.subject);
+      const registeredCourse= student.registeredCourses.map(item => item.course);
+      const registeredCategories = registeredCourse.map(item => item.subject);
   
       // Lấy các khóa học không nằm trong danh sách đã đăng ký
       const recommendedCourses = await Course.find({
