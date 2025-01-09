@@ -1,6 +1,7 @@
 import Header from '~/layouts/components/Header';
 import classNames from 'classnames/bind';
 import styles from './HeaderOnlyLayout.module.scss';
+import Footer from '../components/Footer';
 
 const cx = classNames.bind(styles);
 

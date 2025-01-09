@@ -2,11 +2,20 @@ const jwt = require("jsonwebtoken");
 const Message = require("./api/models/Message");
 const User = require("./api/models/User");
 const Course = require("./api/models/Course");
+const Student = require("./api/models/Student");
+const Teacher = require("./api/models/Teacher");
+const {getLengthNotificationsUnRead} = require("./api/services/NotificationService");
+const {GetAllMsgs} = require("./api/services/MessageService");
 
+let ioInstance;
 // Map ánh xạ userId với socket.id
 const userSocketMap = {};
 
-module.exports = (io) => {
+module.exports.getUserSocketId = (userId) => userSocketMap[userId];
+
+module.exports.initSocket = (io) => {
+  ioInstance = io
+
   // Middleware xác thực JWT cho Socket.IO
   io.use((socket, next) => {
     const token = socket.handshake.auth.token;
@@ -42,9 +51,11 @@ module.exports = (io) => {
             { sender: userId, receiver: receiverID },
             { receiver: userId, sender: receiverID },
           ],
-        }).sort({ createdAt: 1 });
+        })
 
-        const modifiedMessages = messages.map((msg) => {
+        const a = messages.sort((a, b) => a.sentAt - b.sentAt)
+
+        const modifiedMessages = a.map((msg) => {
           if (socket.role === 'student') {
             return {
               ...msg._doc,
@@ -67,6 +78,43 @@ module.exports = (io) => {
         socket.emit("error", { message: "Failed to load messages" });
       }
     });
+
+    socket.on("loadMessaged" , async ({receiverID, courseID}) => {
+
+      try {
+        const chatRoom = await Message.find({
+          $and: [
+            { course: courseID },
+            {
+              $or: [
+                { sender: userId, receiver: receiverID },
+                { receiver: userId, sender: receiverID },
+              ],
+            },
+          ],
+        }).sort({ createdAt: -1 })
+
+        const student = await Student.findOne({ _id : receiverID }) || await Teacher.findOne({ _id : receiverID })
+        
+        const data = chatRoom
+            .sort((a, b) => a.sentAt - b.sentAt)
+            .map(e => {
+          return {
+            message : e.content,
+            sender : e.sender.toString() === userId ? "teacher" : "student",
+            timestamp : e.sentAt,
+            avatar : student.avatar
+          }
+        })
+
+        socket.emit("loadMessaged", data);
+      }
+      catch (error) {
+        console.error("Error loading messages:", error);
+        socket.emit("error", { message: "Failed to load messages" });
+      }
+    })
+
 
     // Tải tin nhắn gần đây
     socket.on("recent-messages", async () => {
@@ -122,17 +170,26 @@ module.exports = (io) => {
           sender: userId,
           receiver: receiverID,
           content: data.message,
+          course : data.courseId
         });
         await newMessage.save();
 
-        const receiverSocketId = userSocketMap[data.receiver];
+        const student = await Student.findOne({ _id : userId })
+
+        const receiverSocketId = userSocketMap[receiverID];
         if (receiverSocketId) {
           // Gửi tin nhắn đến người nhận qua socket ID
           io.to(receiverSocketId).emit("chat message", {
-            sender: userId,
+            sender: "student",
             message: data.message,
             timestamp: new Date(),
+            avatar : student.avatar,
+            studentId : userId
           });
+
+          const msgs = await GetAllMsgs(userId);
+          const len = msgs.filter(e => e.readed === false).length
+          io.to(receiverSocketId).emit("lenMessage", len);
         }
       } catch (error) {
         console.error("Error sending message:", error);
@@ -140,6 +197,87 @@ module.exports = (io) => {
       }
     });
 
+    socket.on("teacher chat message", async ({message, courseId,receiverID }) => {
+      try {
+        const newMessage = new Message({
+          sender: userId,
+          receiver: receiverID,
+          content: message,
+          course : courseId
+        });
+        await newMessage.save();
+
+        const receiverSocketId = userSocketMap[receiverID];
+        if (receiverSocketId) {
+
+          // Gửi tin nhắn đến người nhận qua socket ID
+          io.to(receiverSocketId).emit("teacher chat message", {
+            sender: 'Teacher',
+            receiver : "Bạn",
+            content: message,
+            sentAt: new Date(),
+
+          });
+
+          const msgs = await GetAllMsgs(userId);
+          const len = msgs.filter(e => e.readed === false).length
+          io.to(receiverSocketId).emit("lenMessage", len);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+        socket.emit("error", { message: "Failed to send message" });
+      }
+    });
+
+    socket.on("selectStudent", async ({receiverID, courseID}) => {
+      await Message.updateMany(
+          {
+            $and: [
+              { course: courseID },
+              {
+                $or: [
+                  { sender: userId, receiver: receiverID },
+                  { receiver: userId, sender: receiverID },
+                ],
+              },
+            ],
+          },
+          { $set: { readed: true } } // Cập nhật tất cả các tài liệu với readed = true
+      );
+    })
+
+    // Xử lý sự kiện lấy tất cả đoạn chat
+    socket.on("getAllMsg", async () => {
+      try {
+
+        const chatRoomHeader = await GetAllMsgs(userId);
+
+        const receiverSocketId = userSocketMap[userId];
+
+        if (receiverSocketId) {
+          // Gửi tin nhắn đến người nhận qua socket ID
+          io.to(receiverSocketId).emit("getAllMsg", chatRoomHeader);
+        }
+      }
+      catch (e) {
+        console.error("Error : " + e)
+      }
+
+    })
+
+    socket.on("getLenNotification", async () => {
+
+      const len = await getLengthNotificationsUnRead(userId)
+      socket.emit("getLenNotification", len);
+
+    })
+
+    socket.on("getLenMessage", async () => {
+      const msgs = await GetAllMsgs(userId);
+      const len = msgs.filter(e => e.readed === false).length
+      socket.emit("lenMessage", len);
+
+    })
     // Xử lý sự kiện ngắt kết nối
     socket.on("disconnect", () => {
       delete userSocketMap[userId]; // Xóa socket.id khỏi map
@@ -147,3 +285,11 @@ module.exports = (io) => {
     });
   });
 };
+
+
+module.exports.getIo = () => {
+  if (!ioInstance) {
+    throw new Error("Socket.io not initialized!");
+  }
+  return ioInstance;
+}

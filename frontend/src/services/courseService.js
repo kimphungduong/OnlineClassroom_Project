@@ -1,5 +1,4 @@
-import {courseApi} from '~/api';
-
+import { courseApi } from '~/api';
 
 export const getListCourse = async () => {
     try {
@@ -22,7 +21,7 @@ export const getMyCourse = async (slug) => {
 
 export const getCourse = async (slug) => {
     try {
-        const response = await courseApi.getCourse(slug);
+        const response = await courseApi.getCourseLearn(slug);
         return response.data;
     } catch (error) {
         console.error('Error fetching course:', error);
@@ -39,3 +38,107 @@ export const getLesson = async (courseSlug, lessonSlug) => {
         throw error;
     }
 };
+
+export const addPost = async (courseSlug, data) => {
+    try {
+        const response = await courseApi.addPost(courseSlug, data);
+        return response.data;
+    } catch (error) {
+        console.error('Error adding post:', error);
+        throw error;
+    }
+}
+
+export const getForumPosts = async (courseSlug) => {
+    try {
+        const response = await courseApi.getForumPosts(courseSlug);
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi lấy bài viết từ forum");
+    } catch (error) {
+        console.error('Error fetching forum posts:', error);
+        throw error;
+    }
+};
+
+export const getCoursesBySubject = async (subjectSlug) => {
+    try {
+        const response = await courseApi.getCoursesBySubject(subjectSlug);
+        return response.data;
+    } catch (error) {
+        console.error('Error fetching courses by subject:', error);
+
+        throw error;
+    }
+};
+
+export async function getForumPostDetail(courseSlug, postId) {
+    try {
+        const response = await courseApi.getForumPostDetail(courseSlug, postId);
+
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi lấy bài viết từ forum");
+    } catch (error) {
+        console.error('Error fetching forum post detail:', error);
+        throw error;
+    }
+}
+
+export async function addComment(courseSlug, postId, data) {
+    try {
+        const response = await courseApi.addComment(courseSlug, postId, data);
+        console.log(response.data);
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi thêm comment");
+    } catch (error) {
+        console.error('Error adding comment:', error);
+        throw error;
+    }
+}
+
+export async function voteComment(courseSlug, postId, commentId, value) {
+    try {
+        const response = await courseApi.voteComment(courseSlug, postId, commentId, value);
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi vote comment");
+    } catch (error) {
+        console.error('Error voting comment:', error);
+        throw error;
+    }
+}
+
+export async function votePost(courseSlug, postId, value) {
+    try {
+        const response = await courseApi.votePost(courseSlug, postId, value);
+        if(response.data?.success){
+            return response.data.data;
+        }
+
+        throw new Error("Có lỗi khi vote post");
+    } catch (error) {
+        console.error('Error voting post:', error);
+        throw error;
+    }
+}
+
+export const searchCourses = async (query) => {
+    try {
+        const response = await courseApi.searchCourses(query); // gọi API tìm kiếm
+        return response.data;
+    } catch (error) {
+        console.error('Error searching courses:', error);
+        throw error;
+    }
+};
+

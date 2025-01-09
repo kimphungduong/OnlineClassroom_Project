@@ -3,18 +3,18 @@ import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import authReducer from './slices/authSlice'; // Đảm bảo bạn đã import đúng đường dẫn
 import { composeWithDevTools } from 'redux-devtools-extension';
-import customizationReducer from './slices/customizationReducer';
 
 const persistConfig = {
   key: 'auth',
   storage, // Lưu state vào localStorage
-  whitelist: ['accessToken', 'role', 'name'], // Chỉ lưu những state cần thiết
+  whitelist: ['accessToken', 'role', 'name', 'avatar'], // Chỉ lưu những state cần thiết
 };
 
 const initialState = {
   accessToken: null,
   role: null,
   name: null,
+  avatar: null,
   // các state khác nếu có
 };
 
@@ -33,7 +33,6 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedReducer,
-    customization: customizationReducer,
   },
   devTools: composeWithDevTools(),
 });

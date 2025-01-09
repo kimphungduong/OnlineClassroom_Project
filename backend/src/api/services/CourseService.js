@@ -1,27 +1,83 @@
-const Course = require('../models/Course'); // Điều chỉnh đường dẫn nếu cần
+// CourseService.js
+const Course = require('../models/Course');
 const Lesson = require('../models/Lesson');
 const Teacher = require('../models/Teacher');
 const Test = require('../models/Test');
 const Student = require('../models/Student');
 const Note = require('../models/Note');
+const Subject = require('../models/Subject'); 
+const mongoose = require('mongoose');
+const CartService = require('./CartService')
 
 class CourseService {
-  async getListCourse() {
+
+  async createCourse(courseData, teacherId) {
+    const { name, subject, description, price, image } = courseData;
     try {
-      const courses = await Course.find({});
-      return courses;
+      const course = new Course({
+        name,
+        subject,
+        description,
+        price,
+        rating: 0, // Giá trị rating mặc định
+        teacher: teacherId, // Lưu thông tin teacherId từ middleware xác thực
+        image,
+      });
+
+      await course.save();
+      const teacher = await Teacher.findById(teacherId);
+      if (teacher) {
+        // Thêm courseId vào mảng courses của teacher
+        teacher.courses.push(course._id); // Thêm khóa học mới vào mảng courses của teacher
+  
+        // Lưu lại thông tin teacher với khóa học mới
+        await teacher.save();
+      } else {
+        throw new Error("Teacher không tồn tại");
+      }
+  
+      // Trả về khóa học mới đã được tạo
+      return course;
     } catch (error) {
-      throw new Error('Lỗi khi lấy danh sách khóa học');
+      // Nếu có lỗi trong quá trình lưu, ném lỗi
+      throw new Error('Không thể tạo khóa học: ' + error.message);
+    }
+  }
+  async updateCourse(courseSlug, courseData) {
+    try {
+      // Tìm và cập nhật thông tin khóa học dựa vào slug
+      const updatedCourse = await Course.findOneAndUpdate(
+        { slug: courseSlug }, // Điều kiện tìm kiếm
+        courseData,           // Dữ liệu cập nhật
+        { new: true }         // Tùy chọn để trả về dữ liệu đã cập nhật
+      );
+
+      return updatedCourse; // Trả về khóa học đã cập nhật (hoặc null nếu không tìm thấy)
+    } catch (error) {
+      console.error("Error in updateCourse service:", error);
+      throw new Error("Database update failed");
     }
   }
 
-  async getCourse(slug) {
+  // lấy danh sách Course là model ánh xạ vo database. Coures.find() trả về tất cả khoá học. sevice sẽ định nghĩa các hàm làm gì
+  // async getCourse(slug) {
+  //   try {
+  //     const course = await Course.findOne({ slug })
+  //         .populate('teacher')
+  //         .populate('sections.lessons');
+  //       if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
+  //     if (!course) {
+  //       throw new Error('Khóa học không tồn tại');
+  //     }
+  //     return course;
+  //   } catch (error) {
+  //     throw new Error('Lỗi khi lấy thông tin khóa học');
+  //   }
+  // }
+  async getCourseInfo(slug) {
     try {
-      const course = await Course.findOne({ slug })
-          .populate('teacher')
-          .populate('sections.lessons');
+      const course = await Course.findOne({ slug }).select('name subject image description price ');
         if (!course) return res.status(404).json({ message: 'Không tìm thấy khóa học' });
-        res.json(course);
       if (!course) {
         throw new Error('Khóa học không tồn tại');
       }
@@ -30,7 +86,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin khóa học');
     }
   }
-  async getCourseWithLessons (slug) {
+  async getCourseWithLessons(slug) {
     const course = await Course.findOne({ slug })
       .populate('teacher', 'name email -_id')
       .populate('students', 'name')
@@ -44,26 +100,53 @@ class CourseService {
       course.sections.map(async (section) => {
         return await Promise.all(
           section.lessons.map(async (lesson) => {
+            let detailedLesson;
             if (lesson.lessonType === 'Lesson') {
-              return await Lesson.findById(lesson.lessonId);
+              detailedLesson = await Lesson.findById(lesson.lessonId).lean();
             } else if (lesson.lessonType === 'Test') {
-              return await Test.findById(lesson.lessonId);
+              detailedLesson = await Test.findById(lesson.lessonId).lean();
             }
+            
+            // Giữ lại lessonType
+            return {
+              ...detailedLesson,
+              lessonType: lesson.lessonType,
+            };
           })
         );
       })
     );
-
+  
     course.sections = course.sections.map((section, index) => ({
       ...section,
       lessons: lessons[index]
     }));
-
+  
     return course;
   }
+  
+   static async validCourses(userId){
+    const student = await Student.findById(userId).select('registeredCourses').lean();
+
+    if (!student) {
+      throw new Error('Không tìm thấy học sinh');
+    }
+
+    // Lọc các khóa học chưa hết hạn
+    const validCourses = student.registeredCourses.filter((course) => {
+      const now = new Date();
+      return new Date(course.endDate) >= now; // Chỉ lấy các khóa học chưa hết hạn
+    });
+
+    const courseIds = validCourses.map((course) => course.course);
+    return courseIds;  
+  }
+
   async getMyCourse(userId) {
     try {
-      const courses = await Course.find({ students: userId })
+      const courseIds = await CourseService.validCourses(userId); // Lấy danh sách các courseId hợp lệ
+  
+     const courses = await Course.find({ _id: { $in: courseIds }, students: userId })
       .select('-teacher -students -price -rating -updatedAt -createdAt -__v')  
       .populate({
           path: 'studentProgress',
@@ -73,12 +156,17 @@ class CourseService {
             select: 'title'
           }
         })
+        .populate({
+          path: 'sections.lessons.lessonId',
+          model: 'Lesson',
+          select: 'slug',
+        })
         .lean();
   
       // Tính toán tiến độ học tập
       const coursesWithProgress = courses.map(course => {
         const studentProgress = course.studentProgress.find(progress => progress.student.toString() === userId);
-        const totalLessons = course.lessons.length;
+        const totalLessons = course.sections.reduce((total, section) => total + section.lessons.length, 0);
         const completedLessons = studentProgress ? studentProgress.lessonsCompleted.length : 0;
         const progress = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
   
@@ -93,13 +181,202 @@ class CourseService {
       throw new Error('Lỗi khi lấy danh sách khóa học');
     }
   }
-  async getLession(slug, slugLesson) {
+
+
+  async getLessonsByCourseSlug(slug) {
+    try {
+
+      const course = await Course.findOne({ slug }).lean();
+
+      if (!course) {
+        throw new Error('Khóa học không tồn tại');
+      }
+  
+      // Duyệt qua các sections và populate từng bài giảng
+      for (const section of course.sections) {
+        const populatedLessons = await Promise.all(
+          section.lessons.map(async (lesson) => {
+            let populatedLesson = null;
+            if (lesson.lessonType === 'Lesson') {
+              populatedLesson = await Lesson.findById(lesson.lessonId)
+                .select('name description videoUrl slug')
+                .populate("course", "name")
+                .lean();
+            } else if (lesson.lessonType === 'Test') {
+              populatedLesson = await Test.findById(lesson.lessonId)
+                .select('name questions')
+                .lean();
+            }
+  
+            if (populatedLesson) {
+              return {
+                ...populatedLesson,
+                lessonType: lesson.lessonType, // Thêm lessonType từ dữ liệu gốc
+              };
+            }
+            return null; // Loại bỏ các bài giảng không hợp lệ
+          })
+        );
+  
+        // Gán kết quả populate lại cho lessons
+        section.lessons = populatedLessons.filter(Boolean); // Loại bỏ các bài giảng null
+      }
+  
+      return course.sections; // Trả về danh sách sections với lessons đã populate
+    } catch (error) {
+      throw new Error('Lỗi khi lấy thông tin bài học: ' + error.message);
+    }
+  }
+
+
+
+
+  async getStudentProgress(slug) {
+    // Lấy thông tin course cùng với studentProgress và thông tin student
+    const course = await Course.findOne({ slug })
+      .populate({
+        path: 'studentProgress.student',
+        select: 'name email _id', // Chỉ lấy name và email từ Student
+      })
+      .populate('students')
+      .lean(); // Sử dụng lean() để tối ưu hóa query
+    if (!course) {
+      throw new Error('Course not found');
+    }
+    const totalLessons = course.sections.reduce((sum, section) => sum + section.lessons.length, 0);
+
+    // Lấy danh sách tất cả học sinh liên kết với khóa học
+    const allStudents = course.students.map(student => ({
+      studentId: student._id,
+      name: student.name,
+      email: student.email,
+      lessonsCompleted: 0,
+    }));
+  
+    // Map thông tin studentProgress
+    const progressMap = course.studentProgress.reduce((acc, progress) => {
+      const lessonsCompleted = progress.lessonsCompleted.length; // Đếm tổng số lessonsCompleted
+      
+      acc[progress.student._id.toString()] = {
+        lessonsCompleted,
+      };
+      return acc;
+    }, {});
+  
+    // Kết hợp dữ liệu progress vào danh sách học sinh
+    const result = allStudents.map(student => ({
+      name: student.name,
+      email: student.email,
+      lessonsCompleted: progressMap[student.studentId]?.lessonsCompleted || 0,
+      totalLessons: totalLessons,
+      id: student.studentId
+    }));
+  
+    return result;
+  }
+
+  async getSubmission(slug, studentId) {
+    try {
+      // Tìm khóa học dựa trên slug
+      const course = await Course.findOne({ slug }).exec();
+  
+      // Kiểm tra nếu khóa học không tồn tại
+      if (!course) {
+        throw new Error('Course not found');
+      }
+  
+      // Lấy danh sách testIds
+      const testIds = course.sections
+        .flatMap(section => section.lessons) // Lấy tất cả lessons từ sections
+        .filter(lesson => lesson.lessonType === 'Test') // Chỉ lấy những lessons là Test
+        .map(test => test.lessonId); // Lấy lessonId của Test
+  
+      if (!testIds.length) {
+        throw new Error('No tests found in this course');
+      }
+      const tests = await Test.find({ _id: { $in: testIds } })
+      .select('name submission') // Lấy trường cần thiết từ Test
+      .exec();
+
+      const student = await Student.findOne({ _id: studentId }).select('name email');
+
+
+      // Tìm và populate các bài kiểm tra (tests)
+      const testsWithStudentId = tests.map(test => ({
+        ...test.toObject(), // Chuyển tài liệu Mongoose thành object thường
+        submission: test.submission.filter(sub => sub.student.toString() === studentId), // Lọc submission theo studentId
+        studentName : student.name,
+        email : student.email,
+      }));
+  
+      return testsWithStudentId; // Trả về danh sách các bài kiểm tra đã populate
+    } catch (err) {
+      console.error(err);
+      throw new Error('Error fetching tests');
+    }
+  }
+  
+
+  // PUT
+  async updateSectionTitle(courseSlug, sectionId, title) {
+    if (!title) {
+      throw new Error('Tiêu đề không được để trống');
+    }
+  
+    const course = await Course.findOneAndUpdate(
+      { slug: courseSlug, 'sections._id': sectionId },
+      { $set: { 'sections.$.title': title } },
+      { new: true }
+    );
+  
+    if (!course) {
+      throw new Error('Khóa học hoặc phần không tồn tại');
+    }
+  
+    return course.sections;
+  };
+
+  async addSection(courseSlug, title) {
+    if (!title) {
+      throw new Error('Tiêu đề không được để trống');
+    }
+  
+    const course = await Course.findOneAndUpdate(
+      { slug: courseSlug },
+      { $push: { sections: { title, lessons: [] } } },
+      { new: true }
+    );
+  
+    if (!course) {
+      throw new Error('Khóa học không tồn tại');
+    }
+  
+    return course.sections;
+  };
+
+  async deleteSection(courseSlug, sectionId) {
+    const course = await Course.findOneAndUpdate(
+      { slug: courseSlug },
+      { $pull: { sections: { _id: sectionId } } },
+      { new: true }
+    );
+  
+    if (!course) {
+      throw new Error('Khóa học hoặc phần không tồn tại');
+    }
+  
+    return course.sections;
+  };
+
+
+
+  async getLessionId(slug, lessionId) {
     try {
       const course = await Course.findOne({ slug });
       if (!course) {
         throw new Error('Khóa học không tồn tại');
       }
-      const lesson = await Lesson.findOne({ slug: slugLesson, course: course._id });
+      const lesson = await Lesson.findOne({ _id: lessionId, course: course._id });
       // lấy danh sách bài giảng
 
       if (!lesson) {
@@ -110,6 +387,7 @@ class CourseService {
       throw new Error('Lỗi khi lấy thông tin bài học');
     }
   }
+
   async getNoteByLessonId(lessonId, userId) {
     try {
       const notes = await Note.find({ lesson: lessonId, student: userId }).lean();
@@ -129,7 +407,172 @@ class CourseService {
       throw new Error('Lỗi khi thêm ghi chú');
     }
   }
+  async getListCourse() {
+    try {
+        const courses = await Course.find({}).populate('teacher'); // Lấy đầy đủ thông tin giáo viên
+        return courses;
+    } catch (error) {
+        throw new Error('Lỗi khi lấy danh sách khóa học');
+    }
+  }
+  async getCourse(slug) {
+    try {
+        const course = await Course.findOne({ slug }).populate('teacher'); // Lấy đầy đủ thông tin giáo viên
+        if (!course) {
+            throw new Error('Khóa học không tồn tại');
+        }
+        return course;
+    } catch (error) {
+        throw new Error('Lỗi khi lấy thông tin khóa học');
+    }
+  }
+
+  async getLession(slug, slugLesson) {
+    try {
+        const course = await Course.findOne({ slug }); // Lấy đầy đủ thông tin giáo viên nếu cần
+        if (!course) {
+            throw new Error('Khóa học không tồn tại');
+        }
+        const lesson = await Lesson.findOne({ slug: slugLesson, course: course._id });
+        if (!lesson) {
+            throw new Error('Bài học không tồn tại');
+        }
+        return lesson;
+    } catch (error) {
+        throw new Error('Lỗi khi lấy thông tin bài học');
+    }
+  }
+
+  async getCoursesBySubject(subjectSlug) {
+    try {
+        console.log('Tìm kiếm môn học với slug:', subjectSlug);
+        const subject = await Subject.findOne({ slug: subjectSlug });
+        if (!subject) {
+            throw new Error('Môn học không tồn tại');
+        }
+
+        console.log('Tìm khóa học thuộc môn học:', subject._id);
+        const courses = await Course.find({ subject: subject._id }).populate('teacher');
+        return courses;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách khóa học theo môn học:', error);
+        throw new Error('Lỗi khi lấy danh sách khóa học theo môn học');
+    }
+  }
+
+  async searchCourses(keyword) {
+    try {
+        // Tìm kiếm khóa học dựa trên tiêu đề (title)
+        const courses = await Course.find({
+            name: { $regex: keyword, $options: 'i' } // Sử dụng regex để tìm kiếm không phân biệt hoa thường
+        }).populate('teacher');
+        return courses;
+    } catch (error) {
+        console.error('Lỗi khi tìm kiếm khóa học:', error);
+        throw new Error('Lỗi khi tìm kiếm khóa học');
+    }
+  }
+  async markLessonAsCompleted(lessonId, userId) {
+    try {
+      // Tìm bài học hoặc bài kiểm tra theo ID
+      let lesson;
+      let lessonType;
   
-}
+      // Kiểm tra bài học thuộc loại nào
+      lesson = await Lesson.findById(lessonId);
+      if (lesson) {
+        lessonType = "Lesson";
+      } else {
+        lesson = await Test.findById(lessonId);
+        if (lesson) {
+          lessonType = "Test";
+        } else {
+          throw new Error("Bài học hoặc bài kiểm tra không tồn tại");
+        }
+      }
+  
+      // Tìm khóa học chứa bài học hoặc bài kiểm tra này
+      const course = await Course.findOne({
+        "sections.lessons.lessonId": new mongoose.Types.ObjectId(lessonId),
+      });
+  
+      if (!course) {
+        throw new Error("Khóa học không tồn tại");
+      }
+  
+      // Kiểm tra học viên đã đăng ký khóa học này chưa
+      if (!course.students.includes(userId)) {
+        throw new Error("Học viên chưa tham gia khóa học này");
+      }
+  
+      // Tìm hoặc tạo tiến độ học tập của học viên
+      let studentProgress = course.studentProgress.find(
+        (progress) => progress.student.toString() === userId
+      );
+  
+      if (!studentProgress) {
+        // Nếu chưa có, thêm tiến độ mới
+        studentProgress = {
+          student: userId,
+          lessonsCompleted: [],
+        };
+        course.studentProgress.push(studentProgress);
+      }
+  
+      // Kiểm tra xem bài học đã được đánh dấu hoàn thành chưa
+      const isLessonCompleted = studentProgress.lessonsCompleted.some(
+        (completedLesson) => completedLesson.lessonId === lessonId
+      );
+  
+      if (isLessonCompleted) {
+        throw new Error("Bài học đã được đánh dấu hoàn thành");
+      }
+  
+      // Thêm bài học vào danh sách đã hoàn thành
+      studentProgress.lessonsCompleted.push({
+        lessonId: lessonId,
+        lessonType: lessonType,
+      });
+  
+      // Lưu cập nhật vào cơ sở dữ liệu
+      await course.save();
+  
+      return { message: "Bài học đã được đánh dấu hoàn thành thành công" };
+    } catch (error) {
+      console.error(error);
+      throw new Error("Lỗi khi đánh dấu bài giảng đã học: " + error.message);
+    }
+  }
+  async getRecommendedCourses (studentId){
+    try {
+      // Lấy thông tin sinh viên từ database
+      const student = await Student.findById(studentId).populate('registeredCourses.course');
+      if (!student) {
+        throw new Error('Student not found');
+      }
+  
+      // Lấy danh sách ID khóa học đã đăng ký
+      const registeredCourseIds = student.registeredCourses.map(item => item.course);
+  
+      // Lấy danh mục hoặc thông tin từ khóa học đã đăng ký (nếu có)
+      const registeredCourse= student.registeredCourses.map(item => item.course);
+      const registeredCategories = registeredCourse.map(item => item.subject);
+      
+      //Không lấy các khóa đã có trong dỏ hàng
+      const cartCourseIds = await CartService.findCartByUserId(studentId);
+
+      // Lấy các khóa học không nằm trong danh sách đã đăng ký
+      const recommendedCourses = await Course.find({
+        _id: { $nin: [...registeredCourseIds, ...cartCourseIds] }, // Loại bỏ các khóa học đã đăng ký
+        subject: { $in: registeredCategories } // Lọc các khóa học có cùng danh mục
+      }).populate('teacher', 'name email -_id')
+  
+      return recommendedCourses;
+    } catch (error) {
+      console.error('Error fetching recommended courses:', error.message);
+      throw error;
+    }
+  };
+}  
 
 module.exports = new CourseService();

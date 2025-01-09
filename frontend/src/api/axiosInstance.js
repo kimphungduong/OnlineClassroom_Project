@@ -47,7 +47,7 @@ axiosInstance.interceptors.request.use(
           role = response.data.role;
           // localStorage.setItem('accessToken', token);
           // localStorage.setItem('role', role);
-          store.dispatch(setTokens({ accessToken: token, role }));
+          await store.dispatch(setTokens({ accessToken: token, role }));
           isRefreshing = false;
           onAccessTokenRefreshed(token);
         } catch (error) {

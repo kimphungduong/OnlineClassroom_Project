@@ -1,22 +1,19 @@
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+//const bcrypt = require('bcrypt');
 const User = require('../models/User');
 const { OAuth2Client } = require('google-auth-library');
 const AuthService = require('../services/AuthService');
 
 class AuthController{
   async register(req, res, next) {
-    const { username, password, role, name, email } = req.body;
+    const { username, password, role, displayName, email, phone } = req.body;
     try {
-      const { accessToken, refreshToken, roleUser} = await AuthService.register(username, password, role, name, email);
-      
-      res.json({ accessToken, refreshToken, roleUser });
-    } catch (error) {
-      if (error.message === 'Tên đăng nhập đã tồn tại') {
-        res.status400().json({ message: error.message });
-      } else {
-        res.status(500).json({ message: 'Lỗi máy chủ' });
-      }
+      // Sử dụng AuthService để đăng ký người dùng
+      const { accessToken, refreshToken, role: userRole } = await AuthService.register(username, password, role, displayName, email, phone);
+      res.status(201).json({ accessToken, refreshToken, role: userRole });
+    } catch (err) {
+      res.status(400).json({ message: err.message });
     }
   }
     async google(req, res, next) {
@@ -48,19 +45,25 @@ class AuthController{
     async login(req, res, next) {
       const { username, password } = req.body;
       try {
-        const { accessToken, refreshToken, role, name } = await AuthService.login(username, password);
+        const { accessToken, refreshToken, role, name, avatar } = await AuthService.login(username, password);
         
+        // Kiểm tra vai trò hợp lệ
+        if (!["student", "teacher"].includes(role)) {
+          throw new Error('Vai trò không hợp lệ');
+        }
+
         res.cookie('refreshToken', refreshToken, {
           httpOnly: true,
           secure: false,
           sameSite: 'Lax',
         });
-        res.json({ accessToken, role, name });
+
+        res.json({ accessToken, role, name, avatar });
       } catch (error) {
         if (error.message === 'Sai tên đăng nhập' || error.message === 'Sai mật khẩu') {
           res.status(400).json({ message: 'Sai tên đăng nhập hoặc mật khẩu' });
         } else {
-          res.status(500).json({ message: 'Lỗi máy chủ' });
+          res.status(500).json({ message: 'Đã xảy ra lỗi. Vui lòng thử lại sau.' });
         }
       }
     }
@@ -86,7 +89,6 @@ class AuthController{
         }
       }
     }
-  
     async logout(req, res, next) {
       try {
         const refreshToken = req.cookies.refreshToken;
@@ -97,5 +99,33 @@ class AuthController{
         res.status(500).json({ message: 'Lỗi máy chủ' });
       }
     }
+    async sendVerifyCode(req, res, next) {
+      const { email } = req.body;
+      try {
+        await AuthService.sendVerificationCodeWithSendGrid(email);
+        res.json({ message: 'Email đã được gửi' });
+      } catch (error) {
+        res.status(500).json({ message: 'Lỗi máy chủ' });
+      }
+    }
+    async verifyCode(req, res, next) {
+      const { email ,verifyCode } = req.body;
+      try {
+        const token = await AuthService.verifyCode(email, verifyCode);
+        res.json(token);
+      } catch (error) {
+        res.status(400).json({ message: error.message });
+      }
+    }
+    async resetPassword(req, res, next) {
+      const { token, password } = req.body;
+      try {
+        await AuthService.resetPassword(token, password);
+        res.json({ message: 'Đặt lại mật khẩu thành công' });
+      } catch (error) {
+        res.status(400).json({ message: error.message });
+      }
+    }
+
 }
 module.exports = new AuthController;

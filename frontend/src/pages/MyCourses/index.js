@@ -35,15 +35,34 @@ const MyCourses = () => {
                 </Container>
             </Box>
             <Container sx={{ mt: 2 }}>
-                <Grid container spacing={4}>
-                    {courses.map((course) => (
-                        <Grid item key={course._id} xs={12} sm={6} md={4}>
-                            <CourseCard course={course} />
-                        </Grid>
-                    ))}
-                </Grid>
+                {courses.length > 0 ? (
+                    <Grid container spacing={4}>
+                        {courses.map((course) => (
+                            <Grid item key={course._id} xs={12} sm={6} md={4}>
+                                <CourseCard course={course} />
+                            </Grid>
+                        ))}
+                    </Grid>
+                ) : (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            height: '50vh',
+                            textAlign: 'center',
+                            color: 'gray',
+                        }}
+                    >
+                        <Typography variant="h6" component="p">
+                            Hiện tại bạn chưa đăng ký khóa học nào.
+                        </Typography>
+                    </Box>
+                )}
             </Container>
         </Container>
+
     );
 };
 

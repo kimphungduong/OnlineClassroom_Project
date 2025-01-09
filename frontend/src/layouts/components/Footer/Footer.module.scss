@@ -1,0 +1,77 @@
+.footer {
+    background-color: #001F3F; // phông nền
+    color: white;
+    padding: 20px 0;
+  }
+  
+  .logo {
+    width: 150px;
+    margin-bottom: 10px;
+  }
+  
+  .text {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #ffffff; // màu chữ
+  }
+  
+  .heading {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #ffffff; // màu tiêu đề
+  }
+  
+  .link {
+    color: #ffffff;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 5px;
+  
+    &:hover {
+      text-decoration: underline;
+      color: #4222e6; /* Màu trắng khi hover */
+    }
+  }
+  
+  .socialLinks {
+    margin-top: 10px;
+  
+    .icon {
+      margin-right: 10px;
+  
+      &:hover {
+        color: white; /* Đổi màu khi hover */
+      }
+    }
+  }
+  
+  .powered {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #ace4ac;
+  }
+
+  .linkMoodle {
+    color: #d46231; /* Màu xanh lá cây cho link */
+    text-decoration: none;
+    font-weight: bold; /* Làm đậm chữ link (nếu muốn) */
+  
+    &:hover {
+      text-decoration: underline;
+      color: #e5471b; /* Màu xanh lá cây đậm hơn khi hover */
+    }
+  }
+
+  .sectionTitle {
+    font-size: 3 rem;  
+    font-weight: bold; 
+    color: #4b70d6;    
+    margin-bottom: 1rem;
+  }
+
+  .footer a {
+    color: #ffffff !important; /* Màu trắng cho link */
+    text-decoration: none;
+  }
+  

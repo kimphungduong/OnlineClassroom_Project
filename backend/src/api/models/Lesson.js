@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const documentSchema = require('./document');
+const documentSchema = require('./Document');
 const slug = require('mongoose-slug-updater');
 
 mongoose.plugin(slug);

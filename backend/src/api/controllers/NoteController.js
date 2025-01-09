@@ -35,5 +35,16 @@ class CourseController{
             res.status(500).json({ message: 'Lỗi khi xóa ghi chú', error });
         }
     }
+    async getAllNotesGroupedByCourse(req, res) {
+        try {
+            const { courseId } = req.params;
+            const notesGroupedByCourse = await NoteService.getNotesGroupedBySections(courseId ,req.user.userId);
+            res.json(notesGroupedByCourse);
+        } catch (error) {
+            console.error(error);
+            res.status(500).json({ message: 'Lỗi khi lấy danh sách ghi chú', error });
+        }
+    }
+    
 }
 module.exports = new CourseController;

@@ -13,6 +13,10 @@ const noteApi = {
   deleteNote: (noteId) => {
     return axiosInstance.delete(`/note/${noteId}`);
   },
+  getNotesGroupedByCourse: (courseId  ) => {
+    return axiosInstance.get(`/note/all/${courseId}/`);
+  },
+
 };
 
 export default noteApi;

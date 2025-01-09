@@ -1,0 +1,20 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Đảm bảo chiều cao tối thiểu là toàn màn hình */
+}
+
+.container {
+    width: var(--default-layout-width);
+    max-width: 100%;
+    margin-top: var(--default-layout-header-height);
+    flex: 1; /* Đẩy footer xuống dưới */
+    display: flex;
+}
+
+.content {
+    width: 100%;
+    display: flex;
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    flex: 1; /* Đảm bảo nội dung có thể co giãn đầy đủ */
+}
