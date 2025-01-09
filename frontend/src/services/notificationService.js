@@ -45,7 +45,7 @@ export const getAllNotification = async () => {
                         const createdAt = formatDistanceToNow(parseISO(item.createdAt), { addSuffix: true, locale: vi });
                         return {
                             ...item,
-                            link : `/course/${item.related_data.course_slug}/${item.related_data.lesson_slug}`,
+                            link : `/my-course`,
                             createdAt : createdAt
                         }
                     }

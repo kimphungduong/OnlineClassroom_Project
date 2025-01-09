@@ -277,7 +277,7 @@ const CoursePage = () => {
         videoRef={videoRef}
         currentLessonId={lessonData?._id} // Bài giảng hiện tại
       />
-      <ChatRoom userType="student" userName={courseData.teacher.name} courseId={courseData._id} />
+    <ChatRoom userType="student" userName={courseData.teacher.name} courseId={courseData._id} />
     </Container>
   );
 };

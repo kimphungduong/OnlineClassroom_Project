@@ -94,8 +94,8 @@ module.exports.initSocket = (io) => {
           ],
         }).sort({ createdAt: -1 })
 
-        //const student = await Student.findOne({ _id : receiverID })
-
+        const student = await Student.findOne({ _id : receiverID }) || await Teacher.findOne({ _id : receiverID })
+        
         const data = chatRoom
             .sort((a, b) => a.sentAt - b.sentAt)
             .map(e => {
@@ -103,7 +103,7 @@ module.exports.initSocket = (io) => {
             message : e.content,
             sender : e.sender.toString() === userId ? "teacher" : "student",
             timestamp : e.sentAt,
-            avatar : "https://via.placeholder.com/50"
+            avatar : student.avatar
           }
         })
 
@@ -174,6 +174,8 @@ module.exports.initSocket = (io) => {
         });
         await newMessage.save();
 
+        const student = await Student.findOne({ _id : userId })
+
         const receiverSocketId = userSocketMap[receiverID];
         if (receiverSocketId) {
           // Gửi tin nhắn đến người nhận qua socket ID
@@ -181,7 +183,7 @@ module.exports.initSocket = (io) => {
             sender: "student",
             message: data.message,
             timestamp: new Date(),
-            avatar : "https://via.placeholder.com/50",
+            avatar : student.avatar,
             studentId : userId
           });
 
@@ -216,7 +218,7 @@ module.exports.initSocket = (io) => {
             sentAt: new Date(),
 
           });
-          console.log("quang oi quang")
+
           const msgs = await GetAllMsgs(userId);
           const len = msgs.filter(e => e.readed === false).length
           io.to(receiverSocketId).emit("lenMessage", len);

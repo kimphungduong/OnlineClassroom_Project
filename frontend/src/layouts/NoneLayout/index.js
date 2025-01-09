@@ -1,14 +1,11 @@
-import Header from '~/layouts/components/Header';
 import classNames from 'classnames/bind';
-import styles from './HeaderOnlyLayout.module.scss';
-import Footer from '../components/Footer';
+import styles from './NoneLayout.module.scss';
 
 const cx = classNames.bind(styles);
 
-function HeaderOnly({ children }) {
+function NoneLayout({ children }) {
     return (
         <>
-            <Header />
             <div className={cx('container')}>
                 <div className={cx('content')}>{children}</div>
             </div>
@@ -16,4 +13,4 @@ function HeaderOnly({ children }) {
     );
 }
 
-export default HeaderOnly;
+export default NoneLayout;

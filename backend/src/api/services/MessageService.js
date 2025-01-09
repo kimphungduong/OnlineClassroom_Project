@@ -47,7 +47,7 @@ module.exports.GetAllMsgs = async (userId) => {
                 studentId : receiverId,
                 courseName : course.name,
                 studentName : result.name,
-                studentAvatar : "https://via.placeholder.com/50",
+                studentAvatar : result.avatar,
                 courseId : course._id,
                 readed : e.readed,
                 role : result.role,

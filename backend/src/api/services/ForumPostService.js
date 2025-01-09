@@ -49,7 +49,7 @@ module.exports.getAllPosts = async (slug) => {
             return {
                 ...post.toObject(),
                 name,
-                avatar : "https://via.placeholder.com/50",
+                avatar : avatar,
                 voteCount: post.votes.reduce((acc, curr) => acc + curr.voteValue, 0),
                 commentCount : post.comments.length
             }
@@ -98,7 +98,7 @@ module.exports.getPost = async (slug, postId, userId) =>{
 
             return {
                 name : name,
-                avatar : "https://via.placeholder.com/50",
+                avatar : avatar,
                 ...comment
             }
         })
@@ -106,7 +106,7 @@ module.exports.getPost = async (slug, postId, userId) =>{
         const commentF = await Promise.all(comments)
 
         return {
-            avatar: "https://via.placeholder.com/50",
+            avatar: avatar,
             name,
             ...post.toObject(),
             voteCount : post.votes.reduce((acc, curr) => acc + curr.voteValue, 0),
@@ -151,7 +151,7 @@ module.exports.addComment = async(slug, postId, userId, content) =>{
         return {
             ...comment.toObject(),
             name : name,
-            avatar : "https://via.placeholder.com/50",
+            avatar : avatar,
         }
     }
     catch (error) {
