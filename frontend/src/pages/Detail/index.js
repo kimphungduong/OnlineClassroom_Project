@@ -8,6 +8,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { notification } from 'antd'; // Import notification
 import { cartApi } from '~/api'; // Import cartApi
+import { paymentApi } from '~/api'; // Import paymentApi
 import {
   Container,
   Box,
@@ -16,11 +17,13 @@ import {
   CardMedia,
   Rating,
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const CourseDetailPage = () => {
   const { slug } = useParams(); // Lấy slug từ URL
   const [course, setCourse] = useState(null);
   const [isAdding, setIsAdding] = useState(false); // State cho trạng thái thêm giỏ hàng
+  const navigate = useNavigate();
 
   // Fetch thông tin khóa học khi component được mount
   useEffect(() => {
@@ -62,7 +65,29 @@ const CourseDetailPage = () => {
 
   // Cập nhật dữ liệu khi course có đầy đủ các trường
   const benefits = course.description || []; // Nếu benefits không có, gán là mảng rỗng
+  const handleBuyCourseClick = async () => {
+    //Chuyển hướng đến trang thanh toán
+    try {
+      //Gọi api thêm giỏ hàng
+      const cart = await cartApi.addToCart(course._id);
 
+      const response = await paymentApi.create([course._id]);
+      const paymentId = response.data._id;
+      const qrCode = response.data.qrCode;
+      
+      navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses: [course._id]  } });
+      
+      } catch (error) {
+      if (error.response.data.message=="Lỗi cập nhật giỏ hàng"){
+        const response = await paymentApi.create([course._id]);
+        const paymentId = response.data._id;
+        const qrCode = response.data.qrCode;
+      
+        navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses: [course._id]  } });
+      
+      }
+    }
+  }
   return (
     <Container maxWidth={false} disableGutters sx={{ padding: '0', margin: '0', position: 'relative' }}>
       {/* Phần 1: Toàn màn hình */}
@@ -204,9 +229,9 @@ const CourseDetailPage = () => {
             <FavoriteBorderIcon />
           </Button> */}
         </Box>
-        {/* <Button variant="contained" color="secondary" fullWidth>
+        <Button variant="contained" color="secondary" fullWidth onClick={() => handleBuyCourseClick()}>
           Mua khóa học
-        </Button> */}
+        </Button>
         <Box sx={{ marginTop: '20px', paddingLeft: '10px' }}>
           <Typography variant="h7" fontWeight="bold" gutterBottom >
             Khóa học bao gồm:

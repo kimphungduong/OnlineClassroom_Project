@@ -39,9 +39,9 @@ class EditProfileService {
           if (updateFields.facebook) updateData.facebook = updateFields.facebook;
           if (updateFields.gender) updateData.gender = updateFields.gender;
     
+          const user = await this.findUserById(userId);
           // Nếu có mật khẩu cũ và mật khẩu mới, xử lý mật khẩu
           if (updateFields.currentPassword && updateFields.newPassword) {
-            const user = await this.findUserById(userId);
     
             // Kiểm tra mật khẩu cũ
             const isMatch = await user.comparePassword(updateFields.currentPassword);

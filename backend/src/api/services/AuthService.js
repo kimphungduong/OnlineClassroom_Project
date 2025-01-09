@@ -65,14 +65,9 @@ class AuthService {
       throw new Error('Sai tên đăng nhập');
     }
     var user = student || teacher;
-    try {
-      const isMatch = await user.comparePassword(password);
-      if (!isMatch) {
-        throw new Error('Sai mật khẩu');
-      }
-    }
-    catch (err) {
-      throw new Error('Lỗi máy chủ');
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
+      throw new Error('Sai mật khẩu');
     }
     const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
