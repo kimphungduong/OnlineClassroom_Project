@@ -67,7 +67,10 @@ const authSlice = createSlice({
     },
     getSate: (state) => {
       return state;
-    }
+    },
+    updateAvatar: (state, action) => {
+      state.avatar = action.payload;
+    },
     
   },
   extraReducers: (builder) => {
@@ -117,6 +120,8 @@ const authSlice = createSlice({
         state.status = 'succeeded';
         state.accessToken = action.payload.accessToken;
         state.role = action.payload.role;
+        state.avatar = action.payload.avatar;
+        state.name = action.payload.name;
       })
       .addCase(register.rejected, (state, action) => {
         state.status = 'failed';
@@ -125,5 +130,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout, setTokens } = authSlice.actions;
+export const { logout, setTokens, updateAvatar } = authSlice.actions;
 export default authSlice.reducer;

@@ -28,6 +28,22 @@ class UserService {
       return teacher;
     }
   }
+  getAllEmails() {
+    return Promise.all([
+      Student.find().select('email'),
+      Teacher.find().select('email')
+    ]).then(([students, teachers]) => {
+      return students.concat(teachers).map(user => user.email);
+    });
+  }
+  getAllPhones() {
+    return Promise.all([
+      Student.find().select('phone'),
+      Teacher.find().select('phone')
+    ]).then(([students, teachers]) => {
+      return students.concat(teachers).map(user => user.phone);
+    });
+  }
 }
 
 module.exports = new UserService();

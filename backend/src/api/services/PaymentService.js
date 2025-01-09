@@ -138,7 +138,7 @@ class PaymentService {
                             throw new Error("Student already registered");
                         }
                         course.students.push(payment.student);
-                        paymentSuccessNotification(student._id, course)
+                        paymentSuccessNotification(payment.student, course)
                         await course.save();
                     }
 
@@ -153,8 +153,8 @@ class PaymentService {
                     }
                     student.registeredCourses.push({
                         course: payment.course,
-                        startDate: payment.startDate,
-                        endDate: payment.endDate
+                        startDate: Date.now(),
+                        endDate: Date.now() + 30 * 24 * 60 * 60 * 1000,
                     });
                     await student.save();
 

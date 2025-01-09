@@ -13,6 +13,7 @@ import ReactQuill from "react-quill";
 import {useSearchParams} from "react-router-dom";
 import { notification } from "antd";
 import reviewApi from "~/api/reviewApi";
+import ChatRoom from "~/components/ChatRoom";
 
 const CoursePage = () => {
   const [searchParams] = useSearchParams(); // Đọc query params
@@ -276,6 +277,7 @@ const CoursePage = () => {
         videoRef={videoRef}
         currentLessonId={lessonData?._id} // Bài giảng hiện tại
       />
+      <ChatRoom userType="student" userName={courseData.teacher.name} courseId={courseData._id} />
     </Container>
   );
 };

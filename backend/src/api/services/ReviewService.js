@@ -62,7 +62,7 @@ class ReviewService {
       // Fetch all reviews for the course to update the average rating
       const reviews = await Review.find({ course: courseId });
       const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
-      const averageRating = totalRating / reviews.length;
+      const averageRating = (totalRating / reviews.length).toFixed(1);
 
 
       // Update the course's average rating

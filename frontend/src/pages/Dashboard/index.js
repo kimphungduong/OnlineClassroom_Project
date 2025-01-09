@@ -7,10 +7,13 @@ import {store} from '~/store';
 import { PhotoCamera } from '@mui/icons-material';
 import { IconButton } from '@mui/material';
 import settingApi from '~/api/settingApi';
+import { useDispatch } from 'react-redux';
+import { updateAvatar } from '~/store/slices/authSlice';
 
 const Dashboard = () => {
     const [selectedContent, setSelectedContent] = useState('courses');
     const [avatarUrl, setAvatarUrl] = useState(store.getState().auth.avatar); // Lấy avatar từ store
+    const dispatch = useDispatch();
 
     const handleToggle = (event, newContent) => {
         if (newContent !== null) {
@@ -29,9 +32,10 @@ const Dashboard = () => {
                 const response = await settingApi.updateAvatar(formData);
 
                 // Cập nhật avatar URL từ response
-                if (response.data.avatarUrl) {
-                    setAvatarUrl(response.data.avatarUrl);
-                    console.log('Avatar updated successfully:', response.data.avatarUrl);
+                if (response) {
+                    setAvatarUrl(response);
+                    dispatch(updateAvatar(response));
+                    console.log('Avatar updated successfully:', response);
                 }
             } catch (error) {
                 console.error('Error uploading avatar:', error);
