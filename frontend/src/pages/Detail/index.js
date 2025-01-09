@@ -118,10 +118,9 @@ const CourseDetailPage = () => {
             readOnly
             emptyIcon={<StarBorderIcon style={{ color: '#fff' }} fontSize="inherit" />}
           />
-          <Typography variant="body1">(87 rating)</Typography>
         </Box>
         <Typography variant="body1" paragraph sx={{ mt: 2, ml: 30 }}>
-          {course.sections.length} bài giảng
+          {course.sections.length} Phần
         </Typography>
       </Box>
 

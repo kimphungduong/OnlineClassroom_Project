@@ -13,8 +13,10 @@ import axios from "axios";
 import testApi from "~/api/testApi";
 import { useParams } from "react-router-dom";
 import courseApi from "~/api/courseApi";
+import { useNavigate } from "react-router-dom";
 
 const QuizPage = () => {
+  const navigate = useNavigate();
   const [quizData, setQuizData] = useState(null); // State để lưu bài test
   const [answers, setAnswers] = useState({});
   const [elapsedTime, setElapsedTime] = useState(0); // Timer for elapsed time
@@ -85,6 +87,7 @@ const QuizPage = () => {
       courseApi.markLessonAsCompleted(testId);
       console.log("API Response:", response.data);
       alert(`Nộp bài thành công! Số điểm đạt được: ${score}%`);
+      navigate(-1);
     } catch (error) {
       console.error("Lỗi nộp bài:", error);
       alert("Có lỗi xảy ra.");
