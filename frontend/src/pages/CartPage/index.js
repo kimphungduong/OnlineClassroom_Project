@@ -161,7 +161,7 @@ const CartPage = () => {
         </Typography>
         {/* <Slider {...sliderSettings}> */}
           {recommendedCourses.map((course) => (
-            <Box key={course._id} px={2}>
+            <Box px={2}>
               <CourseCardHome course={course} />
               {/* <Typography>abc</Typography> */}
             </Box>
