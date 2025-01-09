@@ -7,6 +7,7 @@ const Student = require('../models/Student');
 const Note = require('../models/Note');
 const Subject = require('../models/Subject'); 
 const mongoose = require('mongoose');
+const CartService = require('./CartService')
 
 class CourseService {
 
@@ -482,20 +483,24 @@ class CourseService {
   async getRecommendedCourses (studentId){
     try {
       // Lấy thông tin sinh viên từ database
-      const student = await Student.findById(studentId).populate('registeredCourses');
+      const student = await Student.findById(studentId).populate('registeredCourses.course');
       if (!student) {
         throw new Error('Student not found');
       }
   
       // Lấy danh sách ID khóa học đã đăng ký
-      const registeredCourseIds = student.registeredCourses.map(course => course._id.toString());
+      const registeredCourseIds = student.registeredCourses.map(item => item.course);
   
       // Lấy danh mục hoặc thông tin từ khóa học đã đăng ký (nếu có)
-      const registeredCategories = student.registeredCourses.map(course => course.subject);
-  
+      const registeredCourse= student.registeredCourses.map(item => item.course);
+      const registeredCategories = registeredCourse.map(item => item.subject);
+      
+      //Không lấy các khóa đã có trong dỏ hàng
+      const cartCourseIds = await CartService.findCartByUserId(studentId);
+
       // Lấy các khóa học không nằm trong danh sách đã đăng ký
       const recommendedCourses = await Course.find({
-        _id: { $nin: registeredCourseIds }, // Loại bỏ các khóa học đã đăng ký
+        _id: { $nin: [...registeredCourseIds, ...cartCourseIds] }, // Loại bỏ các khóa học đã đăng ký
         subject: { $in: registeredCategories } // Lọc các khóa học có cùng danh mục
       }).populate('teacher', 'name email -_id')
   

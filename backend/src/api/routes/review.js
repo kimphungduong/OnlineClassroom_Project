@@ -14,4 +14,6 @@ router.get('/:id', ReviewController.getReviewById);
 // Get course stats by slug
 router.get('/:slug/stat', ReviewController.getCourseStats);
 
+router.post('/', ReviewController.addReview)
+
 module.exports = router;

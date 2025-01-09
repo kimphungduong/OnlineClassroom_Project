@@ -11,6 +11,8 @@ import { addNote, getNotes, updateNote, deleteNote } from "~/services/noteServic
 import noteApi from "~/api/noteApi";
 import ReactQuill from "react-quill";
 import {useSearchParams} from "react-router-dom";
+import { notification } from "antd";
+import reviewApi from "~/api/reviewApi";
 
 const CoursePage = () => {
   const [searchParams] = useSearchParams(); // Đọc query params
@@ -79,6 +81,24 @@ const CoursePage = () => {
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
+
+  const handleReviewSubmit = async (review) => {
+    try {
+      const response = await reviewApi.addReview({...review, courseId: courseData._id});
+      console.log("Review submitted:", response);
+      notification.success({
+        message: "Đánh giá thành công",
+        description: "Cảm ơn bạn đã đánh giá khóa học!",
+      });
+    } catch (error) {
+      notification.error({
+        message: "Đánh giá thất bại",
+        description: "Có lỗi xảy ra khi đánh giá khóa học!",
+      });
+
+      console.error("Error submitting review:", error);
+    }
+  }
 
   return (
     <Container
@@ -241,6 +261,9 @@ const CoursePage = () => {
           <CourseSidebar
             sections={courseData?.sections}
             slugCourse={slugCourse}
+            progress={courseData?.progress}
+            onSubmitReview={handleReviewSubmit}
+
           />
         </Grid>
       </Grid>

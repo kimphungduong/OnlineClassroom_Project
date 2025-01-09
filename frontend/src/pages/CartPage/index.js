@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Typography, Divider } from "@mui/material";
 import CartItem from "../../components/CartItem";
 import SummarySection from "../../components/SummarySection";
-import CourseCardHome from "~/layouts/components/CourseCardHome"; // Component để hiển thị khóa học đề xuất
+import CourseCardHome from "./CourseCardHome"; // Component để hiển thị khóa học đề xuất
 import Slider from "react-slick"; // Thư viện slider
 import cartApi from "../../api/cartApi";
 import courseApi from "~/api/courseApi"; // Import API recommendation
@@ -35,7 +35,8 @@ const CartPage = () => {
       try {
         // Gọi API lấy danh sách đề xuất
         const response = await courseApi.getRecommendedCourses();
-        setRecommendedCourses(response.data || []);
+        console.log(response.data.data);
+        setRecommendedCourses(response.data.data || []);
       } catch (error) {
         console.error("Error fetching recommendations:", error.response?.data || error.message);
       }
@@ -97,23 +98,24 @@ const CartPage = () => {
     dots: false,
     infinite: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow: 1,  // Số lượng slide hiển thị trên mỗi màn hình
     slidesToScroll: 1,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1024,  // Khi màn hình nhỏ hơn 1024px
         settings: {
-          slidesToShow: 2,
+          slidesToShow: 2,  // Hiển thị 2 slide
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 600,  // Khi màn hình nhỏ hơn 600px
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 1,  // Hiển thị 1 slide
         },
       },
     ],
   };
+  
 
   return (
     <>
@@ -153,8 +155,23 @@ const CartPage = () => {
       </Box>
       <SummarySection total={total} onPayment={handlePayment} />
       </Box>
-      
+      {recommendedCourses.length > 0 && (
+      <Box sx={{ mt: 4, position: "relative", flex: 1 }}>
+        <Typography variant="h5" gutterBottom>
+          Đề xuất cho bạn
+        </Typography>
+        {/* <Slider {...sliderSettings}> */}
+          {recommendedCourses.map((course) => (
+            <Box key={course._id} px={2}>
+              <CourseCardHome course={course} />
+              {/* <Typography>abc</Typography> */}
+            </Box>
+          ))}
+        {/* </Slider> */}
+      </Box>)}     
     </Container>
+    
+
   </>
   );
 };

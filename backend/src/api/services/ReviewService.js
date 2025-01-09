@@ -37,7 +37,42 @@ class ReviewService {
     }
     return review;
   }
+  async addReview(courseId, userId, rating, comment) {
+    try {
+      // Create a new review
+      const review = new Review({
+        course: courseId,
+        student: userId,
+        rating,
+        comment,
+      });
+      //Nếu học viên đã review rồi thì không cho review nữa
+      const student = await Student.findById(userId);
+      if (!student) {
+        throw new Error('Student not found');
+      }
+      const reviewedCourses = await Review.find({ student: userId, course: courseId });
+      if (reviewedCourses.length > 0) {
+        throw new Error('You have already reviewed this course');
+      }
 
+      // Save the review to the database
+      await review.save();
+
+      // Fetch all reviews for the course to update the average rating
+      const reviews = await Review.find({ course: courseId });
+      const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+      const averageRating = totalRating / reviews.length;
+
+
+      // Update the course's average rating
+      await Course.findByIdAndUpdate(courseId, { rating: averageRating });
+
+      return review;
+    } catch (error) {
+      throw new Error('Error adding review: ' + error.message);
+    }
+  }
 }
 
 module.exports = new ReviewService();

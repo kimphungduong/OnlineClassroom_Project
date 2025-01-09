@@ -9,11 +9,13 @@ import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { ArrowBackIos, ArrowForwardIos } from '@mui/icons-material';
 import { getListCourse } from '~/services/courseService';
+import { courseApi } from '~/api';
 
 const cx = classNames.bind(styles);
 
 const Home = () => {
     const [courses, setCourses] = useState([]);
+    const [recommendedCourses, setRecommendedCourses] = useState([]); // State cho đề xuất
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -34,6 +36,27 @@ const Home = () => {
             }
         };
 
+            
+        const fetchRecommendations = async () => {
+            try {
+            // Gọi API lấy danh sách đề xuất
+            const response = await courseApi.getRecommendedCourses();
+            const normalizedCourses = response.data.data.map(course => ({
+                id: course._id,
+                title: course.name,
+                teacher: course.teacher?.name || 'Chưa cập nhật',
+                rating: course.rating,
+                price: course.price,
+                image: course.image,
+                slug: course.slug,
+            }));
+            setRecommendedCourses(normalizedCourses || []);
+            } catch (error) {
+            console.error("Error fetching recommendations:", error.response?.data || error.message);
+            }
+        };
+
+        fetchRecommendations();
         fetchCourses();
     }, []);
 
@@ -70,6 +93,7 @@ const Home = () => {
             <Box sx={{ maxWidth: '100%', marginBottom: '20px' }}>
                 <img className={cx('home')} src={images.home} alt="Introduce" style={{ maxHeight: '300px', width: '100%' }} />
             </Box>
+            
             <Box sx={{ mt: 4, position: 'relative' }}>
                 <Typography variant="h5" gutterBottom>
                     Các khóa học phổ biến
@@ -82,6 +106,21 @@ const Home = () => {
                     ))}
                 </Slider>
             </Box>
+            
+            {recommendedCourses.length > 0 && (
+            <Box sx={{ mt: 4, position: 'relative' }}>
+                <Typography variant="h5" gutterBottom>
+                Đề xuất cho bạn
+                </Typography>
+                <Slider {...settings}>
+                {recommendedCourses.map((course) => (
+                    <Box key={course._id} px={2}>
+                    <CourseCardHome course={course} />
+                    </Box>
+                ))}
+                </Slider>
+            </Box>
+            )}
             <Box sx={{ mt: 4, position: 'relative' }}>
                 <Typography variant="h5" gutterBottom>
                     Các khóa học cho người mới bắt đầu
