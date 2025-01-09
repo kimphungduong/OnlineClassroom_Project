@@ -212,8 +212,6 @@ class CourseController{
     }
   };  
 
- 
-
     async searchCourses(req, res, next) {
         try {
             const { query } = req.query; // Lấy từ khóa tìm kiếm từ query string
