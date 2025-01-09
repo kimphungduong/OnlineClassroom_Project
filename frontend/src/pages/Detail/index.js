@@ -78,13 +78,19 @@ const CourseDetailPage = () => {
       navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses: [course._id]  } });
       
       } catch (error) {
-      if (error.response.data.message=="Lỗi cập nhật giỏ hàng"){
+      if (error.response.data.message=="Khóa học đã có trong giỏ hàng"){
         const response = await paymentApi.create([course._id]);
         const paymentId = response.data._id;
         const qrCode = response.data.qrCode;
       
         navigate(`/payment/${paymentId}`, { state: { qrCode, selectedCourses: [course._id]  } });
       
+      }
+      if(error.response.data.message=="Khóa học đã được đăng ký"){
+        notification.error({
+          message: '"Khóa học đã được đăng ký"',
+          description: 'Khóa học đã được đăng ký, vui lòng chọn khóa học khác.',
+        });
       }
     }
   }

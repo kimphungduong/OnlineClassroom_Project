@@ -530,7 +530,7 @@ class CourseService {
   
       // Thêm bài học vào danh sách đã hoàn thành
       studentProgress.lessonsCompleted.push({
-        lessonId: lessonId,
+        lesson: lessonId,
         lessonType: lessonType,
       });
   
