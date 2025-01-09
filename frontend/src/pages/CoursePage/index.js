@@ -17,7 +17,7 @@ import ChatRoom from "~/components/ChatRoom";
 
 const CoursePage = () => {
   const [searchParams] = useSearchParams(); // Đọc query params
-  const startTime = parseFloat(searchParams.get("time")) || 0; // Lấy giá trị time (mặc định là 0)
+  const [startTime, setStartTime] = useState(parseFloat(searchParams.get("time")) || 0); // Lấy giá trị time (mặc định là 0)
 
   const { slugCourse, slugLesson } = useParams();
   const [tabIndex, setTabIndex] = useState(0);
@@ -50,7 +50,7 @@ const CoursePage = () => {
           const notesResponse = await getNotes(slugCourse, lessonResponse._id);
           setNotesData(notesResponse || []); // Đảm bảo luôn là mảng
         }
-
+        setStartTime(parseFloat(searchParams.get("time")) || 0); // Lấy giá trị time (mặc định là 0)
         setLoading(false);
       } catch (err) {
         setError(err);

@@ -563,7 +563,7 @@ class CourseService {
 
       // Lấy các khóa học không nằm trong danh sách đã đăng ký
       const recommendedCourses = await Course.find({
-        _id: { $nin: [...registeredCourseIds, ...cartCourseIds] }, // Loại bỏ các khóa học đã đăng ký
+        _id: { $nin: [...registeredCourseIds, ...cartCourseIds.courseIds] }, // Loại bỏ các khóa học đã đăng ký
         subject: { $in: registeredCategories } // Lọc các khóa học có cùng danh mục
       }).populate('teacher', 'name email -_id')
   

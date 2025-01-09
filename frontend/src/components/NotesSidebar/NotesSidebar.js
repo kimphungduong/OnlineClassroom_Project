@@ -38,7 +38,7 @@ const NotesSidebar = ({ visible, onClose, courseId, videoRef, currentLessonId })
       }
     } else {
       // Nếu không, điều hướng đến bài giảng khác với thời gian tương ứng
-      navigate(`/course/${slugCourse}/${slug}?time=${time || 0}`);
+      navigate(`/course/${slugCourse}/${slug}?time=${time || 0}`,{ state: { time } });
       if (videoRef && videoRef.current) {
         videoRef.current.seekTo(time || 0); // Phát video tại thời điểm ghi chú
       }
