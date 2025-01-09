@@ -130,7 +130,7 @@ function Header() {
 
     const handleSearch = () => {
         if (searchValue.trim()) {
-            navigate(/search?query=${encodeURIComponent(searchValue.trim())});
+            navigate(`/search?query=${encodeURIComponent(searchValue.trim())}`);
         }
     };
 
