@@ -52,7 +52,7 @@ import { DefaultLayout, HeaderOnly } from '~/layouts';
 import VerifyPage from '~/pages/VerifyPage';
 import ResetPasswordPage from '~/pages/ResetPassword';
 import LoginPage from '~/pages/Login';
-
+import NoneLayout from '~/layouts/NoneLayout'
 
 
 //import Footer from '~/layouts/components/Footer';
@@ -73,7 +73,7 @@ const publicRoutes = [
 
     { path: config.routes.course, component: CoursePage, layout: DefaultLayout, auth: StudentRoute },
     { path: config.routes.cart, component: CartPage, layout: DefaultLayout, auth: StudentRoute},
-    { path: config.routes.login, component: LoginPage, layout: DefaultLayout },
+    { path: config.routes.login, component: LoginPage, layout: NoneLayout },
 
     { path: config.routes.teacherCourse, component: TeacherCourse, layout: DefaultLayout, auth: TeacherRoute },
     { path: config.routes.courseNew, component: CourseNew, layout: DefaultLayout, auth: TeacherRoute },
@@ -89,7 +89,7 @@ const publicRoutes = [
     { path: config.routes.testEdit, component: TestEdit, layout: HeaderOnly, auth: TeacherRoute },
     { path: config.routes.testPage, component: TestPage, layout: HeaderOnly, auth: StudentRoute },
 
-    { path: config.routes.register, component: RegisterPage, layout: DefaultLayout },
+    { path: config.routes.register, component: RegisterPage, layout: NoneLayout },
     { path: config.routes.forgotPassword, component: ForgotPasswordPage, layout: DefaultLayout },
     { path : config.routes.message, component : TeacherMessagePage, layout : HeaderOnly },
     { path : config.routes.notification, component : NotificationPage, layout : DefaultLayout },

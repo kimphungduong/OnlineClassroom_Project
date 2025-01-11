@@ -73,7 +73,7 @@ export default function Footer() {
           rel="noopener noreferrer"
           className={styles.linkMoodle}
         >
-          Moodle
+          Vincent
         </Link>
       </Box>
     </Box>

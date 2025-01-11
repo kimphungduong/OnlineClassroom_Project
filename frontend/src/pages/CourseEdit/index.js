@@ -29,10 +29,11 @@ const CourseEdit = () => {
         if (!slug) throw new Error('Slug không tồn tại');
         const response = await courseApi.getLessonsByCourseSlug(slug);
         if (!response) throw new Error(`HTTP error! status: ${response.status}`);
-
+        const course = await courseApi.getCourse(slug);
         const data = await response.data;
+        console.log(course);
         setSections(data || []);
-        setCourseName(data[0]?.lessons[0]?.name || '');
+        setCourseName(course.data.name || '');
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching course lessons:', error);

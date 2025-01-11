@@ -148,7 +148,9 @@ function Header() {
             <div className={cx('inner')}>
                 {/* Logo */}
                 <Link to={config.routes.home} className={cx('logo-link')}>
-                    <img src={images.logo} alt="Vincent" />
+                    <img src='/logo.png' alt="Vincent" className={cx('logo')}/>
+                    <span className={cx('logo-name')}>Vincent</span>
+
                 </Link>
 
                 {/* Search Bar */}

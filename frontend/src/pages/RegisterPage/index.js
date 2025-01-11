@@ -13,8 +13,9 @@ import { Visibility, VisibilityOff } from "@mui/icons-material";
 import SchoolIcon from "@mui/icons-material/School";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import { register } from "~/store/slices/authSlice";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { Line } from "react-chartjs-2";
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
@@ -307,6 +308,9 @@ const RegisterPage = () => {
             {message}
           </Typography>
         )}
+        <Typography align="center" sx={{ marginTop: 2 }}>
+          Bạn đã có tài khoản? <a href="/login">Đăng nhập</a>
+        </Typography>
         </form>
     </Box>
   );

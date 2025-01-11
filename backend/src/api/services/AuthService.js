@@ -50,7 +50,7 @@ class AuthService {
     }
     
 
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2d' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
@@ -69,7 +69,7 @@ class AuthService {
     if (!isMatch) {
       throw new Error('Sai mật khẩu');
     }
-    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+    const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: '2d' });
     const refreshToken = jwt.sign({ userId: user._id, role: user.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
     await redisClient.set(user._id.toString(), refreshToken, 'EX', 7 * 24 * 60 * 60);
@@ -92,7 +92,7 @@ class AuthService {
       }
   
       // Tạo mới access token và refresh token
-      const newAccessToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_SECRET, { expiresIn: '24h' });
+      const newAccessToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_SECRET, { expiresIn: '2d' });
       const newRefreshToken = jwt.sign({ userId, role: decoded.role }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
   
       // Cập nhật refresh token mới vào Redis
