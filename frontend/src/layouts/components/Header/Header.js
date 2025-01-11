@@ -129,8 +129,14 @@ function Header() {
     };
 
     const handleSearch = () => {
+        if (searchValue.trim().length > 30) {
+            alert('Từ khóa tìm kiếm quá dài, vui lòng nhập lại với tối đa 30 ký tự.');
+            setSearchValue(''); // Làm trống ô tìm kiếm nếu quá dài
+            return;
+        }
         if (searchValue.trim()) {
             navigate(`/search?query=${encodeURIComponent(searchValue.trim())}`);
+            setSearchValue(''); // Làm trống ô tìm kiếm sau khi tìm kiếm thành công
         }
     };
 
