@@ -16,6 +16,7 @@ import { register } from "~/store/slices/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { Line } from "react-chartjs-2";
+import { notification } from "antd";
 
 const RegisterPage = () => {
   const dispatch = useDispatch();
@@ -131,6 +132,7 @@ const RegisterPage = () => {
         navigate("/"); // Chuyển hướng đến trang chủ
       } catch (err) {
         setErrors({ message: err.message || "Đăng ký thất bại" });
+        notification.error({ message: "Đăng ký thất bại", description: err.message });
         console.error("Register failed:", errors);
       } finally {
         setLoading(false); // Tắt trạng thái loading

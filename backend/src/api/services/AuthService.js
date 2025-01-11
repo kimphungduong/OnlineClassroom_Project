@@ -28,12 +28,14 @@ class AuthService {
     if (!validRoles.includes(role)) {
       throw new Error('Vai trò không hợp lệ');
     }
+    const emailList = await UserService.getAllEmails();
     //Kiểm tra trùng email không ở cả học sinh và giáo viên
-    if(UserService.getAllEmails().includes(email)){
+    if(emailList.includes(email)){
       throw new Error('Email đã tồn tại');
     }
+    const  phoneList = await UserService.getAllPhones();
     //Kiểm tra trùng số điện thoại không ở cả học sinh và giáo viên
-    if(UserService.getAllPhones().includes(phone)){
+    if(phoneList.includes(phone)){
       throw new Error('Số điện thoại đã tồn tại');
     }
 
